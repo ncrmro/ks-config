@@ -91,4 +91,6 @@
   };
 
   keystone.terminal.calendar.enable = true;
+  keystone.terminal.contacts.enable = true;
+  keystone.terminal.timer.enable = true;
 }
