@@ -37,7 +37,12 @@
     git = {
       userName = "Nicholas Romero";
       userEmail = "ncrmro@gmail.com";
-      forgejo.enable = true;
+      forgejo = {
+        enable = true;
+        domain = "git.ncrmro.com";
+        sshPort = 2222;
+        username = "ncrmro";
+      };
     };
     sandbox = {
       enable = true;
