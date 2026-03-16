@@ -53,15 +53,16 @@ consumed by both the `keystone.hosts` NixOS module and the `ks` CLI.
 nix flake check
 
 # Build a host config (no deploy, no sudo)
-ks build [--dev] [<HOST>]          # defaults to current hostname
+ks build [--dev] [<HOSTS>]         # defaults to current hostname
 ks build ocean                     # build ocean config
+ks build mox,maia                  # build multiple configs
 ks build --dev                     # build with local keystone + agenix-secrets
 
 # Deploy to a host (switch or boot)
-ks update [--dev] [--boot] [<HOST>]  # defaults to current hostname
+ks update [--dev] [--boot] [<HOSTS>] # defaults to current hostname, locks by default
 ks update ocean                      # deploy to ocean (Tailscale, LAN fallback)
-ks update mercury                    # deploy to mercury (direct IP)
-ks update --dev                      # deploy with local submodule overrides
+ks update mercury,ocean              # deploy multiple (builds all first, then sequential)
+ks update --dev ncrmro-workstation   # deploy with local submodule overrides (bypasses locking)
 ks update --boot                     # nixos-rebuild boot (reboot required)
 ```
 
