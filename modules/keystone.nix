@@ -46,7 +46,7 @@
     mail.host = "ocean";
     git.host = "ocean";
     immich.host = "ocean";
-    immich.backends = [ "ncrmro-workstation" ];
+    immich.workers = [ "ncrmro-workstation" ];
   };
 
   keystone.secrets.repo = inputs.agenix-secrets;
