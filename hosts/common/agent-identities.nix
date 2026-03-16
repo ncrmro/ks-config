@@ -7,6 +7,9 @@
 #   - server host (e.g. ocean):        mail/git account provisioning (via mail.provision / git.provision)
 #   - ALL importing hosts:             OS user account + home directory
 #
+# SSH public keys are declared in keystone.keys (modules/keystone.nix),
+# not here. This file only declares agent identity and feature flags.
+#
 # Agenix note: secrets like agent-{name}-mail-password need recipients on
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
 { ... }:
@@ -16,7 +19,6 @@
       host = "ncrmro-workstation";
       fullName = "Drago";
       email = "drago@ncrmro.com";
-      ssh.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID9TbHc93b0RWSekJcUmlDkw0UulfzkbJqdd0ejfuV2C agent-drago";
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
     };
@@ -24,7 +26,6 @@
       host = "ocean";
       fullName = "Luce";
       email = "luce@ncrmro.com";
-      ssh.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIm+ClDj0CiLcYO3rxsQgRx7P0v3/bSw1QuCNdk87btp agent-luce";
       mail.provision = true;
       git.provision = true;
     };

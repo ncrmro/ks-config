@@ -8,6 +8,8 @@
 {
   imports = [
     ./openssh.nix
+    inputs.keystone.nixosModules.keys
+    ../../../modules/keys.nix
     inputs.keystone.nixosModules.binaryCacheClient
     inputs.keystone.nixosModules.domain
     inputs.keystone.nixosModules.services

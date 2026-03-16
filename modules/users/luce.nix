@@ -1,6 +1,14 @@
 { config, pkgs, ... }:
 let
-  keys = import ./keys.nix;
+  keysCfg = config.keystone.keys;
+  allKeysFor =
+    username:
+    let
+      u = keysCfg.${username};
+      hostKeys = builtins.attrValues (builtins.mapAttrs (_: h: h.publicKey) u.hosts);
+      hwKeys = builtins.attrValues (builtins.mapAttrs (_: h: h.publicKey) u.hardwareKeys);
+    in
+    hostKeys ++ hwKeys;
 in
 {
   programs.zsh.enable = true;
@@ -14,6 +22,6 @@ in
     ];
     initialPassword = "password"; # For testing, change later
     shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = keys.ncrmro;
+    openssh.authorizedKeys.keys = allKeysFor "ncrmro";
   };
 }

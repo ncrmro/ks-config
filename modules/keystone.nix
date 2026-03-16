@@ -1,26 +1,16 @@
 { inputs, lib, ... }:
-let
-  keys = import ./users/keys.nix;
-in
 {
   imports = [
     inputs.keystone.nixosModules.operating-system
     inputs.keystone.nixosModules.hardwareKey
+    ./keys.nix
   ];
 
   keystone.hardwareKey = {
     enable = lib.mkDefault true;
-    keys.yubi-black = {
-      description = "Primary YubiKey 5 NFC (USB-A, black)";
-      sshPublicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAILEOo3uKwbDN1SJemQx8UPVXv0TjKn2VfZSTVFfp3tlcAAAACnNzaDpuY3Jtcm8=";
-    };
-    keys.yubi-green = {
-      description = "Backup YubiKey 5C NFC (USB-C, green sticker)";
-      sshPublicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDtwsz3zAJokZ3rnVyXUxmeUGba61b8KIW3u4aE52dK2AAAAFXNzaDpuY3Jtcm8teXViaS1ncmVlbg==";
-    };
     rootKeys = [
-      "yubi-black"
-      "yubi-green"
+      "ncrmro/yubi-black"
+      "ncrmro/yubi-green"
     ];
     gpgAgent = {
       enable = lib.mkDefault false;
@@ -47,8 +37,6 @@ in
         "podman"
         "dialout"
       ];
-      authorizedKeys = keys.ncrmro;
-      hardwareKeys = [ "yubi-black" ];
       terminal.enable = lib.mkDefault true;
       sshAutoLoad.enable = lib.mkDefault true;
     };

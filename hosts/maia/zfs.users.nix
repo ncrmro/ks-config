@@ -1,6 +1,15 @@
-{ pkgs, ... }:
+# TODO: Migrate zfs-sync user keys to keystone.keys. Consider adminKeys/rootKeys helpers.
+{ pkgs, config, ... }:
 let
-  keys = import ../../modules/users/keys.nix;
+  keysCfg = config.keystone.keys;
+  allKeysFor =
+    username:
+    let
+      u = keysCfg.${username};
+      hostKeys = builtins.attrValues (builtins.mapAttrs (_: h: h.publicKey) u.hosts);
+      hwKeys = builtins.attrValues (builtins.mapAttrs (_: h: h.publicKey) u.hardwareKeys);
+    in
+    hostKeys ++ hwKeys;
 in
 {
   # Enable ZFS backup and NAS
@@ -27,6 +36,6 @@ in
     isSystemUser = true;
     shell = pkgs.bash;
     group = "zfs-sync";
-    openssh.authorizedKeys.keys = keys.root;
+    openssh.authorizedKeys.keys = allKeysFor "ncrmro";
   };
 }
