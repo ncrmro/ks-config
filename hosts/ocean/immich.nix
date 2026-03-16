@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 {
-  services.immich = {
-    enable = true;
+  keystone.os.services.immich = {
+    # Role and mlUrl are auto-configured from keystone.services
     host = "127.0.0.1";
     mediaLocation = "/ocean/media/photos";
   };

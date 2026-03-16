@@ -42,5 +42,12 @@
     };
   };
 
+  keystone.services = {
+    mail.host = "ocean";
+    git.host = "ocean";
+    immich.host = "ocean";
+    immich.backends = [ "ncrmro-workstation" ];
+  };
+
   keystone.secrets.repo = inputs.agenix-secrets;
 }
