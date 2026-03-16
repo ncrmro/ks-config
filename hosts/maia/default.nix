@@ -25,7 +25,6 @@
   environment.systemPackages = [
     pkgs.htop
     pkgs.usbutils
-    pkgs.bottom
     pkgs.btop
   ];
 

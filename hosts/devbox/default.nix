@@ -29,7 +29,6 @@
   environment.systemPackages = [
     pkgs.htop
     pkgs.btop
-    pkgs.bottom
     pkgs.iftop
   ];
 

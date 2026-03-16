@@ -71,10 +71,6 @@
     # Does not support Network Manager
     # impala # TUI for managing wifi
 
-    # Bottom - Graphical process/system monitor
-    # https://github.com/ClementTsang/bottom
-    bottom
-
     # Eza - Modern replacement for ls with colors and git integration
     # https://github.com/eza-community/eza
     # Provided by Keystone
@@ -103,7 +99,6 @@
     # https://www.gnu.org/software/stow/
     stow
 
-    # # fd # Better find
     # httpie # Better curl
     # # diffsitter # Better diff
 
