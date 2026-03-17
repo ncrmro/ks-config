@@ -31,8 +31,8 @@
   # Basic git config
   programs.git = {
     enable = true;
-    userName = "ncrmro";
-    userEmail = "ncrmro@example.com";
+    userName = lib.mkForce "ncrmro";
+    userEmail = lib.mkForce "ncrmro@example.com";
   };
 
   # Home Manager state version
