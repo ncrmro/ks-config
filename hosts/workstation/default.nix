@@ -20,8 +20,6 @@
     ../common/optional/nfs-client.nix
     ../common/optional/monitoring-client.nix
     ../common/optional/alloy-client.nix
-    ../common/optional/docker-rootless.nix
-    ../common/optional/podman.nix
     outputs.nixosModules.bambu-studio
     ./windows11-vm.nix
     ../../modules/nixos/steam.nix

@@ -30,7 +30,6 @@
     ./immich.nix
     ../../modules/keystone.nix
     ../../modules/keystone.server.nix
-    ../common/optional/podman.nix
     ./vms.nix
     ../common/agent-identities.nix
   ];

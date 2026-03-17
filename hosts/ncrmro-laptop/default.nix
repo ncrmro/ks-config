@@ -19,8 +19,6 @@
     ../common/optional/zfs.luks.root.nix
     ./hardware-configuration.nix
     ../common/global
-    # ../common/optional/podman.nix
-    ../common/optional/docker-rootless.nix
     # ../common/optional/docker-root.nix
     ../common/optional/eternal-terminal.nix
     ../common/optional/nfs-client.nix

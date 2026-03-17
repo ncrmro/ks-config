@@ -42,8 +42,20 @@
   };
   time.timeZone = "America/Chicago";
 
+  virtualisation.containers.enable = true;
+  virtualisation = {
+    docker.enable = lib.mkForce false;
+    podman = {
+      enable = true;
+      dockerSocket.enable = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
+  };
+
   environment.systemPackages = with pkgs; [
     home-manager
     lm_sensors
+    dive
+    docker-compose
   ];
 }

@@ -45,7 +45,6 @@
       };
     };
     sandbox = {
-      enable = true;
       extraSubstituters = [ "https://cache.ncrmro.com/main" ];
       extraTrustedPublicKeys = [ "main:H852yjGdbbRIOQcnKm3uZOpZWRFmQoQ5p4I7VDz7kAI=" ];
     };
