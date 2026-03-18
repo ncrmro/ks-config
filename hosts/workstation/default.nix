@@ -20,6 +20,7 @@
     ../common/optional/nfs-client.nix
     ../common/optional/monitoring-client.nix
     ../common/optional/alloy-client.nix
+    ../common/optional/zfs.backup.nix
     outputs.nixosModules.bambu-studio
     ./windows11-vm.nix
     ../../modules/nixos/steam.nix

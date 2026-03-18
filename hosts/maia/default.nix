@@ -13,12 +13,15 @@
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./zpool.lake.noblock.nix
-    ./zfs.users.nix
+    ../common/optional/zfs.backup.nix
     ../common/global
     ../common/optional/alloy-client.nix
     ../common/optional/monitoring-client.nix
     ../../modules/keystone.nix
   ];
+
+  # ZFS backup: maia is a receiver only — pool import dep for lake
+  my.zfs.backup.poolImportServices.lake = "import-lake";
 
   boot.initrd.systemd.emergencyAccess = false;
 

@@ -17,7 +17,15 @@ in
       enable = true;
       listenAddress = "127.0.0.1"; # Only localhost - Alloy scrapes locally
       port = 9100;
-      enabledCollectors = [ "systemd" ];
+      enabledCollectors = [
+        "systemd"
+        "textfile"
+      ];
+      extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus-node-exporter" ];
     };
+
+    systemd.tmpfiles.rules = [
+      "d /var/lib/prometheus-node-exporter 0755 root root -"
+    ];
   };
 }

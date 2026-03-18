@@ -5,7 +5,8 @@
 #   - Receiver: sync users + ZFS delegation + dataset initialization
 #   - Metrics: textfile collector for Prometheus (snapshot age, backup status)
 #
-# Per-host config is minimal — only sshKeyFile and poolImportServices.
+# Per-host config is minimal — only poolImportServices.
+# SSH authentication uses the host's ed25519 key (/etc/ssh/ssh_host_ed25519_key).
 {
   config,
   lib,
@@ -90,10 +91,7 @@ let
     let
       hostCfg = allHosts.${hostKey};
     in
-    if hostCfg.zfs != null && hostCfg.zfs.syncPublicKey != null then
-      [ hostCfg.zfs.syncPublicKey ]
-    else
-      allKeysFor "ncrmro";
+    if hostCfg.hostPublicKey != null then [ hostCfg.hostPublicKey ] else allKeysFor "ncrmro";
 
   isSender = myBackups != { };
   isReceiver = incomingBackups != [ ];
@@ -130,12 +128,6 @@ let
 in
 {
   options.my.zfs.backup = {
-    sshKeyFile = mkOption {
-      type = types.nullOr types.path;
-      default = null;
-      description = "SSH private key for outbound replication.";
-    };
-
     poolImportServices = mkOption {
       type = types.attrsOf types.str;
       default = { };
@@ -212,7 +204,7 @@ in
                       ]
                   );
                 }
-                // (if !isLocal && cfg.sshKeyFile != null then { sshKey = toString cfg.sshKeyFile; } else { })
+                // (if !isLocal then { sshKey = "/etc/ssh/ssh_host_ed25519_key"; } else { })
               )
             ) poolCfg.targets
           ) myBackups

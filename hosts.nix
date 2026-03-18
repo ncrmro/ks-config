@@ -14,6 +14,11 @@
     fallbackIP = "192.168.1.10";
     role = "server";
     buildOnRemote = true;
+    hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO7Oo3b71YDnN2i3vOsXrE4PFhmByjCIW5YtH7VkrTtC";
+    zfs.backups.rpool.targets = [
+      "ocean:ocean"
+      "maia:lake"
+    ];
   };
   mercury = {
     hostname = "mercury";
@@ -26,6 +31,7 @@
     sshTarget = "maia.mercury";
     role = "server";
     buildOnRemote = true;
+    hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAtdLpd4fI4U4JSQeo0z/m2KdB+qAGyURSPko7/1BCIa";
   };
   mox = {
     hostname = "mox";
@@ -38,12 +44,19 @@
     sshTarget = "ncrmro-workstation.mercury";
     role = "client";
     buildOnRemote = true;
+    hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMalqC7xISpPwp7pPHcx8Qc3eiA1LOqJAmflFlHH0oCw";
+    zfs.backups.rpool.targets = [
+      "ocean:ocean"
+      "maia:lake"
+    ];
   };
   ncrmro-laptop = {
     hostname = "ncrmro-laptop";
     sshTarget = null;
     role = "client";
     buildOnRemote = false;
+    hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdFyolB6Fb6z8r+38nsqDig9II1D400COykJPUs2G18";
+    zfs.backups.rpool.targets = [ "maia:lake" ];
   };
   devbox = {
     hostname = "ncrmro-devbox";

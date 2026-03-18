@@ -35,6 +35,10 @@
             hash = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
           };
         }
+        {
+          name = "zfs-backup.json";
+          path = ./dashboards/zfs-backup.json;
+        }
       ];
     }
   ];

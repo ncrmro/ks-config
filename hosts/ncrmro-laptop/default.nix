@@ -24,7 +24,7 @@
     ../common/optional/nfs-client.nix
     ../common/optional/monitoring-client.nix
     ../common/optional/alloy-client.nix
-    ./zfs.remote-replication.nix
+    ../common/optional/zfs.backup.nix
     ../../modules/nixos/steam.nix
     outputs.nixosModules.bambu-studio
   ];
@@ -78,9 +78,6 @@
 
   services.hardware.bolt.enable = true;
   services.fwupd.enable = true;
-  services.zfs.trim.enable = true;
-  services.zfs.autoScrub.enable = true;
-  services.zfs.autoSnapshot.enable = true;
   services.gnome.gnome-keyring.enable = true;
   # security.pam.services.greetd.enableGnomeKeyring = true;
 

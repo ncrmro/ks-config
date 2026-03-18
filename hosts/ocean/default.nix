@@ -12,8 +12,7 @@
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./zpool.ocean.noblock.nix
-    ./zfs.users.nix
-    ./zfs.local-replication.nix
+    ../common/optional/zfs.backup.nix
     ../common/global
 
     ./adguard-home.nix
@@ -54,6 +53,9 @@
       '';
     };
   };
+
+  # ZFS backup: ocean sends rpool to local HDD and offsite to maia
+  my.zfs.backup.poolImportServices.ocean = "import-ocean";
 
   # Grafana SMTP password for alerting
   age.secrets.grafana-smtp-password = {
