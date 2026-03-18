@@ -4,6 +4,7 @@
     inputs.keystone.nixosModules.operating-system
     inputs.keystone.nixosModules.hardwareKey
     ./keys.nix
+    ../hosts/common/agent-identities.nix
   ];
 
   keystone.hardwareKey = {

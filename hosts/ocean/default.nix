@@ -31,7 +31,6 @@
     ../../modules/keystone.nix
     ../../modules/keystone.server.nix
     ./vms.nix
-    ../common/agent-identities.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering

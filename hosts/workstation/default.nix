@@ -23,7 +23,6 @@
     outputs.nixosModules.bambu-studio
     ./windows11-vm.nix
     ../../modules/nixos/steam.nix
-    ../common/agent-identities.nix
   ];
 
   # Agenix secrets for agent-drago (decrypted on workstation host)
