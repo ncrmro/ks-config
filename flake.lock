@@ -648,6 +648,22 @@
         "type": "github"
       }
     },
+    "grafana-mcp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773939701,
+        "narHash": "sha256-+GHFbkQAswNE9Qi6fySPWnosLGny6QMX0qyQbZfizrM=",
+        "owner": "grafana",
+        "repo": "mcp-grafana",
+        "rev": "91fbffb4d118f961ac20d421e4b2cf3ed883b030",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grafana",
+        "repo": "mcp-grafana",
+        "type": "github"
+      }
+    },
     "himalaya": {
       "inputs": {
         "fenix": "fenix_4",
@@ -1090,6 +1106,7 @@
         "deepwork": "deepwork",
         "disko": "disko",
         "ghostty": "ghostty",
+        "grafana-mcp-src": "grafana-mcp-src",
         "himalaya": "himalaya",
         "home-manager": "home-manager_2",
         "hyprland": "hyprland",
@@ -1109,11 +1126,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1773972084,
-        "narHash": "sha256-PJD+JYhkhnL3nYRI5MYX1E48um0EHyROiRBLarW9w40=",
+        "lastModified": 1773979240,
+        "narHash": "sha256-Xp1SfSqpOtQeJZ040Hg5+kPYpaC2pXbgn+YzCsMs9zI=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "1c28184a753f5276c83dee97e51d69f0e83bf1f4",
+        "rev": "31638b9ba1ce74428533c72103f5bed0feb30c19",
         "type": "github"
       },
       "original": {
