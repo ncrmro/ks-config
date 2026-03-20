@@ -1,8 +1,6 @@
 {
-  pkgs,
   lib,
   inputs,
-  outputs,
   ...
 }:
 {
@@ -41,21 +39,4 @@
     publicKey = "main:H852yjGdbbRIOQcnKm3uZOpZWRFmQoQ5p4I7VDz7kAI=";
   };
   time.timeZone = "America/Chicago";
-
-  virtualisation.containers.enable = true;
-  virtualisation = {
-    docker.enable = lib.mkForce false;
-    podman = {
-      enable = true;
-      dockerSocket.enable = true;
-      defaultNetwork.settings.dns_enabled = true;
-    };
-  };
-
-  environment.systemPackages = with pkgs; [
-    home-manager
-    lm_sensors
-    dive
-    docker-compose
-  ];
 }

@@ -19,6 +19,7 @@
       host = "ncrmro-workstation";
       fullName = "Drago";
       email = "drago@ncrmro.com";
+      archetype = "engineer";
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
     };
@@ -26,6 +27,7 @@
       host = "ocean";
       fullName = "Luce";
       email = "luce@ncrmro.com";
+      archetype = "product";
       mail.provision = true;
       git.provision = true;
     };

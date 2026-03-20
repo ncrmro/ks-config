@@ -25,6 +25,7 @@
     sshTarget = "216.128.136.32";
     role = "server";
     buildOnRemote = false;
+    baremetal = false; # Vultr VPS
   };
   maia = {
     hostname = "maia";
@@ -63,29 +64,34 @@
     sshTarget = "ncrmro-devbox.mercury";
     role = "client";
     buildOnRemote = false;
+    baremetal = false; # cloud dev instance
   };
   catalystPrimary = {
     hostname = "catalyst-primary";
     sshTarget = "144.202.67.5";
     role = "server";
     buildOnRemote = false;
+    baremetal = false; # Vultr VPS
   };
   test-vm = {
     hostname = "test-vm";
     sshTarget = null;
     role = "client";
     buildOnRemote = false;
+    baremetal = false; # libvirt VM
   };
   testbox = {
     hostname = "testbox";
     sshTarget = null;
     role = "client";
     buildOnRemote = false;
+    baremetal = false; # libvirt VM
   };
   build-vm-desktop = {
     hostname = "build-vm-desktop";
     sshTarget = null;
     role = "client";
     buildOnRemote = false;
+    baremetal = false; # libvirt VM
   };
 }
