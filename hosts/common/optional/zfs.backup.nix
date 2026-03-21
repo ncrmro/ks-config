@@ -204,8 +204,49 @@ in
                       ]
                   );
                 }
-                // (if !isLocal then { sshKey = "/etc/ssh/ssh_host_ed25519_key"; } else { })
+                // (
+                  if !isLocal then { sshKey = "/run/syncoid/${syncoidName sourcePool targetStr}/ssh_key"; } else { }
+                )
               )
+            ) poolCfg.targets
+          ) myBackups
+        )
+      );
+    })
+
+    # === Sender: SSH key access for remote syncoid commands ===
+    # The NixOS syncoid module sandboxes the service as User=syncoid, but
+    # the host SSH key at /etc/ssh/ssh_host_ed25519_key is root:root 0600.
+    # Use ExecStartPre=+ (root) to copy the key to a syncoid-readable path,
+    # then override --sshkey to point there.
+    (mkIf isSender {
+      systemd.services = listToAttrs (
+        concatLists (
+          mapAttrsToList (
+            sourcePool: poolCfg:
+            concatMap (
+              targetStr:
+              let
+                t = parseTarget targetStr;
+                isLocal = t.hostKey == myHostKey;
+                name = syncoidName sourcePool targetStr;
+                serviceName = "syncoid-${name}";
+                keyPath = "/run/syncoid/${name}/ssh_key";
+                copyKeyScript = pkgs.writeShellScript "syncoid-copy-key-${name}" ''
+                  mkdir -p /run/syncoid/${name}
+                  cp /etc/ssh/ssh_host_ed25519_key ${keyPath}
+                  chown syncoid:syncoid ${keyPath}
+                  chmod 0400 ${keyPath}
+                '';
+              in
+              if !isLocal then
+                [
+                  (nameValuePair serviceName {
+                    serviceConfig.ExecStartPre = [ "+${copyKeyScript}" ];
+                  })
+                ]
+              else
+                [ ]
             ) poolCfg.targets
           ) myBackups
         )
