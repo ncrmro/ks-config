@@ -9,6 +9,7 @@
 {
   imports = [
     inputs.keystone.homeModules.desktop
+    inputs.keystone.homeModules.notes
     ../common/global
     ../common/features/cli
     ../common/features/desktop
@@ -88,6 +89,12 @@
     login = "ncrmro";
     host = "mail.ncrmro.com";
     passwordCommand = "cat /run/agenix/stalwart-mail-ncrmro-password";
+  };
+
+  keystone.notes = {
+    enable = true;
+    repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
+    zk.enable = true;
   };
 
   keystone.terminal.calendar.enable = true;
