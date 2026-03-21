@@ -14,6 +14,7 @@
     fallbackIP = "192.168.1.10";
     role = "server";
     buildOnRemote = true;
+    journalRemote = true;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO7Oo3b71YDnN2i3vOsXrE4PFhmByjCIW5YtH7VkrTtC";
     zfs.backups.rpool.targets = [
       "ocean:ocean"

@@ -194,10 +194,6 @@
   environment.variables = {
     TERM = "xterm-256color"; # Or your preferred terminal type
   };
-
-  # Centralized journal collection server (REQ-020)
-  keystone.os.journalRemote.server.enable = true;
-
   keystone.os.tailscale = {
     tags = [
       "tag:k8s-cluster"

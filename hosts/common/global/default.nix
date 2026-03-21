@@ -19,9 +19,6 @@
     mail.host = "ocean";
     git.host = "ocean";
   };
-
-  # Centralized journal collection — all hosts forward to ocean (REQ-020)
-  keystone.os.journalRemote.serverHost = "ocean";
   keystone.hosts = import ../../../hosts.nix;
 
   # Apply custom overlays
