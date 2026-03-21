@@ -243,6 +243,11 @@ in
                 [
                   (nameValuePair serviceName {
                     serviceConfig.ExecStartPre = [ "+${copyKeyScript}" ];
+                    # SECURITY: The NixOS syncoid module's default sandboxing adds
+                    # InaccessiblePaths for the RuntimeDirectory, which blocks access
+                    # to the SSH key we copy there via ExecStartPre. ReadWritePaths
+                    # overrides this for the key directory specifically.
+                    serviceConfig.ReadWritePaths = [ "/run/syncoid/${name}" ];
                   })
                 ]
               else
