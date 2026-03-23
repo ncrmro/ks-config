@@ -7,6 +7,8 @@
     ../hosts/common/agent-identities.nix
   ];
 
+  keystone.repos = import ../repos.nix;
+
   keystone.hardwareKey = {
     enable = lib.mkDefault true;
     rootKeys = [

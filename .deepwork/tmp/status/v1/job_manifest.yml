@@ -1,0 +1,63 @@
+jobs:
+- name: deepwork_jobs
+  display_name: Deepwork Jobs
+  summary: Creates and manages multi-step AI workflows. Use when defining, implementing,
+    testing, or improving DeepWork jobs.
+  workflows:
+  - name: learn
+    display_name: Learn
+    summary: Analyze conversation history to improve job instructions and capture
+      learnings
+    steps:
+    - name: learn
+      display_name: Learn
+  - name: new_job
+    display_name: New Job
+    summary: Create a new DeepWork job from scratch through definition, implementation,
+      testing, and iteration
+    steps:
+    - name: define
+      display_name: Define
+    - name: implement
+      display_name: Implement
+    - name: test
+      display_name: Test
+    - name: iterate
+      display_name: Iterate
+  - name: repair
+    display_name: Repair
+    summary: Clean up and migrate DeepWork configurations from prior versions
+    steps:
+    - name: fix_settings
+      display_name: Fix Settings
+    - name: fix_jobs
+      display_name: Fix Jobs
+    - name: errata
+      display_name: Errata
+- name: deepwork_reviews
+  display_name: Deepwork Reviews
+  summary: Manage .deepreview rules for automated code review
+  workflows:
+  - name: add_document_update_rule
+    display_name: Add Document Update Rule
+    summary: Add a review rule ensuring a documentation file stays up-to-date when
+      related source files change
+    steps:
+    - name: analyze_dependencies
+      display_name: Analyze Dependencies
+    - name: apply_rule
+      display_name: Apply Rule
+  - name: discover_rules
+    display_name: Discover Rules
+    summary: "Set up a complete suite of .deepreview rules for a project \u2014 native\
+      \ reviews, skill migration, documentation update rules, and language-specific\
+      \ code review"
+    steps:
+    - name: add_deepwork_native_reviews
+      display_name: Add Deepwork Native Reviews
+    - name: migrate_existing_skills
+      display_name: Migrate Existing Skills
+    - name: add_documentation_rules
+      display_name: Add Documentation Rules
+    - name: add_language_reviews
+      display_name: Add Language Reviews
