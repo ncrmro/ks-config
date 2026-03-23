@@ -43,6 +43,8 @@
     };
   };
 
+  keystone.development = true;
+
   keystone.services = {
     mail.host = "ocean";
     git.host = "ocean";
