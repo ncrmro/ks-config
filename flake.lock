@@ -1129,11 +1129,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1774323954,
-        "narHash": "sha256-ek6IwCh3IdhbIftiZqiMvtelbLA1sZnZ3HQD1loUFmw=",
+        "lastModified": 1774328004,
+        "narHash": "sha256-clSYT9uWkoCLrFDZE3wHHMyAYM0HyOrQyqm8FQJKQVM=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "21e8bc8b1f8e8ca8a7c25a5844eb30ec504243cf",
+        "rev": "430f1e99458552af8f2a6ce4d92b51e99896ff12",
         "type": "github"
       },
       "original": {
