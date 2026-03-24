@@ -31,6 +31,8 @@
     # '';
   };
 
+  keystone.development = lib.mkDefault true;
+
   # Keystone terminal configuration
   keystone.terminal = {
     enable = true;
