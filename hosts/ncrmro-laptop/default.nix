@@ -76,6 +76,8 @@
   # iOS USB tethering/hotspot
   keystone.os.iphoneTether.enable = true;
 
+  keystone.desktop.obs.gpuType = "amd";
+
   services.hardware.bolt.enable = true;
   services.fwupd.enable = true;
   services.gnome.gnome-keyring.enable = true;

@@ -64,6 +64,8 @@
     name = "Workstation Speakers";
   };
 
+  keystone.desktop.obs.gpuType = "amd";
+
   keystone.os.services.ollama = {
     enable = true;
     acceleration = "vulkan";
