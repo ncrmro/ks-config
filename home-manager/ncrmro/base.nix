@@ -91,12 +91,6 @@
     passwordCommand = "cat /run/agenix/stalwart-mail-ncrmro-password";
   };
 
-  keystone.notes = {
-    enable = true;
-    repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
-    zk.enable = true;
-  };
-
   keystone.terminal.calendar.enable = true;
   keystone.terminal.contacts.enable = true;
   keystone.terminal.timer.enable = true;
