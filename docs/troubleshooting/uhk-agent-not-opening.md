@@ -56,7 +56,7 @@ UHK Agent recreates the directory with correct permissions on next launch.
 
 ## Related Configuration
 
-- UHK hardware enabled: `hardware.keyboard.uhk.enable = true`
+- UHK hardware enabled: `keystone.hardware.uhk.enable = true`
   - `hosts/workstation/default.nix`
   - `hosts/ncrmro-laptop/default.nix`
 - UHK Agent package: `home-manager/common/features/desktop/default.nix`

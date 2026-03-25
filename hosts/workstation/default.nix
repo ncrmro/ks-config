@@ -126,7 +126,7 @@
   };
   programs.nix-ld.enable = true;
 
-  hardware.keyboard.uhk.enable = true;
+  keystone.hardware.uhk.enable = true;
 
   hardware.graphics = {
     enable = true;

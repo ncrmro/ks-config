@@ -94,7 +94,7 @@
 
   programs.nix-ld.enable = true;
 
-  hardware.keyboard.uhk.enable = true;
+  keystone.hardware.uhk.enable = true;
 
   systemd.services.fprintd = {
     wantedBy = [ "multi-user.target" ];

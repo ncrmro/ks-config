@@ -868,7 +868,7 @@ All keybinding configurations are centralized in a single file:
 #### Current Status
 - Enabled in: `/home/ncrmro/nixos-config/hosts/ncrmro-laptop/default.nix:71`
 - Enabled in: `/home/ncrmro/nixos-config/hosts/workstation/default.nix:54`
-- Config: `hardware.keyboard.uhk.enable = true;`
+- Config: `keystone.hardware.uhk.enable = true;`
 
 #### Layer Architecture
 
@@ -1000,7 +1000,7 @@ Configuration is managed through UHK Agent software (https://ultimatehackingkeyb
 NixOS enables UHK support through hardware module:
 
 ```nix
-hardware.keyboard.uhk.enable = true;
+keystone.hardware.uhk.enable = true;
 ```
 
 This ensures proper USB permissions and udev rules for UHK Agent access. Keymaps are stored in UHK hardware memory and persist across systems.

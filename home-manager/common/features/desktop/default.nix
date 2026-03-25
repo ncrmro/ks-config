@@ -50,7 +50,6 @@
     telegram-desktop
     discord-ptb
     papers
-    uhk-agent
     gimp
   ];
 }
