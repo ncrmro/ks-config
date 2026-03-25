@@ -44,6 +44,7 @@
   ncrmro-workstation = {
     hostname = "ncrmro-workstation";
     sshTarget = "ncrmro-workstation.mercury";
+    tailscaleIP = "100.64.0.3";
     role = "client";
     buildOnRemote = true;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMalqC7xISpPwp7pPHcx8Qc3eiA1LOqJAmflFlHH0oCw";
