@@ -34,7 +34,6 @@ in
             "systemd"
             "textfile"
           ];
-          extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus-node-exporter" ];
           port = 9100;
         };
       };
@@ -111,10 +110,6 @@ in
         }
       ];
     };
-
-    systemd.tmpfiles.rules = [
-      "d /var/lib/prometheus-node-exporter 0755 root root -"
-    ];
 
     services.nginx.virtualHosts."prometheus.ncrmro.com" = {
       forceSSL = true;
