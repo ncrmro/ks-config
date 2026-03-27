@@ -59,36 +59,36 @@
   # GitHub agents token
   age.secrets.github-agents-token = {
     # Grafana API token for MCP and dashboards
-    age.secrets.grafana-mcp-api-key = {
-      file = "${inputs.agenix-secrets}/secrets/grafana-mcp-api-key.age";
+    age.secrets.grafana-api-token = {
+      file = "${inputs.agenix-secrets}/secrets/grafana-api-token.age";
       owner = "ncrmro";
       mode = "0400";
     };
     file = "${inputs.agenix-secrets}/secrets/github-agents-token.age";
     # Grafana API token for MCP and dashboards
-    age.secrets.grafana-mcp-api-key = {
-      file = "${inputs.agenix-secrets}/secrets/grafana-mcp-api-key.age";
+    age.secrets.grafana-api-token = {
+      file = "${inputs.agenix-secrets}/secrets/grafana-api-token.age";
       owner = "ncrmro";
       mode = "0400";
     };
     owner = "ncrmro";
     # Grafana API token for MCP and dashboards
-    age.secrets.grafana-mcp-api-key = {
-      file = "${inputs.agenix-secrets}/secrets/grafana-mcp-api-key.age";
+    age.secrets.grafana-api-token = {
+      file = "${inputs.agenix-secrets}/secrets/grafana-api-token.age";
       owner = "ncrmro";
       mode = "0400";
     };
     mode = "0400";
     # Grafana API token for MCP and dashboards
-    age.secrets.grafana-mcp-api-key = {
-      file = "${inputs.agenix-secrets}/secrets/grafana-mcp-api-key.age";
+    age.secrets.grafana-api-token = {
+      file = "${inputs.agenix-secrets}/secrets/grafana-api-token.age";
       owner = "ncrmro";
       mode = "0400";
     };
   };
   # Grafana API token for MCP and dashboards
-  age.secrets.grafana-mcp-api-key = {
-    file = "${inputs.agenix-secrets}/secrets/grafana-mcp-api-key.age";
+  age.secrets.grafana-api-token = {
+    file = "${inputs.agenix-secrets}/secrets/grafana-api-token.age";
     owner = "ncrmro";
     mode = "0400";
   };

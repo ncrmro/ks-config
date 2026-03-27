@@ -65,7 +65,7 @@ in
   "secrets/miniflux-admin.age".publicKeys = adminKeys ++ [ systems.ocean ];
 
   # Grafana API token for MCP server
-  "secrets/grafana-mcp-api-key.age".publicKeys = adminKeys ++ [ systems.ocean ] ++ desktops;
+  "secrets/grafana-api-token.age".publicKeys = adminKeys ++ [ systems.ocean ] ++ desktops;
 
   # Grafana SMTP password (for alerting via Stalwart)
   "secrets/grafana-smtp-password.age".publicKeys = adminKeys ++ [ systems.ocean ];
