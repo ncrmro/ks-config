@@ -32,6 +32,7 @@
   };
 
   keystone.development = lib.mkDefault true;
+  keystone.repos = import ../../../repos.nix;
 
   keystone.notes = {
     enable = lib.mkDefault true;

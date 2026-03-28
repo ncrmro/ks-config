@@ -10,4 +10,7 @@
     url = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git";
     flakeInput = "agenix-secrets";
   };
+  "ncrmro/notes" = {
+    url = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
+  };
 }
