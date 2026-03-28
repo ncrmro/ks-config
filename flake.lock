@@ -83,10 +83,12 @@
     "blueprint": {
       "inputs": {
         "nixpkgs": [
+          "keystone",
           "llm-agents",
           "nixpkgs"
         ],
         "systems": [
+          "keystone",
           "llm-agents",
           "systems"
         ]
@@ -131,19 +133,23 @@
     "bun2nix": {
       "inputs": {
         "flake-parts": [
+          "keystone",
           "llm-agents",
           "flake-parts"
         ],
         "import-tree": "import-tree",
         "nixpkgs": [
+          "keystone",
           "llm-agents",
           "nixpkgs"
         ],
         "systems": [
+          "keystone",
           "llm-agents",
           "systems"
         ],
         "treefmt-nix": [
+          "keystone",
           "llm-agents",
           "treefmt-nix"
         ]
@@ -487,25 +493,8 @@
     },
     "flake-parts": {
       "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib"
-      },
-      "locked": {
-        "lastModified": 1730504689,
-        "narHash": "sha256-hgmguH29K2fvs9szpq2r3pz2/8cJd2LPS+b4tfNFCwE=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "506278e768c2a08bec68eb62932193e341f55c90",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-parts_2": {
-      "inputs": {
         "nixpkgs-lib": [
+          "keystone",
           "llm-agents",
           "nixpkgs"
         ]
@@ -516,6 +505,24 @@
         "owner": "hercules-ci",
         "repo": "flake-parts",
         "rev": "f20dc5d9b8027381c474144ecabc9034d6a839a3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1730504689,
+        "narHash": "sha256-hgmguH29K2fvs9szpq2r3pz2/8cJd2LPS+b4tfNFCwE=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "506278e768c2a08bec68eb62932193e341f55c90",
         "type": "github"
       },
       "original": {
@@ -566,7 +573,7 @@
     },
     "flake-utils_3": {
       "inputs": {
-        "systems": "systems_6"
+        "systems": "systems_7"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -1115,9 +1122,7 @@
         "hyprland": "hyprland",
         "kinda-nvim-hx": "kinda-nvim-hx",
         "lanzaboote": "lanzaboote",
-        "llm-agents": [
-          "llm-agents"
-        ],
+        "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
@@ -1129,11 +1134,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1774703911,
-        "narHash": "sha256-tS2cxtpaU4vxqVbhO3EWODXyv0TBUL4ubbcO7kqmlFI=",
+        "lastModified": 1774727745,
+        "narHash": "sha256-f+/OmXpLoSMN5GoxfKuUTPC7Es3Hw2TGq6Aq111mCLU=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "d6467ddd183fd12c4c33450ad20e3b18348de999",
+        "rev": "41d76bf547d2b589848431e4fecc5b55fc166711",
         "type": "github"
       },
       "original": {
@@ -1184,7 +1189,7 @@
     },
     "llama-cpp": {
       "inputs": {
-        "flake-parts": "flake-parts",
+        "flake-parts": "flake-parts_2",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -1207,19 +1212,20 @@
       "inputs": {
         "blueprint": "blueprint",
         "bun2nix": "bun2nix",
-        "flake-parts": "flake-parts_2",
+        "flake-parts": "flake-parts",
         "nixpkgs": [
+          "keystone",
           "nixpkgs"
         ],
-        "systems": "systems_7",
+        "systems": "systems_5",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1773528399,
-        "narHash": "sha256-Wg637l+Ab6wAoo2ly80uFeVewU2aSVtxnrGKVZ4MUhw=",
+        "lastModified": 1774684080,
+        "narHash": "sha256-eJIUxivNSrQG8XSdr5L1Wd22D4rk7tBFe9cu232Ko24=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "8fbad8864f88c6abbc2318ce13535cd6fc1192a3",
+        "rev": "7176adaf9eff4f30fc4ec1c635da530c083cd52e",
         "type": "github"
       },
       "original": {
@@ -1529,7 +1535,10 @@
         ],
         "keystone": "keystone",
         "llama-cpp": "llama-cpp",
-        "llm-agents": "llm-agents",
+        "llm-agents": [
+          "keystone",
+          "llm-agents"
+        ],
         "nixos-hardware": [
           "keystone",
           "nixos-hardware"
@@ -1711,21 +1720,6 @@
     },
     "systems_5": {
       "locked": {
-        "lastModified": 1689347949,
-        "narHash": "sha256-12tWmuL2zgBgZkdoB6qXZsgJEH9LR3oUgpaQq2RbI80=",
-        "owner": "nix-systems",
-        "repo": "default-linux",
-        "rev": "31732fcf5e8fea42e59c2488ad31a0e651500f68",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default-linux",
-        "type": "github"
-      }
-    },
-    "systems_6": {
-      "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
         "owner": "nix-systems",
@@ -1736,6 +1730,21 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_6": {
+      "locked": {
+        "lastModified": 1689347949,
+        "narHash": "sha256-12tWmuL2zgBgZkdoB6qXZsgJEH9LR3oUgpaQq2RbI80=",
+        "owner": "nix-systems",
+        "repo": "default-linux",
+        "rev": "31732fcf5e8fea42e59c2488ad31a0e651500f68",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default-linux",
         "type": "github"
       }
     },
@@ -1757,6 +1766,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
+          "keystone",
           "llm-agents",
           "nixpkgs"
         ]
@@ -1809,7 +1819,7 @@
           "keystone",
           "nixpkgs"
         ],
-        "systems": "systems_5"
+        "systems": "systems_6"
       },
       "locked": {
         "lastModified": 1771062828,

@@ -17,12 +17,8 @@
       flake = false;
     };
 
-    # llm-agents - AI coding agent packages (claude-code, gemini-cli, codex)
-    # Declared here so it can be updated independently of keystone.
-    llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # llm-agents — follows keystone's pin (updated when keystone is relocked)
+    llm-agents.follows = "keystone/llm-agents";
 
     # Keystone - self-sovereign infrastructure platform
     # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
@@ -30,7 +26,6 @@
     keystone = {
       url = "github:ncrmro/keystone";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.llm-agents.follows = "llm-agents";
     };
 
     # llama.cpp - latest for MXFP4 support (workstation-specific)
