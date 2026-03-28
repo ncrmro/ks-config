@@ -1,15 +1,7 @@
+# Ocean-specific ncrmro HM config: mail, rebuild function, stateVersion pin.
+# Structural imports (terminal, notes, global, cli) are provided by modules/keystone/terminal.nix.
+{ lib, ... }:
 {
-  lib,
-  inputs,
-  ...
-}:
-{
-  imports = [
-    ../common/global
-    ../common/features/cli
-    inputs.keystone.homeModules.terminal
-  ];
-
   # stateVersion pinned to 25.05 (overrides keystone default from system.stateVersion)
   home.stateVersion = lib.mkForce "25.05";
 

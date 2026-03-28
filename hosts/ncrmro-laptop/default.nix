@@ -11,14 +11,12 @@
   imports = [
     # lanzaboote provided by keystone operating-system module
     # inputs.omarchy-nix.nixosModules.default
-    ../common/optional/home-manager-base.nix
-    ../../modules/keystone.nix
-    ../../modules/keystone.desktop.nix
+    ../../modules/keystone/os.nix
+    ../../modules/keystone/desktop.nix
     # outputs.nixosModules.omarchy-config
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./hardware-configuration.nix
-    ../common/global
     # ../common/optional/docker-root.nix
     ../common/optional/eternal-terminal.nix
     ../common/optional/nfs-client.nix

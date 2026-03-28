@@ -1,0 +1,44 @@
+# NixOS: desktop role — HM boilerplate + desktop HM modules for ncrmro.
+# Does NOT import terminal.nix because homeModules.desktop already imports
+# modules/terminal (directory) internally via modules/desktop/home/default.nix.
+# Importing homeModules.terminal (explicit file path) alongside would cause a
+# duplicate option declaration conflict.
+{ inputs, outputs, ... }:
+{
+  imports = [
+    inputs.home-manager.nixosModules.default
+    inputs.keystone.nixosModules.desktop
+  ];
+
+  users.mutableUsers = true;
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "backup";
+  home-manager.extraSpecialArgs = { inherit inputs outputs; };
+
+  keystone.desktop = {
+    enable = true;
+    user = "ncrmro";
+  };
+
+  # Desktop needs resolved for Tailscale MagicDNS
+  keystone.os.services.resolved.enable = true;
+
+  keystone.os.users.ncrmro.desktop.enable = true;
+
+  # ncrmro HM modules for desktop hosts.
+  # homeModules.desktop internally imports modules/terminal (directory path),
+  # so homeModules.terminal must NOT be added here to avoid a duplicate.
+  home-manager.users.ncrmro.imports = [
+    inputs.keystone.homeModules.desktop
+    inputs.keystone.homeModules.notes
+    ../../home-manager/common/global
+    ../../home-manager/common/features/cli
+    ../../home-manager/common/features/desktop
+    ../../home-manager/common/features/virtualization.nix
+    ../../home-manager/common/features/cliflux.nix
+    ../../home-manager/common/optional/mcp/github-mcp.nix
+    ../../home-manager/common/optional/mcp/kubernetes.nix
+    ../../home-manager/ncrmro/base.nix
+  ];
+}

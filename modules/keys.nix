@@ -1,13 +1,11 @@
 # SSH public key registry data — declares all keys for ncrmro and agents.
 #
 # This file only contains key DATA. The keystone.keys option definition
-# comes from inputs.keystone.nixosModules.keys (imported in common/global).
+# comes from inputs.keystone.nixosModules.keys (imported in modules/keystone/os.nix).
 #
 # Import this file on any host that needs access to SSH public keys.
-# Full keystone hosts get this via modules/keystone.nix; legacy hosts
+# Full keystone hosts get this via modules/keystone/os.nix; legacy hosts
 # import it directly.
-#
-# TODO: Once all hosts use keystone.os, merge this into modules/keystone.nix.
 { ... }:
 {
   keystone.keys = {

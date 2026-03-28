@@ -1,3 +1,4 @@
+# NixOS: server role — enables keystone server module.
 { inputs, ... }:
 {
   imports = [

@@ -9,13 +9,11 @@
 }@args:
 {
   imports = [
-    ../common/optional/home-manager-base.nix
-    ../../modules/keystone.nix
-    ../../modules/keystone.desktop.nix
+    ../../modules/keystone/os.nix
+    ../../modules/keystone/desktop.nix
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./hardware-configuration.nix
-    ../common/global
     ../common/optional/eternal-terminal.nix
     ../common/optional/nfs-client.nix
     ../common/optional/monitoring-client.nix

@@ -7,7 +7,6 @@
 }:
 {
   imports = [
-    ./base.nix
     ../common/features/desktop/obs.nix
     ../common/features/desktop/digital_audio_workstation.nix
     ../common/features/desktop/openscad.nix

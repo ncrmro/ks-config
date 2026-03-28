@@ -3,9 +3,8 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/nixos/headscale
-    ../common/global
+    ../../modules/keystone/os.nix
     ../common/optional/alloy-client.nix
-    ../../modules/keystone.nix
     ./adguard-home.nix
     ./nginx.nix
     inputs.keystone.nixosModules.headscale-dns

@@ -7,13 +7,14 @@
 }:
 {
   imports = [
-    ../common/optional/home-manager-base.nix
+    ../../modules/keystone/os.nix
+    ../../modules/keystone/server.nix
+    ../../modules/keystone/terminal.nix
     ./hardware-configuration.nix
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./zpool.ocean.noblock.nix
     ../common/optional/zfs.backup.nix
-    ../common/global
 
     ./adguard-home.nix
     ../common/optional/servarr.nix
@@ -27,8 +28,6 @@
     ./observability
     ../common/optional/alloy-client.nix
     ./immich.nix
-    ../../modules/keystone.nix
-    ../../modules/keystone.server.nix
     ./vms.nix
   ];
 
@@ -166,7 +165,7 @@
     group = "acme";
   };
 
-  # Host-specific server services (enable is in modules/keystone.server.nix)
+  # Host-specific server services (keystone.server.enable is in modules/keystone/server.nix)
   keystone.server.services.attic.enable = true;
 
   # Attic server token signing key

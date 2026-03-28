@@ -1,7 +1,7 @@
 # Maia - Legacy home server
 #
 # Secure Boot via keystone operating-system module (Lanzaboote + sbctl).
-# User management via keystone.nix (ncrmro user + root keys via hardwareKey).
+# User management via modules/keystone/os.nix (ncrmro user + root keys via hardwareKey).
 # Disko partitioning provided by keystone operating-system module.
 {
   pkgs,
@@ -14,10 +14,9 @@
     ../common/optional/zfs.luks.root.nix
     ./zpool.lake.noblock.nix
     ../common/optional/zfs.backup.nix
-    ../common/global
+    ../../modules/keystone/os.nix
     ../common/optional/alloy-client.nix
     ../common/optional/monitoring-client.nix
-    ../../modules/keystone.nix
   ];
 
   # ZFS backup: maia is a receiver only — pool import dep for lake

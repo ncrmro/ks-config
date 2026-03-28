@@ -1,24 +1,13 @@
+# ncrmro personal HM settings: mail, calendar, contacts, timer, yubikey, git,
+# hyprland rules, and packages. Structural imports (terminal, desktop, cli, etc.)
+# are provided by modules/keystone/desktop.nix via the NixOS module system.
 {
-  inputs,
-  outputs,
   config,
   pkgs,
   lib,
   ...
 }:
 {
-  imports = [
-    inputs.keystone.homeModules.desktop
-    inputs.keystone.homeModules.notes
-    ../common/global
-    ../common/features/cli
-    ../common/features/desktop
-    ../common/features/virtualization.nix
-    ../common/features/cliflux.nix
-    ../common/optional/mcp/github-mcp.nix
-    ../common/optional/mcp/kubernetes.nix
-    # ../common/optional/mcp/mcp-language-server.nix # GitHub 502, uses rev="main"
-  ];
 
   home.packages = with pkgs; [
     nixfmt
