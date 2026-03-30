@@ -65,5 +65,8 @@
     source = "alsa_input.usb-046d_Logitech_BRIO_873172C7-03.analog-stereo";
   };
   # END keystone-managed audio defaults
+  # BEGIN keystone-managed printer defaults
+  keystone.desktop.printer.default = "Brother_HL_L2395DW_series";
+  # END keystone-managed printer defaults
   # END keystone-managed desktop state
 }
