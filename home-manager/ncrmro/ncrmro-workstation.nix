@@ -61,8 +61,8 @@
   # END keystone-managed monitors
   # BEGIN keystone-managed audio defaults
   keystone.desktop.audio.defaults = {
-    sink = null;
-    source = null;
+    sink = "alsa_output.usb-Loud_Technologies_Inc._Onyx_Blackjack-00.analog-stereo";
+    source = "alsa_input.usb-046d_Logitech_BRIO_873172C7-03.analog-stereo";
   };
   # END keystone-managed audio defaults
   # END keystone-managed desktop state
