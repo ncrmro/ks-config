@@ -148,6 +148,8 @@
 
   # Additional zsh aliases (not in keystone terminal)
   programs.zsh.shellAliases = {
+    # Separate Claude config/session history for work use.
+    claude-work = "CLAUDE_CONFIG_DIR=~/.claude-work claude";
     "docker comppose" = "docker-compose";
     dc = "docker-compose";
     k = "kubectl";
