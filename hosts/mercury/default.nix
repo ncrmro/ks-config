@@ -8,6 +8,7 @@
     ./adguard-home.nix
     ./nginx.nix
     inputs.keystone.nixosModules.headscale-dns
+    inputs.keystone.nixosModules.headscale-acl
   ];
 
   boot.tmp.cleanOnBoot = true;
@@ -30,10 +31,12 @@
     };
   };
 
-  # Auto-DNS: import generated DNS records from ocean's keystone services
+  # Auto-DNS and ACL: import generated records from ocean's keystone services
   keystone.headscale = {
     enable = true;
     dnsRecords = oceanConfig.keystone.server.generatedDNSRecords;
+    aclRules = oceanConfig.keystone.services.generatedACLRules;
+    generatedTagOwners = oceanConfig.keystone.services.generatedTagOwners;
   };
 
   system.stateVersion = "25.05";

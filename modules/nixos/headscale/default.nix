@@ -221,6 +221,61 @@ in
 
   environment.systemPackages = [ config.services.headscale.package ];
 
-  # Copy ACL configuration to system
-  environment.etc."headscale/acl.hujson".source = ./acl.hujson;
+  # ACL policy — static rules migrated from acl.hujson, merged with
+  # auto-generated rules from keystone.services via headscale-acl module
+  keystone.headscale.tagOwners = {
+    "tag:github-actions" = [ "ncrmro@" ];
+    "tag:server" = [ "ncrmro@" ];
+    "tag:node-exporter" = [ "ncrmro@" ];
+    "tag:agent" = [
+      "drago@"
+      "luce@"
+    ];
+    "tag:ocean-ingress" = [ "ncrmro@" ];
+    "tag:ocean-email" = [ "ncrmro@" ];
+  };
+
+  keystone.headscale.staticACLs = [
+    # Server nodes have full access (infrastructure servers)
+    {
+      src = [ "tag:server" ];
+      dst = [ "*:*" ];
+    }
+    # All nodes can access server nodes for DNS and AdGuard
+    {
+      src = [ "*" ];
+      dst = [
+        "tag:server:53"
+        "tag:server:3000"
+      ];
+    }
+    # Admin user has full access to everything
+    {
+      src = [ "ncrmro@" ];
+      dst = [ "*:*" ];
+    }
+    # Agent VMs can access ocean ingress services
+    {
+      src = [ "tag:agent" ];
+      dst = [
+        "tag:ocean-ingress:80"
+        "tag:ocean-ingress:443"
+        "tag:ocean-ingress:2222"
+      ];
+    }
+    # Agent VMs can access ocean email services
+    {
+      src = [ "tag:agent" ];
+      dst = [
+        "tag:ocean-email:993"
+        "tag:ocean-email:465"
+        "tag:ocean-email:25"
+      ];
+    }
+    # Agents can communicate with each other
+    {
+      src = [ "tag:agent" ];
+      dst = [ "tag:agent:*" ];
+    }
+  ];
 }

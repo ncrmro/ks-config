@@ -195,8 +195,6 @@
   };
   keystone.os.tailscale = {
     tags = [
-      "tag:k8s-cluster"
-      "tag:k8s-master"
       "tag:ocean-email"
       "tag:ocean-ingress"
     ];
