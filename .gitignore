@@ -1,6 +1,7 @@
 # Ignore .kube directory containing kubeconfig files
 .kube/
 result
+result-*
 result-desktop-vm
 *.qcow2
 *GGUF

@@ -63,6 +63,16 @@
   };
   programs.fastfetch.enable = true;
 
+  home.sessionVariables = {
+    IMMICH_URL = "https://photos.ncrmro.com";
+  };
+
+  programs.zsh.initExtra = ''
+    if [ -f /run/agenix/ncrmro-immich-api-key ]; then
+      export IMMICH_API_KEY="$(tr -d '\n' < /run/agenix/ncrmro-immich-api-key)"
+    fi
+  '';
+
   programs.git.settings = {
     credential.helper = "store";
     includeIf."gitdir:~/code/unsupervised/" = {
