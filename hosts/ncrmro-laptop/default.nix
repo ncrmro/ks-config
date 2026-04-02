@@ -69,6 +69,13 @@
     mode = "0400";
   };
 
+  # User-home Immich API key for Home Manager shell access
+  age.secrets.ncrmro-immich-api-key = {
+    file = "${inputs.agenix-secrets}/secrets/ncrmro-immich-api-key.age";
+    owner = "ncrmro";
+    mode = "0400";
+  };
+
   programs.bambu-studio.enable = true;
 
   # Per-host home-manager config: monitor layout, rebuild target

@@ -103,6 +103,13 @@
     mode = "0400";
   };
 
+  # User-home Immich API key for Home Manager shell access
+  age.secrets.ncrmro-immich-api-key = {
+    file = "${inputs.agenix-secrets}/secrets/ncrmro-immich-api-key.age";
+    owner = "ncrmro";
+    mode = "0400";
+  };
+
   # Agent mail password for Stalwart provisioning (plaintext, used to create account)
   # NOTE: This secret must also be re-encrypted for ocean's host key in agenix-secrets.
   age.secrets.agent-drago-mail-password = {
