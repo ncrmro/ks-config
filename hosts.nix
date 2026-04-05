@@ -7,10 +7,13 @@
 # Keys MUST match nixosConfigurations names in flake.nix.
 # The hostname field MUST match the host's networking.hostName.
 #
+# sshTarget defaults to "${hostname}.${keystone.headscaleDomain}" when
+# headscaleDomain is set. Only override for VPS direct IPs or null for
+# local-only hosts.
+#
 {
   ocean = {
     hostname = "ocean";
-    sshTarget = "ocean.mercury";
     fallbackIP = "192.168.1.10";
     role = "server";
     buildOnRemote = true;
@@ -23,27 +26,24 @@
   };
   mercury = {
     hostname = "mercury";
-    sshTarget = "216.128.136.32";
+    sshTarget = "216.128.136.32"; # Vultr VPS, no Tailscale DNS
     role = "server";
     buildOnRemote = false;
-    baremetal = false; # Vultr VPS
+    baremetal = false;
   };
   maia = {
     hostname = "maia";
-    sshTarget = "maia.mercury";
     role = "server";
     buildOnRemote = true;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAtdLpd4fI4U4JSQeo0z/m2KdB+qAGyURSPko7/1BCIa";
   };
   mox = {
     hostname = "mox";
-    sshTarget = "mox.mercury";
     role = "client";
     buildOnRemote = true;
   };
   ncrmro-workstation = {
     hostname = "ncrmro-workstation";
-    sshTarget = "ncrmro-workstation.mercury";
     tailscaleIP = "100.64.0.3";
     role = "client";
     buildOnRemote = true;
@@ -55,45 +55,16 @@
   };
   ncrmro-laptop = {
     hostname = "ncrmro-laptop";
-    sshTarget = "ncrmro-laptop.mercury";
     role = "client";
     buildOnRemote = false;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdFyolB6Fb6z8r+38nsqDig9II1D400COykJPUs2G18";
     zfs.backups.rpool.targets = [ "maia:lake" ];
   };
-  devbox = {
-    hostname = "ncrmro-devbox";
-    sshTarget = "ncrmro-devbox.mercury";
-    role = "client";
-    buildOnRemote = false;
-    baremetal = false; # cloud dev instance
-  };
   catalystPrimary = {
     hostname = "catalyst-primary";
-    sshTarget = "144.202.67.5";
+    sshTarget = "144.202.67.5"; # Vultr VPS, no Tailscale DNS
     role = "server";
     buildOnRemote = false;
-    baremetal = false; # Vultr VPS
-  };
-  test-vm = {
-    hostname = "test-vm";
-    sshTarget = null;
-    role = "client";
-    buildOnRemote = false;
-    baremetal = false; # libvirt VM
-  };
-  testbox = {
-    hostname = "testbox";
-    sshTarget = null;
-    role = "client";
-    buildOnRemote = false;
-    baremetal = false; # libvirt VM
-  };
-  build-vm-desktop = {
-    hostname = "build-vm-desktop";
-    sshTarget = null;
-    role = "client";
-    buildOnRemote = false;
-    baremetal = false; # libvirt VM
+    baremetal = false;
   };
 }

@@ -18,6 +18,7 @@
 
   # Fleet-wide identity
   keystone.domain = "ncrmro.com";
+  keystone.headscaleDomain = "mercury";
   keystone.services = {
     mail.host = "ocean";
     git.host = "ocean";
