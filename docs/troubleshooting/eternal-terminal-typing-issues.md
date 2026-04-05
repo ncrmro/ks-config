@@ -129,5 +129,5 @@ et ncrmro@ocean -v 9  # Maximum verbosity
 ## Related Configuration
 
 - Ocean's TERM setting: `hosts/ocean/default.nix:141`
-- Keystone ET module: `.submodules/keystone/modules/os/eternal-terminal.nix`
+- Keystone ET module: `../keystone/modules/os/eternal-terminal.nix`
 - ET enabled by default via: `keystone.os.services.eternalTerminal.enable = true`

@@ -2,7 +2,7 @@
 
 ## Current Situation (Resolved)
 - **Status**: Migrated to Keystone OS module.
-- **New Module**: `.submodules/keystone/modules/os/airplay.nix`
+- **New Module**: `../keystone/modules/os/airplay.nix`
 - **Configuration**:
   - **Dynamic Naming**: Configurable via `keystone.os.services.airplay.name`.
   - **Firewall**: Automatically managed via `openFirewall` option.

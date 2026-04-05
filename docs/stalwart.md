@@ -4,7 +4,7 @@ This document covers the Stalwart mail server configuration on NixOS, including 
 
 ## Architecture Overview
 
-Stalwart is configured via the `keystone.os.mail` module (`.submodules/keystone/modules/os/mail.nix`) with host-specific overrides in `hosts/ocean/default.nix`.
+Stalwart is configured via the `keystone.os.mail` module (`../keystone/modules/os/mail.nix`) with host-specific overrides in `hosts/ocean/default.nix`.
 
 Key components:
 - **JMAP API**: `127.0.0.1:8082` (local only, proxied via nginx)

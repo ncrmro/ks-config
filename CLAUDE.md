@@ -21,7 +21,7 @@ This is a NixOS configuration repository using flakes for managing system config
   - `/common/kubernetes/` - Kubernetes module definitions
 - `/home-manager/` - User-specific Home Manager configurations
 - `/modules/` - Custom NixOS and user modules (keystone wrappers, local NixOS modules, user definitions)
-- `.submodules/keystone/` - Local clone of [ncrmro/keystone](https://github.com/ncrmro/keystone) (gitignored)
+- `../keystone/` - Sibling checkout of [ncrmro/keystone](https://github.com/ncrmro/keystone)
 - `/bin/` - Helper scripts for deployment and management
 - `/docs/` - Documentation for various setup procedures
 - `/kubernetes/` - Raw Kubernetes manifests (legacy)
@@ -29,11 +29,10 @@ This is a NixOS configuration repository using flakes for managing system config
 
 ### Local Repo Clones
 
-Both `.submodules/keystone/` and `agenix-secrets/` are **gitignored local clones**, not git submodules. They exist locally for development but are not tracked by the parent repo. The authoritative version pins are in `flake.lock`.
+Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by nixos-config lives in `flake.lock`.
 
 **Setup after fresh clone:**
 ```bash
-git clone git@github.com:ncrmro/keystone.git .submodules/keystone
 git clone ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git agenix-secrets
 ```
 
@@ -56,13 +55,13 @@ nix flake check
 ks build [--dev] [<HOSTS>]         # defaults to current hostname
 ks build ocean                     # build ocean config
 ks build mox,maia                  # build multiple configs
-ks build --dev                     # build with local keystone + agenix-secrets
+ks build                           # build against the live keystone checkout in dev mode
 
 # Deploy to a host (switch or boot)
 ks update [--dev] [--boot] [<HOSTS>] # defaults to current hostname, locks by default
 ks update ocean                      # deploy to ocean (Tailscale, LAN fallback)
 ks update mercury,ocean              # deploy multiple (builds all first, then sequential)
-ks update --dev ncrmro-workstation   # deploy with local submodule overrides (bypasses locking)
+ks update --dev ncrmro-workstation   # deploy with live local repo overrides (bypasses locking)
 ks update --boot                     # nixos-rebuild boot (reboot required)
 ```
 
@@ -74,7 +73,7 @@ The `bin/build` and `bin/update` shims delegate to `ks` for backwards compatibil
 
 When changes span keystone or agenix-secrets:
 
-1. Commit and push from the local clone (`cd .submodules/keystone && git push` or `cd agenix-secrets && git push`)
+1. Commit and push from the source repo (`cd ../keystone && git push` or `cd agenix-secrets && git push`)
 2. Update the flake lock for the changed inputs: `nix flake update keystone` (or `agenix-secrets`, or both)
 3. Commit `flake.lock` in nixos-config
 4. Push nixos-config

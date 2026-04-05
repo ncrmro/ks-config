@@ -1,4 +1,4 @@
-@.submodules/keystone/AGENTS.md
+@../keystone/AGENTS.md
 
 ## Repository Overview
 
@@ -43,7 +43,7 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Keystone: Shared Convention Layer
 
-[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. It lives at `.submodules/keystone` as a gitignored local clone and is consumed as a flake input (`github:ncrmro/keystone`).
+[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. Its canonical checkout on this host is the sibling repo at `../keystone`, and nixos-config consumes it as the `keystone` flake input (`github:ncrmro/keystone`).
 
 **When to put something in keystone vs nixos-config:**
 - **Keystone**: Reusable modules that others could benefit from (server roles, desktop setup, terminal environment, mail, DNS, binary cache, hardware key management)
@@ -56,17 +56,14 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Clean Git History: Flake Update Workflow
 
-Both `.submodules/keystone` and `agenix-secrets/` are **gitignored local clones** — not git submodules. They exist locally for development but are not tracked by the parent repo. The authoritative version pins are in `flake.lock`.
+Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by nixos-config lives in `flake.lock`.
 
-**Local clones:**
-- `.submodules/keystone` - GitHub: `github:ncrmro/keystone`
+**Local checkouts:**
+- `../keystone` - GitHub: `github:ncrmro/keystone`
 - `agenix-secrets` - Private Forgejo: `git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git`
 
 **Setup after fresh clone:**
-```bash
-git clone git@github.com:ncrmro/keystone.git .submodules/keystone
-git clone ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git agenix-secrets
-```
+Keystone should already exist at `~/.keystone/repos/ncrmro/keystone` per Keystone repo conventions. Clone `agenix-secrets` locally if needed.
 
 ### The Golden Rule
 
@@ -82,16 +79,16 @@ nix flake update keystone agenix-secrets     # both
 
 ```bash
 # 1. Make and test changes locally
-cd .submodules/keystone
+cd ../keystone
 # ... edit files ...
-cd ../..
-./bin/keystone-dev --build   # Verify changes build (no sudo needed)
-./bin/keystone-dev           # Deploy immediately (nixos-rebuild switch with local keystone)
+keystone-dev --build         # Verify changes build (no deploy)
+cd ../nixos-config
+ks build                     # Verify nixos-config against the live keystone checkout
 
-# 2. Commit and push from local clone
-cd .submodules/keystone
+# 2. Commit and push from the keystone repo
+cd ../keystone
 git add -A && git commit -m "feat(server): description" && git push
-cd ../..
+cd ../nixos-config
 
 # 3. Update flake lock and commit
 nix flake update keystone
@@ -100,11 +97,11 @@ git commit -m "feat: update keystone (description)"
 ```
 
 **`keystone-dev` modes:**
-- `./bin/keystone-dev` — `nixos-rebuild switch` with local keystone (deploys immediately, no commit needed)
-- `./bin/keystone-dev --build` — build only, no switch (verify changes compile)
-- `./bin/keystone-dev --boot` — `nixos-rebuild boot` (applies on next reboot, for critical changes like dbus)
+- `keystone-dev` — `nixos-rebuild switch` with the live `../keystone` checkout
+- `keystone-dev --build` — build only, no switch
+- `keystone-dev --boot` — `nixos-rebuild boot` for changes that should apply on reboot
 
-**When the user says they ran `keystone-dev` or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
+**When the user says they ran `keystone-dev`, `ks update --dev`, or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
 
 ### Updating Agenix Secrets
 
@@ -258,7 +255,7 @@ To add a new service with auto-DNS, enable it in ocean's keystone config and reb
   - `keystone.nix`, `keystone.server.nix`, `keystone.desktop.nix` - Keystone wrapper modules
   - `/modules/nixos/` - Local NixOS modules (headscale, steam, bambu-studio)
   - `/modules/users/` - User definitions and SSH keys
-- `.submodules/keystone/` - Local Keystone clone (gitignored)
+- `../keystone/` - Keystone sibling checkout
 - `/agenix-secrets/` - Local agenix secrets clone (gitignored)
 - `/bin/` - Helper scripts
 - `/overlays/` - Nix overlays (imports keystone overlay + local packages)
@@ -288,7 +285,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 ./bin/updateWorkstation   # Rebuild workstation
 
 # Verify local keystone changes (without sudo)
-./bin/keystone-dev --build
+ks build
 
 # Check flake configuration
 nix flake check
