@@ -88,16 +88,6 @@
 
       # NixOS system configurations
       nixosConfigurations = {
-        # Desktop/workstation configuration
-        mox = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/mox ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-
         # Home server configuration
         maia = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
@@ -149,14 +139,6 @@
             outputs = self;
           };
         };
-        devbox = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/devbox ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
         mercury = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [ ./hosts/mercury ];
@@ -194,11 +176,6 @@
 
       # Home Manager configurations
       homeConfigurations = {
-        "ncrmro@mox" = home-manager.lib.homeManagerConfiguration {
-          modules = [ ./home-manager/ncrmro/mox.nix ];
-          pkgs = pkgsForSystem "x86_64-linux";
-          extraSpecialArgs = { inherit inputs self; };
-        };
         "nicholas@unsup-macbook" = home-manager.lib.homeManagerConfiguration {
           modules = [ ./home-manager/ncrmro/unsup-macbook.nix ];
           pkgs = pkgsForSystem "aarch64-darwin";
@@ -216,7 +193,7 @@
         packages = [ nixpkgs.legacyPackages.x86_64-linux.nixfmt ];
         shellHook = ''
           build() {
-            local hosts=(mox maia ncrmro-laptop devbox mercury catalystPrimary ocean ncrmro-workstation)
+            local hosts=(maia ncrmro-laptop mercury catalystPrimary ocean ncrmro-workstation)
             local failed=()
             for host in "''${hosts[@]}"; do
               echo "Building $host..."
