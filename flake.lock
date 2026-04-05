@@ -1122,6 +1122,7 @@
         "hyprland": "hyprland",
         "kinda-nvim-hx": "kinda-nvim-hx",
         "lanzaboote": "lanzaboote",
+        "lfs-s3-src": "lfs-s3-src",
         "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",
         "nix-index-database": "nix-index-database",
@@ -1134,11 +1135,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1775163400,
-        "narHash": "sha256-A5zJzLvil2vByAcU+GMaHS1frKbbvygJbgXcMAFNXnc=",
+        "lastModified": 1775348519,
+        "narHash": "sha256-rCHrpOl+HwFgiV1c9zjfm7Z5vc04BoZhQ20YRfUCvvo=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "ffe2db37abd57b7c55ffe979912e4c0cdd6cad52",
+        "rev": "dee9285e3ee580e4fc36445d12cf3307d8b6a762",
         "type": "github"
       },
       "original": {
@@ -1184,6 +1185,23 @@
       "original": {
         "owner": "nix-community",
         "repo": "lanzaboote",
+        "type": "github"
+      }
+    },
+    "lfs-s3-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761051611,
+        "narHash": "sha256-g8q+whJ3xyrCcH9mJxtFz2MNLJXOxBHEgqGx5fDlUrQ=",
+        "owner": "nicolas-graves",
+        "repo": "lfs-s3",
+        "rev": "96d34384a09d3a81c6cc840608d33610e6b23505",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nicolas-graves",
+        "ref": "0.2.1",
+        "repo": "lfs-s3",
         "type": "github"
       }
     },
