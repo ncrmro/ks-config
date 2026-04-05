@@ -55,7 +55,7 @@
   };
   ncrmro-laptop = {
     hostname = "ncrmro-laptop";
-    sshTarget = null;
+    sshTarget = "ncrmro-laptop.mercury";
     role = "client";
     buildOnRemote = false;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdFyolB6Fb6z8r+38nsqDig9II1D400COykJPUs2G18";
