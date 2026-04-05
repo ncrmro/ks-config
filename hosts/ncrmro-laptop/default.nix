@@ -14,8 +14,6 @@
     ../../modules/keystone/os.nix
     ../../modules/keystone/desktop.nix
     # outputs.nixosModules.omarchy-config
-    ./disk-config.nix
-    ../common/optional/zfs.luks.root.nix
     ./hardware-configuration.nix
     # ../common/optional/docker-root.nix
     ../common/optional/eternal-terminal.nix
@@ -27,10 +25,14 @@
     outputs.nixosModules.bambu-studio
   ];
 
-  keystone.os.hypervisor.connections = [
-    "qemu+ssh://ncrmro@ocean/session"
-    "qemu+ssh://ncrmro@ncrmro-workstation/session"
-  ];
+  keystone.os = {
+    storage.enable = true;
+    iphoneTether.enable = true;
+    hypervisor.connections = [
+      "qemu+ssh://ncrmro@ocean/session"
+      "qemu+ssh://ncrmro@ncrmro-workstation/session"
+    ];
+  };
 
   # Stalwart mail user password for himalaya
   age.secrets.stalwart-mail-ncrmro-password = {
@@ -85,9 +87,6 @@
   #   enable = true;
   #   settings.default_session.user = "ncrmro";
   # };
-
-  # iOS USB tethering/hotspot
-  keystone.os.iphoneTether.enable = true;
 
   keystone.desktop.obs.gpuType = "amd";
 

@@ -27,11 +27,10 @@
   keystone.os.users.ncrmro.desktop.enable = true;
 
   # ncrmro HM modules for desktop hosts.
-  # homeModules.desktop internally imports modules/terminal (directory path),
-  # so homeModules.terminal must NOT be added here to avoid a duplicate.
+  # keystone.nixosModules.operating-system provides terminal and notes as
+  # sharedModules. keystone.nixosModules.desktop provides desktop. Do NOT
+  # re-import any of these here.
   home-manager.users.ncrmro.imports = [
-    inputs.keystone.homeModules.desktop
-    inputs.keystone.homeModules.notes
     ../../home-manager/common/global
     ../../home-manager/common/features/cli
     ../../home-manager/common/features/desktop

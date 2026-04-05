@@ -14,7 +14,10 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
   ];
-  disko.devices.disk.disk1.device = "/dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7KHNJ0Y507142D";
+  keystone.os.storage.devices = [
+    "/dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7KHNJ0Y507142D"
+  ];
+  keystone.os.storage.swap.size = "64G";
 
   boot.initrd.systemd.emergencyAccess = false;
   boot.initrd.availableKernelModules = [
