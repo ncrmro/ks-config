@@ -98,39 +98,6 @@
           };
         };
 
-        # Test VM configuration - Desktop testing VM
-        test-vm = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            home-manager.nixosModules.default
-            {
-              boot.initrd.systemd.emergencyAccess = true;
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.extraSpecialArgs = {
-                inherit inputs;
-                outputs = self;
-              };
-              home-manager.users.ncrmro = import ./home-manager/ncrmro/test-vm.nix;
-            }
-            ./hosts/test-vm
-          ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-
-        # Additional systems
-        # testbox = nixpkgs.lib.nixosSystem {
-        #   modules = [ ./hosts/testbox ];
-        #   specialArgs = {
-        #     inherit inputs self;
-        #     outputs = self;
-        #   };
-        # };
-
         ncrmro-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [ ./hosts/ncrmro-laptop ];
