@@ -11,6 +11,9 @@
     inputs.disko.nixosModules.disko
     inputs.home-manager.nixosModules.default
     inputs.keystone.nixosModules.desktop
+    # Legacy disk-config: uses disko disk name "disk1". Do NOT migrate to
+    # keystone.os.storage without re-partitioning — see ncrmro-laptop boot
+    # failure caused by disk1→disk0 partition label mismatch.
     ./disk-config.nix
     ./hardware-configuration.nix
     ../common/global

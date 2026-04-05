@@ -11,6 +11,12 @@
   imports = [
     ../../modules/keystone/os.nix
     ../../modules/keystone/desktop.nix
+    # Legacy disk-config: uses disko disk name "disk1", producing partition
+    # labels like disk-disk1-ESP and disk-disk1-encryptedSwap baked into GPT.
+    # keystone.os.storage uses 0-based naming (disk0), which breaks boot on
+    # existing installs because the on-disk labels don't match. Do NOT migrate
+    # to keystone.os.storage without re-partitioning or adding a disk-name
+    # migration path in the keystone module.
     ./disk-config.nix
     ../common/optional/zfs.luks.root.nix
     ./hardware-configuration.nix
