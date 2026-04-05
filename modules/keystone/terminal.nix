@@ -14,9 +14,9 @@
   home-manager.extraSpecialArgs = { inherit inputs outputs; };
 
   # Base ncrmro home-manager config: terminal tools + notes (no desktop)
+  # keystone.nixosModules.operating-system provides terminal and notes as
+  # sharedModules. Do NOT re-import them here.
   home-manager.users.ncrmro.imports = [
-    inputs.keystone.homeModules.terminal
-    inputs.keystone.homeModules.notes
     ../../home-manager/common/global
     ../../home-manager/common/features/cli
   ];
