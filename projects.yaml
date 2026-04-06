@@ -1,0 +1,74 @@
+# Keystone project registry
+# Schema: https://github.com/ncrmro/keystone/schemas/projects.schema.json
+
+keystone:
+  mission: "Self-sovereign NixOS infrastructure platform for deploying secure, encrypted systems on any hardware"
+  repos:
+    - ncrmro/keystone
+    - ncrmro/nixos-config
+    - ncrmro/agenix-secrets
+
+agents:
+  mission: "Composable system prompt architecture and RFC 2119 conventions for multi-agent workflows"
+  repos:
+    - ncrmro/keystone
+
+unsupervised:
+  mission: "Work at Unsupervisedcom — AI/ML platform"
+  repos:
+    - Unsupervisedcom/deepwork
+
+catalyst:
+  mission: "Deployment platform with preview environments"
+  repos:
+    - ncrmro/catalyst
+
+ks-systems:
+  mission: "ks.systems website and company that develops Keystone software and sells custom hardware"
+  repos:
+    - ncrmro/ks-systems
+
+ks-systems-hardware:
+  mission: "Modular, expandable, 3D-printable computer case system designed around Mini-ITX"
+  repos:
+    - ncrmro/ks-systems-hardware
+
+nixos-config:
+  mission: "Personal NixOS infrastructure for laptop, workstation, homelab, and VPS"
+  repos:
+    - ncrmro/nixos-config
+
+meze:
+  mission: "Meal planning app optimizing for nutrition, wellbeing, physique, budget, and culinary curiosity"
+  repos:
+    - ncrmro/meze
+
+tetrastack:
+  mission: "Opinionated Next.js/Auth.js/Drizzle/libSQL/Turso/Cloudflare Workers template"
+  repos:
+    - ncrmro/tetrastack
+
+ncrmro-website:
+  mission: "Personal website and blog deployed on Cloudflare Workers with Next.js 15"
+  repos:
+    - ncrmro/ncrmro-website
+
+plant-caravan:
+  mission: "Autonomous agricultural systems for space exploration and Earth-based vertical farming"
+  repos:
+    - ncrmro/plant-caravan
+
+eonmun:
+  mission: "Portfolio art site"
+  repos:
+    - ncrmro/eonmun
+
+hoss:
+  mission: "Houston Open Source Society — local open source developer community"
+  repos:
+    - ncrmro/hoss
+
+trading:
+  mission: "Automated stock/options trading with Alpaca API"
+  repos:
+    - ncrmro/trading
