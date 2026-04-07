@@ -24,5 +24,8 @@
     k9s
   ];
 
+  # DeepWork is provided by the Claude Code plugin on this machine
+  keystone.terminal.deepwork.enable = false;
+
   programs.home-manager.enable = true;
 }
