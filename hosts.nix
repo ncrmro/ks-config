@@ -14,7 +14,6 @@
 {
   ocean = {
     hostname = "ocean";
-    sshTarget = "ocean.mercury";
     fallbackIP = "192.168.1.10";
     role = "server";
     buildOnRemote = true;
