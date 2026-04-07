@@ -11,7 +11,6 @@
     inputs.keystone.nixosModules.services
     inputs.keystone.nixosModules.hosts
     ../keys.nix
-    ../users/root.nix
     ../../hosts/common/global/openssh.nix
     ../../hosts/common/agent-identities.nix
   ];
