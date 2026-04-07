@@ -134,7 +134,6 @@
     };
   };
 
-  keystone.development = true;
   networking.hostName = "ncrmro-laptop";
   networking.hostId = "cac44b47";
   system.stateVersion = "25.11";

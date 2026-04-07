@@ -237,6 +237,5 @@
     # "1.1.1.1"
   ];
 
-  keystone.development = true;
   system.stateVersion = "25.11";
 }

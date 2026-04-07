@@ -44,6 +44,7 @@
   time.timeZone = "America/Chicago";
 
   keystone.repos = import ../../repos.nix;
+  keystone.development = true;
 
   keystone.hardwareKey = {
     enable = lib.mkDefault true;
