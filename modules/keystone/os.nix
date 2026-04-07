@@ -78,6 +78,13 @@
       ];
       terminal.enable = lib.mkDefault true;
       sshAutoLoad.enable = lib.mkDefault true;
+      capabilities = [
+        "ks"
+        "engineer"
+        "product"
+        "project-manager"
+        "notes"
+      ];
     };
   };
 
