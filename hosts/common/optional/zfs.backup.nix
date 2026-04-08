@@ -75,15 +75,8 @@ let
   # Excluded datasets pattern
   excludePattern = "nix$|k3s/server$|k3s/agent$|docker$|containers$|images$|libvirt$";
 
-  # Helper to get all SSH public keys for a keystone.keys user
-  allKeysFor =
-    username:
-    let
-      u = config.keystone.keys.${username};
-      hostKeys = attrValues (mapAttrs (_: h: h.publicKey) u.hosts);
-      hwKeys = attrValues (mapAttrs (_: h: h.publicKey) (u.hardwareKeys or { }));
-    in
-    hostKeys ++ hwKeys;
+  # All SSH public keys for a keystone.keys user
+  allKeysFor = username: config.keystone.keys.${username}.allKeys;
 
   # Get authorized keys for a sync user based on source host config
   syncKeysFor =

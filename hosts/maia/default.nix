@@ -54,8 +54,6 @@
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
-  services.openssh.settings.PermitRootLogin = "yes";
-
   networking.hostId = "22386ca6"; # generate with: head -c 8 /etc/machine-id
   networking.hostName = "maia"; # Define your hostname.
 

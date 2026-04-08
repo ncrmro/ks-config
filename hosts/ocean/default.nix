@@ -222,8 +222,6 @@
     windowsBackupQuota = "1T";
   };
 
-  services.openssh.settings.PermitRootLogin = "yes";
-
   networking.hostId = "89cbac5f"; # generate with: head -c 8 /etc/machine-id
   networking.hostName = "ocean";
 

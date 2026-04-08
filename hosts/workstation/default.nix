@@ -152,8 +152,6 @@
     enable32Bit = true;
   };
 
-  services.openssh.settings.PermitRootLogin = "yes";
-
   # OOM Killer configuration
   # Prioritize killing docker/podman rootless processes over Hyprland
   # NOTE: Cannot set OOMScoreAdjust for wayland-wm@Hyprland because NixOS creates

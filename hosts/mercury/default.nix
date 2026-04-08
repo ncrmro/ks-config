@@ -20,7 +20,6 @@
     "1.1.1.1"
     "8.8.8.8"
   ];
-  services.openssh.settings.PermitRootLogin = "yes";
 
   services.alloy-client = {
     enable = true;
