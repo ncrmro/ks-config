@@ -76,7 +76,6 @@
         "dialout"
       ];
       terminal.enable = lib.mkDefault true;
-      sshAutoLoad.enable = lib.mkDefault true;
       capabilities = [
         "ks"
         "engineer"
