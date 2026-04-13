@@ -63,8 +63,6 @@
   };
   programs.fastfetch.enable = true;
 
-  keystone.terminal.perception.enable = true;
-
   home.sessionVariables = {
     IMMICH_URL = "https://photos.ncrmro.com";
   };
