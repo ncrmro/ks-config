@@ -29,6 +29,7 @@
     ../common/optional/monitoring-client.nix
     ../common/optional/alloy-client.nix
     ../common/optional/zfs.backup.nix
+    ../common/optional/ableton-live.nix
     ../../modules/nixos/steam.nix
     outputs.nixosModules.bambu-studio
   ];

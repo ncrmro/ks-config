@@ -27,6 +27,7 @@
     ../common/optional/zfs.backup.nix
     outputs.nixosModules.bambu-studio
     ./windows11-vm.nix
+    ../common/optional/ableton-live.nix
     ../../modules/nixos/steam.nix
   ];
 
