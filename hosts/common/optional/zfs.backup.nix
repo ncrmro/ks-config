@@ -379,56 +379,10 @@ in
       );
     })
 
-    # === Metrics: snapshot age and count timer ===
-    (mkIf (isSender || isReceiver) {
-      systemd.services.zfs-snapshot-metrics = {
-        description = "Write ZFS snapshot metrics for Prometheus textfile collector";
-        path = [
-          config.boot.zfs.package
-          pkgs.coreutils
-          pkgs.gawk
-        ];
-        serviceConfig = {
-          Type = "oneshot";
-          User = "root";
-        };
-        script = ''
-          METRICS_DIR="/var/lib/prometheus-node-exporter"
-          METRICS_FILE="$METRICS_DIR/zfs_snapshots.prom"
-          TEMP_FILE="$METRICS_DIR/.zfs_snapshots.prom.tmp"
-
-          mkdir -p "$METRICS_DIR"
-
-          {
-            echo "# HELP zfs_snapshot_newest_age_seconds Age of newest snapshot in seconds"
-            echo "# TYPE zfs_snapshot_newest_age_seconds gauge"
-            echo "# HELP zfs_snapshot_count Number of snapshots"
-            echo "# TYPE zfs_snapshot_count gauge"
-
-            NOW=$(date +%s)
-            for pool in $(zpool list -H -o name 2>/dev/null); do
-              NEWEST=$(zfs list -H -t snapshot -o creation -s creation -r "$pool" 2>/dev/null | tail -1)
-              COUNT=$(zfs list -H -t snapshot -r "$pool" 2>/dev/null | wc -l)
-
-              if [ -n "$NEWEST" ]; then
-                SNAP_TS=$(date -d "$NEWEST" +%s 2>/dev/null || echo 0)
-                AGE=$((NOW - SNAP_TS))
-                echo "zfs_snapshot_newest_age_seconds{host=\"${myHostname}\",pool=\"$pool\"} $AGE"
-              fi
-              echo "zfs_snapshot_count{host=\"${myHostname}\",pool=\"$pool\"} $COUNT"
-            done
-          } > "$TEMP_FILE"
-          mv "$TEMP_FILE" "$METRICS_FILE"
-        '';
-      };
-
-      systemd.timers.zfs-snapshot-metrics = {
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "*:0/5";
-          Persistent = true;
-        };
-      };
-    })
+    # NOTE: zfs-snapshot-metrics service and timer are now owned by keystone's
+    # modules/os/zfs-backup.nix (introduced in PR #214). Declaring them here
+    # caused a systemd unit collision during evaluation. Legacy gaps tracked
+    # in a follow-up keystone issue; once closed this whole file can be
+    # removed in favor of the keystone module.
   ];
 }
