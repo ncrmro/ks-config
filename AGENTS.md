@@ -166,7 +166,6 @@ Add as **flake inputs**. Choose the appropriate flake:
 |------|------|--------------|
 | **ncrmro-workstation** | Primary desktop | AMD GPU, ZFS, Secure Boot, bridge networking for VMs, agent hosting, Attic push |
 | **ncrmro-laptop** | Portable laptop | ZFS, Secure Boot, fingerprint reader, ZFS remote replication to maia |
-| **mox** | Older desktop | Minimal config |
 
 ### Agent VMs
 

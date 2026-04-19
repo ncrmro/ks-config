@@ -37,11 +37,6 @@
     buildOnRemote = true;
     hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAtdLpd4fI4U4JSQeo0z/m2KdB+qAGyURSPko7/1BCIa";
   };
-  mox = {
-    hostname = "mox";
-    role = "client";
-    buildOnRemote = true;
-  };
   ncrmro-workstation = {
     hostname = "ncrmro-workstation";
     tailscaleIP = "100.64.0.3";

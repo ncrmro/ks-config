@@ -31,7 +31,7 @@ Docs: `github:nix-community/nixos-anywhere`
 
 - VM test install (local emulated install of a host):
 ```bash
-nix run github:nix-community/nixos-anywhere -- --flake .#mox --vm-test
+nix run github:nix-community/nixos-anywhere -- --flake .#ncrmro-laptop --vm-test
 ```
 
 - Remote host install (replace values accordingly):
@@ -81,6 +81,6 @@ nixos-rebuild switch --flake .#testbox --target-host "root@192.168.1.123"
 ## Home Manager
 Switch user configuration via Home Manager (adjust user/host):
 ```bash
-home-manager switch --flake /etc/nixos/flake/#ncrmro@mox
+home-manager switch --flake /etc/nixos/flake/#ncrmro@ncrmro-workstation
 ```
 

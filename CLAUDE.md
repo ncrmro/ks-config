@@ -7,7 +7,7 @@ This is a NixOS configuration repository using flakes for managing system config
 ### Core Components
 
 - **Flake-based Configuration**: All system configurations are managed through `flake.nix` which defines multiple NixOS systems and Home Manager configurations
-- **Host-specific Configurations**: Each host (mox, maia, ocean, mercury, etc.) has its own configuration in `/hosts/<hostname>/`
+- **Host-specific Configurations**: Each host (maia, ocean, mercury, etc.) has its own configuration in `/hosts/<hostname>/`
 - **Modular Structure**: Common configurations are shared via `/hosts/common/` with optional features that can be imported per-host
 - **Kubernetes Integration**: Several hosts run K3s with NixOS-managed Kubernetes resources
 - **ZFS Storage**: Many systems use ZFS with LUKS encryption and remote replication
@@ -54,7 +54,7 @@ nix flake check
 # Build a host config (no deploy, no sudo)
 ks build [--dev] [<HOSTS>]         # defaults to current hostname
 ks build ocean                     # build ocean config
-ks build mox,maia                  # build multiple configs
+ks build ocean,maia                # build multiple configs
 ks build                           # build against the live keystone checkout in dev mode
 
 # Deploy to a host (switch or boot)
