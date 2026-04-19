@@ -10,3 +10,4 @@ result-desktop-vm
 .submodules/
 agenix-secrets/
 .deepwork/tmp/
+.claude/
