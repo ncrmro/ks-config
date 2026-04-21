@@ -57,8 +57,13 @@
     };
   };
 
+  # Consumer flake path — convention default is `keystone-config`, but this
+  # fleet's repo is named `nixos-config`. Override to match reality.
+  keystone.systemFlake.path = "/home/ncrmro/.keystone/repos/ncrmro/nixos-config";
+
   keystone.os = {
     enable = lib.mkDefault true;
+    adminUsername = "ncrmro";
     storage.enable = lib.mkDefault false; # All hosts use disko
     ssh.enable = lib.mkDefault false; # SSH configured independently
     hypervisor.enable = lib.mkDefault true;
