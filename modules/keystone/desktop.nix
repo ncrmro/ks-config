@@ -24,7 +24,7 @@
   # Desktop needs resolved for Tailscale MagicDNS
   keystone.os.services.resolved.enable = true;
 
-  keystone.os.users.ncrmro.desktop.enable = true;
+  keystone.os.admin.desktop.enable = true;
 
   # ncrmro HM modules for desktop hosts.
   # keystone.nixosModules.operating-system provides terminal and notes as

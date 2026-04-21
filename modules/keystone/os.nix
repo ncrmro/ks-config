@@ -67,7 +67,7 @@
     storage.enable = lib.mkDefault false; # All hosts use disko
     ssh.enable = lib.mkDefault false; # SSH configured independently
     hypervisor.enable = lib.mkDefault true;
-    users.ncrmro = {
+    admin = {
       fullName = "Nicholas Romero";
       extraGroups = [
         "wheel"
