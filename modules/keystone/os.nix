@@ -63,23 +63,17 @@
 
   keystone.os = {
     enable = lib.mkDefault true;
-    adminUsername = "ncrmro";
     storage.enable = lib.mkDefault false; # All hosts use disko
     ssh.enable = lib.mkDefault false; # SSH configured independently
     hypervisor.enable = lib.mkDefault true;
-    admin = {
+    users.ncrmro = {
+      admin = true;
       fullName = "Nicholas Romero";
-      extraGroups = [
-        "wheel"
-        "media"
-        "audio"
-        "input"
-        "networkmanager"
-        "sound"
-        "docker"
-        "podman"
-        "dialout"
-      ];
+      # Supplementary groups are module-owned post-#470/#471:
+      #   wheel, podman, libvirtd, dialout, media → admin (this user)
+      #   networkmanager, video, audio           → desktop users (via desktop.enable)
+      #   zfs                                    → all users on ZFS storage
+      # Retired groups: input, sound, docker (see keystone process.user-groups).
       terminal.enable = lib.mkDefault true;
       capabilities = [
         "ks"

@@ -45,5 +45,5 @@
   keystone.os.secureBoot.enable = false;
   keystone.os.tpm.enable = false;
   keystone.os.hypervisor.enable = false;
-  keystone.os.admin.sshAutoLoad.enable = false;
+  keystone.os.users.ncrmro.sshAutoLoad.enable = false;
 }
