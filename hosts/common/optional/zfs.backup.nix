@@ -280,61 +280,9 @@ in
       );
     })
 
-    # === Receiver: sync users + ZFS delegation ===
-    (mkIf isReceiver {
-      environment.systemPackages = with pkgs; [
-        lzop
-        mbuffer
-      ];
-
-      users.groups.zfs-sync = { };
-
-      users.users = listToAttrs (
-        map (
-          syncHostname:
-          let
-            # Find the host key for this hostname
-            hostKey = findFirst (key: allHosts.${key}.hostname == syncHostname) null (attrNames allHosts);
-            syncUser = "${syncHostname}-sync";
-          in
-          nameValuePair syncUser {
-            isSystemUser = true;
-            shell = pkgs.bash;
-            group = "zfs-sync";
-            openssh.authorizedKeys.keys = if hostKey != null then syncKeysFor hostKey else [ ];
-          }
-        ) uniqueSyncUsers
-      );
-
-      # Initialize backup datasets and ZFS delegations
-      systemd.services.zfs-backup-init = {
-        description = "Initialize ZFS backup datasets and delegations";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "zfs.target" ] ++ importDepsFor incomingTargetPools;
-        requires = importDepsFor incomingTargetPools;
-        path = [ config.boot.zfs.package ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = concatStringsSep "\n" (
-          map (
-            incoming:
-            let
-              dataset = "${incoming.targetPool}/backups/${incoming.sourceHostname}/${incoming.sourcePool}";
-              syncUser = "${incoming.sourceHostname}-sync";
-            in
-            ''
-              # ${syncUser} → ${dataset}
-              if ! zfs list ${dataset} >/dev/null 2>&1; then
-                zfs create -p ${dataset} || true
-              fi
-              zfs allow ${syncUser} receive,create,mount,rollback,destroy ${dataset}
-            ''
-          ) incomingBackups
-        );
-      };
-    })
+    # NOTE: Receiver section (sync users, ZFS delegation) is now owned by
+    # keystone's modules/os/zfs-backup.nix. Removed to avoid conflicting
+    # users.users group definitions.
 
     # === Metrics: syncoid job status via ExecStopPost ===
     (mkIf isSender {
