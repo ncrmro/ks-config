@@ -2,14 +2,20 @@
 # Every machine in the fleet imports this module.
 { inputs, lib, ... }:
 {
+  # `keystone.nixosModules.operating-system` is imported automatically by
+  # mkSystemFlake (via mkLinuxHost). Re-importing it here from
+  # `inputs.keystone.nixosModules.operating-system` produces a second
+  # _file-less inline-attrset module instance that NixOS does not
+  # deduplicate; sharedModules entries get applied twice and trigger
+  # `_module.args.keystoneInputs` "defined multiple times" errors.
+  #
+  # `keystone.nixosModules.{domain,services,hosts}` are already pulled in
+  # by `operating-system`'s own imports list (see keystone flake.nix), so
+  # they don't need to be repeated either.
   imports = [
-    inputs.keystone.nixosModules.operating-system
     inputs.keystone.nixosModules.hardwareKey
     inputs.keystone.nixosModules.keys
     inputs.keystone.nixosModules.binaryCacheClient
-    inputs.keystone.nixosModules.domain
-    inputs.keystone.nixosModules.services
-    inputs.keystone.nixosModules.hosts
     ../keys.nix
     ../../hosts/common/global/openssh.nix
     ../../hosts/common/agent-identities.nix
@@ -66,23 +72,16 @@
     storage.enable = lib.mkDefault false; # All hosts use disko
     ssh.enable = lib.mkDefault false; # SSH configured independently
     hypervisor.enable = lib.mkDefault true;
-    users.ncrmro = {
-      admin = true;
-      fullName = "Nicholas Romero";
-      # Supplementary groups are module-owned post-#470/#471:
-      #   wheel, podman, libvirtd, dialout, media → admin (this user)
-      #   networkmanager, video, audio           → desktop users (via desktop.enable)
-      #   zfs                                    → all users on ZFS storage
-      # Retired groups: input, sound, docker (see keystone process.user-groups).
-      terminal.enable = lib.mkDefault true;
-      capabilities = [
-        "ks"
-        "engineer"
-        "product"
-        "project-manager"
-        "notes"
-      ];
-    };
+    # The admin user (ncrmro) is now declared in flake.nix `adminUser` and
+    # threaded through `mkSystemFlake { admin = ...; }`. Keep per-host
+    # tweaks (e.g. desktop.enable on workstation/laptop) in their own modules;
+    # do not redeclare the admin user here.
+    #
+    # Supplementary groups are module-owned post-#470/#471:
+    #   wheel, podman, libvirtd, dialout, media → admin (this user)
+    #   networkmanager, video, audio           → desktop users (via desktop.enable)
+    #   zfs                                    → all users on ZFS storage
+    # Retired groups: input, sound, docker (see keystone process.user-groups).
   };
 
   keystone.secrets.repo = inputs.agenix-secrets;
