@@ -58,18 +58,160 @@
           };
           overlays = overlays;
         };
+
+      # Module args (`inputs`, `self`, `outputs`) are passed to every host
+      # via mkSystemFlake's `shared.specialArgs`. They cannot be supplied via
+      # `_module.args` because consumer modules (e.g.
+      # modules/keystone/os.nix) reference `inputs.keystone.nixosModules.*`
+      # inside their own `imports` list, and `_module.args` resolution
+      # depends on `config`, which causes infinite recursion at import time.
+      fleetSpecialArgs = {
+        inherit inputs self;
+        outputs = self;
+      };
+
+      # Fleet admin user. mkSystemFlake places this at
+      # `keystone.os.users.<adminUsername>` with `admin = true`, so this is
+      # the single source of truth for the ncrmro identity. The matching
+      # block was removed from `modules/keystone/os.nix` during this migration.
+      adminUser = {
+        username = "ncrmro";
+        fullName = "Nicholas Romero";
+        terminal.enable = true;
+        capabilities = [
+          "ks"
+          "engineer"
+          "product"
+          "project-manager"
+          "notes"
+        ];
+      };
+
+      # Storage devices are managed entirely by per-host disko configs in this
+      # fleet (`keystone.os.storage.enable = false` in modules/keystone/os.nix).
+      # mkLaptop/mkServer still require a storage.devices list for option-type
+      # validation, so pass a placeholder. The keystone storage module is
+      # gated on `storage.enable`, so these values are never read at runtime.
+      placeholderDevices = [ "/dev/disk/by-id/placeholder-disko-managed" ];
+
+      # All hosts that have ZFS backups declared need `storage.type = "zfs"`
+      # to satisfy the keystone zfs-backup assertion, even when
+      # `storage.enable = false` (this fleet handles ZFS via per-host disko
+      # configs). mkLaptop's default of "ext4" trips the assertion on
+      # ncrmro-laptop, so override here.
+      zfsStorage = {
+        type = "zfs";
+        mode = "single";
+        devices = placeholderDevices;
+      };
+
+      fleet = inputs.keystone.lib.mkSystemFlake {
+        admin = adminUser;
+        defaults = {
+          timeZone = "America/Chicago";
+          # Channel default deliberately matches the keystone option default
+          # for now; a follow-up commit flips this to "unstable" so the fleet
+          # tracks main until a stable release exists.
+          updateChannel = "stable";
+        };
+        shared.specialArgs = fleetSpecialArgs;
+        hosts = {
+          maia = {
+            kind = "server";
+            stateVersion = "25.11";
+            # mkServer defaults to ZFS; placeholder devices are ignored
+            # because keystone.os.storage.enable = false in this fleet.
+            storage.devices = placeholderDevices;
+            modules = [ ./hosts/maia ];
+          };
+
+          ncrmro-laptop = {
+            kind = "laptop";
+            stateVersion = "25.11";
+            # Override mkLaptop's ext4 default — laptop runs ZFS via disko
+            # and the keystone zfs-backup module asserts `storage.type ==
+            # "zfs"` regardless of `storage.enable`.
+            storage = zfsStorage;
+            modules = [ ./hosts/ncrmro-laptop ];
+          };
+
+          mercury = {
+            kind = "server";
+            hostname = "mercury";
+            stateVersion = "25.05";
+            storage.devices = placeholderDevices;
+            # Mercury is a VPS without TPM or Secure Boot hardware. The
+            # host module turns those off, so mkSystemFlake's defaults
+            # (which would force them on) must match here too.
+            secureBoot.enable = false;
+            tpm.enable = false;
+            # Mercury reads ocean's generated DNS/ACL records as a specialArg.
+            # The reference into `fleet.nixosConfigurations.ocean` is lazy:
+            # ocean's config is only forced when mercury's modules actually
+            # read `oceanConfig`, so there is no evaluation-time recursion.
+            specialArgs = {
+              oceanConfig = fleet.nixosConfigurations.ocean.config;
+            };
+            modules = [ ./hosts/mercury ];
+          };
+
+          # catalystPrimary is a non-keystone host (k3s VPS with hardcoded
+          # SSH keys; see hosts/catalystPrimary/default.nix). It does NOT
+          # import any keystone modules and does NOT want mkSystemFlake's
+          # mkServer wrapper to force `keystone.os.enable = true` onto it.
+          # This host is wired manually below the mkSystemFlake call as a
+          # documented exception — see `nixosConfigurations.catalystPrimary`
+          # at the end of the outputs block.
+
+          ocean = {
+            kind = "server";
+            stateVersion = "25.11";
+            storage.devices = placeholderDevices;
+            modules = [ ./hosts/ocean ];
+          };
+
+          ncrmro-workstation = {
+            # `workstation` is a distinct mkSystemFlake kind — it pre-pins a
+            # ZFS-compatible kernel and enables the desktop archetype, which
+            # is what this host wants.
+            kind = "workstation";
+            stateVersion = "25.11";
+            storage.devices = placeholderDevices;
+            modules = [ ./hosts/workstation ];
+          };
+        };
+      };
     in
-    {
+    fleet
+    // {
+      # `catalystPrimary` is wired manually as an exception: it does not use
+      # the keystone OS module (k3s VPS, hardcoded SSH keys), so wrapping it
+      # via mkSystemFlake would force `keystone.os.enable = true` and trip
+      # the storage / fileSystems assertions. Merging into nixosConfigurations
+      # via attribute-set extension keeps it discoverable alongside the rest.
+      nixosConfigurations = fleet.nixosConfigurations // {
+        catalystPrimary = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [ ./hosts/catalystPrimary ];
+          specialArgs = {
+            inherit inputs self;
+            outputs = self;
+          };
+        };
+      };
+
       # Code formatter (official NixOS formatter)
       formatter.x86_64-linux = (pkgsForSystem "x86_64-linux").nixfmt;
       formatter.aarch64-darwin = (pkgsForSystem "aarch64-darwin").nixfmt;
 
-      # Custom packages
+      # Custom packages — extend whatever mkSystemFlake exposes (e.g.
+      # installerTargetsJson, vm-image-*, iso) with our own.
       packages.x86_64-linux =
         let
           pkgs = pkgsForSystem "x86_64-linux";
         in
-        {
+        (fleet.packages.x86_64-linux or { })
+        // {
           inherit (pkgs.keystone)
             claude-code
             codex
@@ -79,69 +221,15 @@
           inherit (pkgs) mcp-language-server;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
-          iso = self.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;
+          iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;
         };
 
       # Import NixOS and Home Manager modules
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      # NixOS system configurations
-      nixosConfigurations = {
-        # Home server configuration
-        maia = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/maia ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-
-        ncrmro-laptop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/ncrmro-laptop ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-        mercury = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/mercury ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-            oceanConfig = self.nixosConfigurations.ocean.config;
-          };
-        };
-        catalystPrimary = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/catalystPrimary ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-        ocean = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/ocean ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-        ncrmro-workstation = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/workstation ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
-          };
-        };
-      };
-
-      # Home Manager configurations
+      # macOS Home Manager configurations — mkSystemFlake doesn't manage these
+      # because macOS hosts here are user-only, not full system flakes.
       homeConfigurations = {
         "nicholas@unsup-macbook" = home-manager.lib.homeManagerConfiguration {
           modules = [ ./home-manager/ncrmro/unsup-macbook.nix ];

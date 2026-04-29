@@ -7,7 +7,13 @@
 {
   imports = [
     inputs.home-manager.nixosModules.default
-    inputs.keystone.nixosModules.desktop
+    # `keystone.nixosModules.desktop` is imported automatically by
+    # mkSystemFlake when `kind = laptop` or `kind = workstation`. Re-importing
+    # it here from `inputs.keystone.nixosModules.desktop` produces a second
+    # inline-attrset instance that NixOS does not deduplicate; the desktop
+    # module's `home-manager.sharedModules = [ self.homeModules.desktop ]`
+    # then runs twice and triggers `programs.walker.elephant` "already
+    # declared" errors during home-manager evaluation.
   ];
 
   users.mutableUsers = true;
