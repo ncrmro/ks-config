@@ -109,10 +109,11 @@
         admin = adminUser;
         defaults = {
           timeZone = "America/Chicago";
-          # Channel default deliberately matches the keystone option default
-          # for now; a follow-up commit flips this to "unstable" so the fleet
-          # tracks main until a stable release exists.
-          updateChannel = "stable";
+          # Default the entire fleet to the unstable update channel.
+          # Until ncrmro/keystone publishes a GitHub release, the stable
+          # channel cannot resolve (404), so unstable is the only working
+          # default. Per-host opt-back-in via `updateChannel = "stable"`.
+          updateChannel = "unstable";
         };
         shared.specialArgs = fleetSpecialArgs;
         hosts = {
