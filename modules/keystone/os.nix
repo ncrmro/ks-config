@@ -70,6 +70,11 @@
   keystone.os = {
     enable = lib.mkDefault true;
     storage.enable = lib.mkDefault false; # All hosts use disko
+    # mkSystemFlake templates disable Tailscale by default because generic
+    # consumers may not provide a hosts registry. This fleet always sets
+    # keystone.hosts below, so keep the historical "all keystone OS hosts join
+    # Headscale unless a host explicitly opts out" behavior.
+    tailscale.enable = true;
     ssh.enable = lib.mkDefault false; # SSH configured independently
     hypervisor.enable = lib.mkDefault true;
     # The admin user (ncrmro) is now declared in flake.nix `adminUser` and
