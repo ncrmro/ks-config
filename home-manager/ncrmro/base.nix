@@ -45,7 +45,7 @@
   '';
 
   wayland.windowManager.hyprland.settings = {
-    windowrule = [
+    windowrule = lib.mkDefault [
       # Tag messaging apps
       "tag +messaging, match:class Signal"
       "tag +messaging, match:title .*WhatsApp.*"
