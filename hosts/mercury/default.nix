@@ -46,4 +46,7 @@
   keystone.os.tpm.enable = false;
   keystone.os.hypervisor.enable = false;
   keystone.os.users.ncrmro.sshAutoLoad.enable = false;
+  # No local-link peers on a public-internet VPS — avahi would advertise
+  # on the public network without serving any fleet purpose.
+  keystone.os.services.avahi.enable = false;
 }
