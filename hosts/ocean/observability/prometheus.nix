@@ -106,6 +106,20 @@ in
                 device_type = "plant-monitor";
               };
             }
+            # TODO: 192.168.1.148 is currently a DHCP lease; a renewal could move
+            # the OX node to a different address and silently break this scrape.
+            # Pin it via either a `wifi.manual_ip` block in
+            # ncrmro/plant-caravan:hardware/firmware/ox-node.yaml or a DHCP
+            # reservation in adguard-home.nix.
+            {
+              targets = [ "192.168.1.148:80" ];
+              labels = {
+                instance = "ox-node";
+                environment = "home";
+                device_type = "ox-node";
+                subsystem = "power";
+              };
+            }
           ];
         }
       ];
