@@ -279,7 +279,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "esphome_sensor_value{id=\"battery_v_rate\",instance=\"ox-node\"}",
+          "expr": "esphome_sensor_value{id=\"battery_voltage_rate\",instance=\"ox-node\"}",
           "legendFormat": "dV/dt",
           "refId": "A"
         }
@@ -412,7 +412,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "esphome_sensor_value{id=\"battery_tte\",instance=\"ox-node\"}",
+          "expr": "esphome_sensor_value{id=\"battery_time_to_empty\",instance=\"ox-node\"}",
           "legendFormat": "TTE",
           "refId": "A"
         }
@@ -452,7 +452,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "esphome_sensor_value{id=\"battery_ttf\",instance=\"ox-node\"}",
+          "expr": "esphome_sensor_value{id=\"battery_time_to_full\",instance=\"ox-node\"}",
           "legendFormat": "TTF",
           "refId": "A"
         }
