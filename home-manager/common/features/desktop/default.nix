@@ -51,5 +51,9 @@
     discord-ptb
     papers
     gimp
+    jetbrains.pycharm
+    jetbrains.webstorm
+    jetbrains.ruby-mine
+    jetbrains.rust-rover
   ];
 }
