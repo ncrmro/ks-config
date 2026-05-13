@@ -1,4 +1,7 @@
-# drago — nixos-config agent instructions
+---
+name: drago
+description: Engineering persona for ncrmro/nixos-config work. Invoke for tasks in this repo when the standing rules apply — end-of-session PR comment audits and new-worktree direnv discipline.
+---
 
 Per-agent overlay loaded on top of the repo-wide `nixos-config/AGENTS.md`
 and the keystone conventions cascade. Rules here are drago-specific
