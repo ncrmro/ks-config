@@ -148,6 +148,8 @@
 
   keystone.hardware.uhk.enable = true;
 
+  hardware.ledger.enable = true;
+
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
