@@ -24,8 +24,10 @@
     k9s
   ];
 
-  # DeepWork is provided by the Claude Code plugin on this machine
+  # AI tools and DeepWork are provided by the Claude Code plugin on this machine
+  keystone.terminal.ai.enable = false;
   keystone.terminal.deepwork.enable = false;
+  keystone.terminal.sandbox.enable = false;
 
   programs.home-manager.enable = true;
 }
