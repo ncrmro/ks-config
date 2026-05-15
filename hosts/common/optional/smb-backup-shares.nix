@@ -131,8 +131,14 @@ in
     services.avahi = {
       enable = true;
       nssmdns4 = true;
+      openFirewall = true;
       publish.enable = true;
       publish.userServices = true;
+      # Without addresses=true Avahi advertises the _adisk._tcp service but never
+      # publishes the host A record, so macOS resolves "<host>.local" to nothing
+      # and the Time Machine connection fails.
+      publish.addresses = true;
+      publish.workstation = true;
       extraServiceFiles = {
         smb = ''
           <?xml version="1.0" standalone='no'?>
