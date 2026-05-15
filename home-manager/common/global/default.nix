@@ -34,12 +34,6 @@
   keystone.development = lib.mkDefault true;
   keystone.repos = import ../../../repos.nix;
 
-  keystone.notes = {
-    enable = lib.mkDefault true;
-    repo = lib.mkDefault "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
-    zk.enable = lib.mkDefault true;
-  };
-
   # Keystone terminal configuration
   keystone.terminal = {
     enable = true;
