@@ -1,0 +1,1 @@
+../../_shared/conventions/code.shell-scripts.md
