@@ -1288,15 +1288,16 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1779295064,
-        "narHash": "sha256-go0MYGBTC6N2JXO0bDISIvNwn7QoLsqfWyj255dLmlo=",
+        "lastModified": 1779308613,
+        "narHash": "sha256-YPD0Zdfr/1je21FCbb5izcpwlihqrgGC0Tp5h3M+TX0=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "edfb84ae9060dc4a3cda31a7f62663d6fd6c2ad4",
+        "rev": "2b7282b39f2739ecddc1dfb9190f26adc06d4b72",
         "type": "github"
       },
       "original": {
         "owner": "ncrmro",
+        "ref": "feat/agents-task-loop-module",
         "repo": "keystone",
         "type": "github"
       }
