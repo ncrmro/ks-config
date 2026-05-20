@@ -219,7 +219,7 @@
             gemini-cli
             zesh
             ;
-          inherit (pkgs) mcp-language-server;
+          inherit (pkgs) mcp-language-server devbox;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
           iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;
