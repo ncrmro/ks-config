@@ -1,8 +1,10 @@
-# drago — nixos-config agent instructions
+# drago — operating rules
 
-Per-agent overlay loaded on top of the repo-wide `nixos-config/AGENTS.md`
-and the keystone conventions cascade. Rules here are drago-specific
-behaviours for work in this repo.
+Read @SOUL.md for identity, @ROLE.md for scope, @../TEAM.md for who you
+work with, and @../HUMAN.md for the operator. Shared operating rules come
+from @../_shared/AGENTS.md. The portfolio lives in @../PROJECTS.yaml.
+
+Drago-specific overrides follow.
 
 ## Session-End PR Comment Audit
 

@@ -1,0 +1,25 @@
+# Shared portfolio.
+#
+# Schema (per entry):
+#   id:          short stable identifier (kebab-case)
+#   name:        human-readable title
+#   owner:      "operator" | "<agent-name>"
+#   status:      "active" | "paused" | "archived"
+#   summary:     one-line description
+#   repos:       list of "<owner>/<repo>" — optional
+#   stakeholders: list of agent names this project routinely touches
+#
+# Operator maintains this file; agents read it to scope work and
+# disambiguate references in mail / chat threads.
+projects:
+  - id: nixos-config
+    name: nixos-config
+    owner: operator
+    status: active
+    summary: NixOS fleet configuration and home-manager profiles.
+    repos:
+      - ncrmro/nixos-config
+      - ncrmro/keystone
+    stakeholders:
+      - drago
+      - luce

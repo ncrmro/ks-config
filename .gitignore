@@ -11,3 +11,9 @@ result-desktop-vm
 agenix-secrets/
 .deepwork/tmp/
 .claude/
+
+# Agent runtime state. Symlinked into agent homes by home-manager
+# activation; written by agents at runtime, intentionally untracked.
+agents/*/TASKS.yaml
+agents/*/SCHEDULES.yaml
+agents/*/ISSUES.yaml

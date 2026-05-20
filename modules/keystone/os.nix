@@ -19,6 +19,7 @@
     ../keys.nix
     ../../hosts/common/global/openssh.nix
     ../../hosts/common/agent-identities.nix
+    ../agent-home-state.nix
   ];
 
   # Fleet-wide identity
