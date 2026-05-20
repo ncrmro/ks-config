@@ -39,6 +39,19 @@ let
     "PROJECTS.yaml" = "${flakePath}/agents/PROJECTS.yaml";
   };
 
+  # Skill-tree + per-tool top-level docs. All three CLI tools (Claude,
+  # Codex, Gemini) read these natively; the canonical skill content lives
+  # in `agents/skills/` and the operating rules in `agents/_shared/AGENTS.md`.
+  # nixos-config#29 wires these for ncrmro via the keystone aiExtensions
+  # surface; agent users need the same wiring through this module.
+  skillTreeFiles = {
+    ".agents/skills" = "${flakePath}/agents/skills";
+    ".claude/skills" = "${flakePath}/agents/skills";
+    ".claude/CLAUDE.md" = "${flakePath}/agents/_shared/AGENTS.md";
+    ".gemini/GEMINI.md" = "${flakePath}/agents/_shared/AGENTS.md";
+    ".codex/AGENTS.md" = "${flakePath}/agents/_shared/AGENTS.md";
+  };
+
   # Tracked per-agent files. SOUL/ROLE/AGENTS are in-repo.
   perAgentTracked = name: {
     "SOUL.md" = "${flakePath}/agents/${name}/SOUL.md";
@@ -72,6 +85,7 @@ in
             );
             sharedLinks = lib.mapAttrs (_n: t: { source = mkLink t; }) sharedFiles;
             trackedLinks = lib.mapAttrs (_n: t: { source = mkLink t; }) (perAgentTracked name);
+            skillTreeLinks = lib.mapAttrs (_n: t: { source = mkLink t; }) skillTreeFiles;
           in
           {
             # CRITICAL: these symlinks point INTO the consumer flake checkout
@@ -79,7 +93,7 @@ in
             # reflects edits without a rebuild. The runtime files live behind
             # the gitignore — activation pre-creates them so the symlinks are
             # not dangling on first deploy.
-            home.file = sharedLinks // trackedLinks // runtimeLinks;
+            home.file = sharedLinks // trackedLinks // runtimeLinks // skillTreeLinks;
 
             home.activation.agentStateTouchRuntime = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
               for target in ${lib.escapeShellArgs (runtimeTargets name)}; do

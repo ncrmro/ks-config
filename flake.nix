@@ -23,8 +23,12 @@
     # Keystone - self-sovereign infrastructure platform
     # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
     # For local dev without commits, use: ./bin/dev-keystone <hostname>
+    #
+    # Temporarily pinned to feat/agents-task-loop-module (which is stacked
+    # on refactor/agents-rip-out-notes). Re-lock to a main merge commit once
+    # those keystone PRs land.
     keystone = {
-      url = "github:ncrmro/keystone";
+      url = "github:ncrmro/keystone/feat/agents-task-loop-module";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -83,7 +87,6 @@
           "engineer"
           "product"
           "project-manager"
-          "notes"
         ];
       };
 
