@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+import { api } from "../lib/api";
+
+let missions: Awaited<ReturnType<typeof api.listMissions>>["missions"] = [];
+let err: string | null = null;
+try {
+  ({ missions } = await api.listMissions());
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+---
+<Base title="Missions">
+  <h2>Missions</h2>
+  {err && <p class="empty">Could not reach server: {err}</p>}
+  {!err && missions.length === 0 && (
+    <p class="empty">No missions yet. POST one to <code>/api/missions</code>.</p>
+  )}
+  {missions.length > 0 && (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Created</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {missions.map((m) => (
+          <tr>
+            <td><a href={`/missions/${m.slug}`}>{m.title}</a></td>
+            <td class="muted">{new Date(m.createdAt).toLocaleString()}</td>
+            <td><span class={`pill ${m.status}`}>{m.status}</span></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>
