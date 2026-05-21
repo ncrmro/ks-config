@@ -96,7 +96,7 @@
     zk.enable = true;
   };
 
-  keystone.terminal.aiExtensions.experimental = true;
+  keystone.terminal.aiExtensions.enable = true;
   keystone.terminal.calendar.enable = true;
   keystone.terminal.contacts.enable = true;
   keystone.terminal.timer.enable = true;
