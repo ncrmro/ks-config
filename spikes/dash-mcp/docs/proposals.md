@@ -193,19 +193,23 @@ on the human to spring-clean. The agent is doing what it's already good
 at — synthesizing recent activity — and the work product (a report or
 an archive) is the same artifact the dashboard already understands.
 
-## Proposed schema v2: project / milestone / task
+## Schema v2: project / milestone / task
 
-The current `mission` table conflates two things: a Keystone-style mission
+**Status: project + milestone shipped, task pending.** The `mission` → `project`
+rename has been applied (single migration, no data to preserve). What's still
+proposed here is the **task** abstraction.
+
+The original `mission` table conflated two things: a Keystone-voice mission
 statement (purpose / values / scope — the brand-voice artifact in
 `~/notes/projects/<name>/mission.md`) and the operational rollup the
-dashboard actually cares about. They should split.
+dashboard actually cares about. They are now split.
 
-- **Project** is the operational primitive — what dash-mcp tracks.
+- **Project** is the operational primitive — what dash-mcp tracks. *(shipped)*
 - **Mission** stays in Keystone's voice as a narrative file inside the
-  project (literally `project.mission_md_path` or similar), not its own
-  database row.
-- **Milestone** is the planning rollup inside a project.
-- **Task** is the actionable unit — a decision or action (human or agent),
+  project, pointed at by `project.mission_md_path`, not its own database
+  row. *(shipped)*
+- **Milestone** is the planning rollup inside a project. *(shipped)*
+- **Task** *(not yet shipped)* is the actionable unit — a decision or action (human or agent),
   often with a source ref into an external provider (GitHub issue, Forgejo
   PR, Slack thread, email, calendar event, agent handoff). Tasks are the
   level at which "reply to this PR review", "decide on the

@@ -19,17 +19,16 @@ async function call(method: string, path: string, body?: unknown): Promise<unkno
 }
 
 export const api = {
-  listMissions: (q: { project?: string; status?: string } = {}) => {
+  listProjects: (q: { status?: string } = {}) => {
     const params = new URLSearchParams();
-    if (q.project) params.set("project", q.project);
     if (q.status) params.set("status", q.status);
     const qs = params.toString();
-    return call("GET", `/api/missions${qs ? `?${qs}` : ""}`);
+    return call("GET", `/api/projects${qs ? `?${qs}` : ""}`);
   },
-  getMission: (slug: string) => call("GET", `/api/missions/${encodeURIComponent(slug)}`),
-  createMission: (body: unknown) => call("POST", `/api/missions`, body),
-  updateMission: (slug: string, patch: unknown) =>
-    call("PATCH", `/api/missions/${encodeURIComponent(slug)}`, patch),
+  getProject: (slug: string) => call("GET", `/api/projects/${encodeURIComponent(slug)}`),
+  createProject: (body: unknown) => call("POST", `/api/projects`, body),
+  updateProject: (slug: string, patch: unknown) =>
+    call("PATCH", `/api/projects/${encodeURIComponent(slug)}`, patch),
   createReport: (slug: string, body: unknown) =>
-    call("POST", `/api/missions/${encodeURIComponent(slug)}/reports`, body),
+    call("POST", `/api/projects/${encodeURIComponent(slug)}/reports`, body),
 };

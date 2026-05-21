@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "161dd13a-1088-4418-9238-df79073d1304",
+  "id": "d79bfe91-96c7-4af9-8e85-9b6ed539a3b2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent": {
@@ -122,8 +122,68 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mission": {
-      "name": "mission",
+    "milestone": {
+      "name": "milestone",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "due_at": {
+          "name": "due_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'planned'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "milestone_project_id_project_id_fk": {
+          "name": "milestone_project_id_project_id_fk",
+          "tableFrom": "milestone",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "project": {
+      "name": "project",
       "columns": {
         "id": {
           "name": "id",
@@ -134,13 +194,6 @@
         },
         "slug": {
           "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "project": {
-          "name": "project",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -176,6 +229,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "mission_md_path": {
+          "name": "mission_md_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -194,22 +254,15 @@
         }
       },
       "indexes": {
-        "mission_slug_uq": {
-          "name": "mission_slug_uq",
+        "project_slug_uq": {
+          "name": "project_slug_uq",
           "columns": [
             "slug"
           ],
           "isUnique": true
         },
-        "mission_project_idx": {
-          "name": "mission_project_idx",
-          "columns": [
-            "project"
-          ],
-          "isUnique": false
-        },
-        "mission_status_idx": {
-          "name": "mission_status_idx",
+        "project_status_idx": {
+          "name": "project_status_idx",
           "columns": [
             "status"
           ],
@@ -221,8 +274,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mission_milestone": {
-      "name": "mission_milestone",
+    "project_repo": {
+      "name": "project_repo",
       "columns": {
         "id": {
           "name": "id",
@@ -231,68 +284,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "mission_id": {
-          "name": "mission_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "due_at": {
-          "name": "due_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'planned'"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "mission_milestone_mission_id_mission_id_fk": {
-          "name": "mission_milestone_mission_id_mission_id_fk",
-          "tableFrom": "mission_milestone",
-          "tableTo": "mission",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "mission_repo": {
-      "name": "mission_repo",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "mission_id": {
-          "name": "mission_id",
+        "project_id": {
+          "name": "project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -321,22 +314,22 @@
         }
       },
       "indexes": {
-        "mission_repo_ref_idx": {
-          "name": "mission_repo_ref_idx",
+        "project_repo_ref_idx": {
+          "name": "project_repo_ref_idx",
           "columns": [
-            "mission_id",
+            "project_id",
             "ref"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "mission_repo_mission_id_mission_id_fk": {
-          "name": "mission_repo_mission_id_mission_id_fk",
-          "tableFrom": "mission_repo",
-          "tableTo": "mission",
+        "project_repo_project_id_project_id_fk": {
+          "name": "project_repo_project_id_project_id_fk",
+          "tableFrom": "project_repo",
+          "tableTo": "project",
           "columnsFrom": [
-            "mission_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -349,8 +342,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mission_report": {
-      "name": "mission_report",
+    "project_report": {
+      "name": "project_report",
       "columns": {
         "id": {
           "name": "id",
@@ -359,8 +352,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "mission_id": {
-          "name": "mission_id",
+        "project_id": {
+          "name": "project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -412,24 +405,24 @@
         }
       },
       "indexes": {
-        "mission_report_mission_idx": {
-          "name": "mission_report_mission_idx",
+        "project_report_project_idx": {
+          "name": "project_report_project_idx",
           "columns": [
-            "mission_id",
+            "project_id",
             "created_at"
           ],
           "isUnique": false
         },
-        "mission_report_host_idx": {
-          "name": "mission_report_host_idx",
+        "project_report_host_idx": {
+          "name": "project_report_host_idx",
           "columns": [
             "host_id",
             "created_at"
           ],
           "isUnique": false
         },
-        "mission_report_agent_idx": {
-          "name": "mission_report_agent_idx",
+        "project_report_agent_idx": {
+          "name": "project_report_agent_idx",
           "columns": [
             "agent_id",
             "created_at"
@@ -438,12 +431,12 @@
         }
       },
       "foreignKeys": {
-        "mission_report_mission_id_mission_id_fk": {
-          "name": "mission_report_mission_id_mission_id_fk",
-          "tableFrom": "mission_report",
-          "tableTo": "mission",
+        "project_report_project_id_project_id_fk": {
+          "name": "project_report_project_id_project_id_fk",
+          "tableFrom": "project_report",
+          "tableTo": "project",
           "columnsFrom": [
-            "mission_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -451,9 +444,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "mission_report_host_id_host_id_fk": {
-          "name": "mission_report_host_id_host_id_fk",
-          "tableFrom": "mission_report",
+        "project_report_host_id_host_id_fk": {
+          "name": "project_report_host_id_host_id_fk",
+          "tableFrom": "project_report",
           "tableTo": "host",
           "columnsFrom": [
             "host_id"
@@ -464,9 +457,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "mission_report_agent_id_agent_id_fk": {
-          "name": "mission_report_agent_id_agent_id_fk",
-          "tableFrom": "mission_report",
+        "project_report_agent_id_agent_id_fk": {
+          "name": "project_report_agent_id_agent_id_fk",
+          "tableFrom": "project_report",
           "tableTo": "agent",
           "columnsFrom": [
             "agent_id"
@@ -482,8 +475,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mission_scope": {
-      "name": "mission_scope",
+    "project_scope": {
+      "name": "project_scope",
       "columns": {
         "id": {
           "name": "id",
@@ -492,8 +485,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "mission_id": {
-          "name": "mission_id",
+        "project_id": {
+          "name": "project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -516,12 +509,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "mission_scope_mission_id_mission_id_fk": {
-          "name": "mission_scope_mission_id_mission_id_fk",
-          "tableFrom": "mission_scope",
-          "tableTo": "mission",
+        "project_scope_project_id_project_id_fk": {
+          "name": "project_scope_project_id_project_id_fk",
+          "tableFrom": "project_scope",
+          "tableTo": "project",
           "columnsFrom": [
-            "mission_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -534,8 +527,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "mission_value": {
-      "name": "mission_value",
+    "project_value": {
+      "name": "project_value",
       "columns": {
         "id": {
           "name": "id",
@@ -544,8 +537,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "mission_id": {
-          "name": "mission_id",
+        "project_id": {
+          "name": "project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -561,12 +554,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "mission_value_mission_id_mission_id_fk": {
-          "name": "mission_value_mission_id_mission_id_fk",
-          "tableFrom": "mission_value",
-          "tableTo": "mission",
+        "project_value_project_id_project_id_fk": {
+          "name": "project_value_project_id_project_id_fk",
+          "tableFrom": "project_value",
+          "tableTo": "project",
           "columnsFrom": [
-            "mission_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"

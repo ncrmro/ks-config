@@ -1,20 +1,32 @@
 # dash-mcp
 
-Spike — a fleet-wide mission dashboard with an MCP surface for centralized
-agent tracking across a Keystone fleet.
+Spike — a fleet-wide **project** dashboard with an MCP surface for
+centralized agent tracking across a Keystone fleet.
+
+## Naming
+
+- **Project** is the operational primitive this spike tracks — slug, status,
+  owner agent, milestones, repos, reports.
+- **Mission** is reserved for the Keystone-voice narrative artifact
+  (`~/notes/projects/<slug>/mission.md`) — Purpose / Core Values / Scope. Each
+  project row points at its mission file via `mission_md_path`; the notebook
+  keeps ownership of the narrative.
+- **Task** is the future addition — actionable work items (review PR, reply
+  to issue, decide, etc.) that span providers. Sketched in
+  `docs/proposals.md` (Schema v2), not yet implemented.
 
 ## Context
 
 The Keystone OS-agents stack (`~/.keystone/repos/ncrmro/keystone/modules/os/agents/`)
-runs per-host agent users with a task-loop + scheduler model. Durable per-project
-**missions** (Purpose / Core Values / Scope / Non-goals) already live in
-`~/notes/projects/<name>/mission.md`, but there is no shared surface where every
-agent on every host can report progress against a mission, and no central place
-to view mission state across the fleet.
+runs per-host agent users with a task-loop + scheduler model. Durable
+per-project narratives already live in `~/notes/projects/<slug>/mission.md`,
+but there is no shared surface where every agent on every host can report
+progress against a project, and no central place to view project state across
+the fleet.
 
 This spike prototypes that surface as a Bun workspace:
 
-- **web** — Astro dashboard listing missions, reports, hosts, and agents
+- **web** — Astro dashboard listing projects, reports, hosts, and agents
 - **mcp** — MCP stdio server installable at host or user scope; the surface
   agents call into to report progress
 - **server** — Bun HTTP API backed by Drizzle ORM + libSQL (sqld); single source
@@ -27,11 +39,11 @@ Once the shape stabilizes, these graduate into Keystone modules + DeepWork jobs.
 ## Prior art
 
 - [`ncrmro/notes#1` Product Agent Goals](https://git.ncrmro.com/ncrmro/notes/issues/1)
-  enumerates the active product missions (Meze, Catalyst, Keystone, Plant Caravan)
-  that the dashboard surfaces first.
+  enumerates the active product projects (Meze, Catalyst, Keystone, Plant
+  Caravan) that the dashboard surfaces first.
 - [`ncrmro/notes#5` Executive Assistant](https://git.ncrmro.com/ncrmro/notes/issues/5)
   defines the utility-agent surface (events, contacts, priorities, reading,
-  socials) that should eventually appear alongside product missions.
+  socials) that should eventually appear alongside product projects.
 - [`ncrmro/notes#10` Vega Agent Architecture](https://git.ncrmro.com/ncrmro/notes/issues/10)
   describes the internal project-acceleration agent, the `claude --agent <name>`
   CLI surface, and per-agent MCP config generation. Links downstream to
@@ -39,7 +51,7 @@ Once the shape stabilizes, these graduate into Keystone modules + DeepWork jobs.
 - `ncrmro/vega#1` (private) — internal Vega tracker.
 - `~/notes/projects/agents/mission.md` — composable prompt architecture and
   Luce↔Drago handoff protocol. Establishes the principle that agents collaborate
-  on missions through typed artifacts; this spike is the typed-artifact store.
+  on projects through typed artifacts; this spike is the typed-artifact store.
 
 ## Architecture
 
@@ -77,23 +89,23 @@ Once the shape stabilizes, these graduate into Keystone modules + DeepWork jobs.
 `sqld`, `server`, and `web` are all long-running and orchestrated with
 `process-compose` (see `code/process-compose.yaml`).
 
-## Mission data model
+## Project data model
 
-Richer than `mission.md` — keeps the human notebook's Purpose / Values / Scope
-shape and adds dashboard fields (status, milestones, reports) and fleet
-attribution (host, agent).
+Adds dashboard fields (status, milestones, reports) and fleet attribution
+(host, agent) on top of the notebook's narrative `mission.md`.
 
 | Table              | Notes |
 | ------------------ | ----- |
-| `mission`          | `slug`, `project`, `title`, `purpose`, `status` (`proposed\|active\|blocked\|done\|archived`), `owner_agent`, timestamps |
-| `mission_value`    | per-mission core values (mirrors `mission.md` "Core Values") |
-| `mission_scope`    | per-mission in/out scope items (mirrors `mission.md` "Scope") |
-| `mission_milestone`| per-mission milestones with due date and status |
-| `mission_report`   | append-only progress: `kind` (`work_started\|work_update\|blocked\|done\|note`), `summary`, `refs[]` (normalized `gh:`/`fj:` refs or file paths), `host_id`, `agent_id` |
+| `project`          | `slug`, `title`, `purpose`, `status` (`proposed\|active\|blocked\|done\|archived`), `owner_agent`, `mission_md_path` (pointer to notebook narrative), timestamps |
+| `project_value`    | per-project core values (mirrors `mission.md` "Core Values") |
+| `project_scope`    | per-project in/out scope items (mirrors `mission.md` "Scope") |
+| `milestone`        | per-project milestones with due date and status |
+| `project_repo`     | per-project repo links (normalized `gh:`/`fj:` refs, URL, optional label) |
+| `project_report`   | append-only progress: `kind` (`work_started\|work_update\|blocked\|done\|note`), `summary`, `refs[]` (normalized `gh:`/`fj:` refs or file paths), `host_id`, `agent_id` |
 | `host`             | `hostname`, `first_seen`, `last_seen` |
 | `agent`            | `name`, `host_id`, `first_seen`, `last_seen` (composite-unique on `(name, host_id)`) |
 
-Inserting a `mission_report` upserts the host + agent rows and bumps
+Inserting a `project_report` upserts the host + agent rows and bumps
 `last_seen`, so `/hosts` and `/agents` reflect activity automatically.
 
 ## MCP tools
@@ -102,11 +114,11 @@ Implemented in `code/mcp/src/tools.ts`:
 
 | Tool             | Purpose |
 | ---------------- | ------- |
-| `mission_list`   | List missions (filter by `project` or `status`) |
-| `mission_get`    | Mission detail + report timeline |
-| `mission_create` | Create a mission with values, scope, owner |
-| `mission_update` | Patch title/purpose/status/owner |
-| `mission_report` | Append a progress report — `host` and `agent` are auto-injected |
+| `project_list`   | List projects (filter by `status`) |
+| `project_get`    | Project detail + report timeline |
+| `project_create` | Create a project with values, scope, owner, mission narrative path |
+| `project_update` | Patch title/purpose/status/owner/missionMdPath |
+| `project_report` | Append a progress report — `host` and `agent` are auto-injected |
 
 Identity resolution order (`code/mcp/src/identity.ts`):
 
@@ -120,12 +132,12 @@ port `7878`).
 
 The reference fleet is two agents on two hosts:
 
-| Agent  | Host                 | Mission ownership          |
+| Agent  | Host                 | Project ownership          |
 | ------ | -------------------- | -------------------------- |
 | `drago`| `ncrmro-workstation` | Keystone, Plant Caravan    |
 | `luce` | `ocean`              | ks.systems                 |
 
-The seed (`db/seeds/missions.json`) writes a few starter reports under each
+The seed (`db/seeds/projects.json`) writes a few starter reports under each
 identity so `/hosts` and `/agents` reflect that layout out of the box.
 
 ### User-level (today)
@@ -187,7 +199,7 @@ cd spikes/dash-mcp/code
 ./bin/dash-claude --agent drago --host ncrmro-workstation
 ./bin/dash-claude --agent luce  --host ocean
 ./bin/dash-claude --agent drago --host ncrmro-workstation --strict -- \
-    -p "List dash-mcp missions" --output-format json
+    -p "List dash-mcp projects" --output-format json
 ./bin/dash-claude --agent drago --host ncrmro-workstation --dry-run
 ```
 
@@ -240,14 +252,14 @@ set -a && source .ports.env && set +a
 
 curl -sS "http://127.0.0.1:${SERVER_PORT}/healthz"
 
-curl -sS -X POST "http://127.0.0.1:${SERVER_PORT}/api/missions" \
+curl -sS -X POST "http://127.0.0.1:${SERVER_PORT}/api/projects" \
   -H 'content-type: application/json' \
   -d '{
     "slug": "keystone",
-    "project": "keystone",
     "title": "Keystone",
     "purpose": "Self-sovereign NixOS infrastructure platform.",
     "status": "active",
+    "missionMdPath": "projects/keystone/mission.md",
     "values": ["Operational rigor over novelty", "Conventions as code"],
     "scopeIn": ["NixOS modules", "DeepWork jobs"],
     "scopeOut": ["Vendor lock-in"]
@@ -257,17 +269,17 @@ curl -sS -X POST "http://127.0.0.1:${SERVER_PORT}/api/missions" \
 (
   echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}}'
   echo '{"jsonrpc":"2.0","method":"notifications/initialized"}'
-  echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"mission_report","arguments":{"slug":"keystone","kind":"work_update","summary":"Scaffolded dash-mcp spike","refs":["gh:ncrmro/nixos-config"]}}}'
+  echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"project_report","arguments":{"slug":"keystone","kind":"work_update","summary":"Scaffolded dash-mcp spike","refs":["gh:ncrmro/nixos-config"]}}}'
   sleep 0.5
 ) | DASH_MCP_SERVER_URL="http://127.0.0.1:${SERVER_PORT}" \
     DASH_MCP_HOST="$(hostname)" \
     DASH_MCP_AGENT="${USER}" \
     bun run mcp/src/index.ts
 
-curl -sS "http://127.0.0.1:${SERVER_PORT}/api/missions/keystone" | jq '.reports'
+curl -sS "http://127.0.0.1:${SERVER_PORT}/api/projects/keystone" | jq '.reports'
 ```
 
-Then open `http://127.0.0.1:${WEB_PORT}/` — the mission and report show up on
+Then open `http://127.0.0.1:${WEB_PORT}/` — the project and report show up on
 `/`, and `/hosts` + `/agents` list the reporting host/agent.
 
 Inspecting logs (per the global process-compose rule against `-f`, the `./pc`
@@ -308,7 +320,7 @@ in the `env_cmds` form.
 - Drizzle schema is the single source of truth for the DB; zod validators are
   separate request-shape contracts. Drizzle-inferred row types are re-exported
   from `@dash-mcp/db`.
-- Refs in `mission_report.refs[]` use the keystone-normalized form: `gh:owner/repo#n`,
+- Refs in `project_report.refs[]` use the keystone-normalized form: `gh:owner/repo#n`,
   `fj:owner/repo#n`, or `gh:owner/repo` / `fj:owner/repo` for repo-only. Per
   `process.keystone-development` rules 16–18.
 
@@ -323,7 +335,7 @@ in the `env_cmds` form.
   MCP config picks it up automatically.
 - **Alignment with Vega.** Vega is the project-acceleration agent; dash-mcp is
   the surface it (and every other agent) reports into. Vega-specific tools
-  (e.g. `mission_audit`, `mission_plan`) can layer on top of the current
+  (e.g. `project_audit`, `project_plan`) can layer on top of the current
   data model without schema changes.
 - **`sqld` packaging.** This spike depends on `pkgs.sqld`; if that disappears
   from nixpkgs upstream, fall back to embedded libSQL inside the server and

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { mission, missionReport } from "@dash-mcp/db/schema";
+import { project, projectReport } from "@dash-mcp/db/schema";
 import { getDb } from "../db.js";
 import { error, json, parseJson } from "../http.js";
 import { createReportSchema } from "../validators.js";
@@ -11,19 +11,19 @@ export async function createReport(slug: string, req: Request): Promise<Response
   const input = parsed.data;
   const { db } = getDb();
 
-  const [m] = await db
-    .select({ id: mission.id })
-    .from(mission)
-    .where(eq(mission.slug, slug))
+  const [p] = await db
+    .select({ id: project.id })
+    .from(project)
+    .where(eq(project.slug, slug))
     .limit(1);
-  if (!m) return error("not_found", `mission ${slug} not found`, 404);
+  if (!p) return error("not_found", `project ${slug} not found`, 404);
 
   const { hostId, agentId } = await upsertHostAndAgent(db, input.host, input.agent);
 
   const [row] = await db
-    .insert(missionReport)
+    .insert(projectReport)
     .values({
-      missionId: m.id,
+      projectId: p.id,
       hostId,
       agentId,
       kind: input.kind,

@@ -1,55 +1,53 @@
 import { z } from "zod";
 import {
-  createMissionInputSchema,
-  updateMissionInputSchema,
-  missionInsertSchema,
-  missionReportInsertSchema,
+  createProjectInputSchema,
+  updateProjectInputSchema,
+  projectInsertSchema,
+  projectReportInsertSchema,
 } from "@dash-mcp/db/zod";
 import { api } from "./api.js";
 import { resolveIdentity } from "./identity.js";
 
-const missionStatusSchema = missionInsertSchema.shape.status;
-const reportKindSchema = missionReportInsertSchema.shape.kind;
+const projectStatusSchema = projectInsertSchema.shape.status;
+const reportKindSchema = projectReportInsertSchema.shape.kind;
 
 export const tools = {
-  mission_list: {
+  project_list: {
     description:
-      "List missions across the fleet. Optionally filter by project or status.",
+      "List projects across the fleet. Optionally filter by status.",
     input: z.object({
-      project: z.string().optional(),
-      status: missionStatusSchema.optional(),
+      status: projectStatusSchema.optional(),
     }),
-    run: async (args: { project?: string; status?: string }) =>
-      api.listMissions(args),
+    run: async (args: { status?: string }) => api.listProjects(args),
   },
 
-  mission_get: {
+  project_get: {
     description:
-      "Get a single mission by slug, including its values, scope, milestones, repos, and report timeline.",
+      "Get a single project by slug, including its values, scope, milestones, repos, and report timeline.",
     input: z.object({ slug: z.string() }),
-    run: async (args: { slug: string }) => api.getMission(args.slug),
+    run: async (args: { slug: string }) => api.getProject(args.slug),
   },
 
-  mission_create: {
+  project_create: {
     description:
-      "Create a new mission. Mirrors the shape of ~/notes/projects/<name>/mission.md (purpose / values / scope) plus dashboard fields (status, owner, milestones, repos).",
-    input: createMissionInputSchema,
-    run: async (args: unknown) => api.createMission(args),
+      "Create a new project. Optional missionMdPath points to the Keystone-voice narrative in the notebook (e.g. projects/<slug>/mission.md) that owns the Purpose / Values / Scope statement; the project row mirrors a dashboard-friendly subset.",
+    input: createProjectInputSchema,
+    run: async (args: unknown) => api.createProject(args),
   },
 
-  mission_update: {
-    description: "Patch a mission's title/purpose/status/owner.",
+  project_update: {
+    description: "Patch a project's title/purpose/status/owner/missionMdPath.",
     input: z.object({
       slug: z.string(),
-      patch: updateMissionInputSchema,
+      patch: updateProjectInputSchema,
     }),
     run: async (args: { slug: string; patch: unknown }) =>
-      api.updateMission(args.slug, args.patch),
+      api.updateProject(args.slug, args.patch),
   },
 
-  mission_report: {
+  project_report: {
     description:
-      "Append a progress report against a mission. host and agent are auto-resolved from $DASH_MCP_HOST/$HOSTNAME and $DASH_MCP_AGENT/$KS_AGENT/$USER unless explicitly overridden.",
+      "Append a progress report against a project. host and agent are auto-resolved from $DASH_MCP_HOST/$HOSTNAME and $DASH_MCP_AGENT/$KS_AGENT/$USER unless explicitly overridden.",
     input: z.object({
       slug: z.string(),
       kind: reportKindSchema,

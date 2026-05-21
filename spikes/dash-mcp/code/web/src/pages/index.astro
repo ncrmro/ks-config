@@ -2,21 +2,21 @@
 import Base from "../layouts/Base.astro";
 import { api } from "../lib/api";
 
-let missions: Awaited<ReturnType<typeof api.listMissions>>["missions"] = [];
+let projects: Awaited<ReturnType<typeof api.listProjects>>["projects"] = [];
 let err: string | null = null;
 try {
-  ({ missions } = await api.listMissions());
+  ({ projects } = await api.listProjects());
 } catch (e) {
   err = e instanceof Error ? e.message : String(e);
 }
 ---
-<Base title="Missions">
-  <h2>Missions</h2>
+<Base title="Projects">
+  <h2>Projects</h2>
   {err && <p class="empty">Could not reach server: {err}</p>}
-  {!err && missions.length === 0 && (
-    <p class="empty">No missions yet. POST one to <code>/api/missions</code>.</p>
+  {!err && projects.length === 0 && (
+    <p class="empty">No projects yet. POST one to <code>/api/projects</code>.</p>
   )}
-  {missions.length > 0 && (
+  {projects.length > 0 && (
     <table>
       <thead>
         <tr>
@@ -26,11 +26,11 @@ try {
         </tr>
       </thead>
       <tbody>
-        {missions.map((m) => (
+        {projects.map((p) => (
           <tr>
-            <td><a href={`/missions/${m.slug}`}>{m.title}</a></td>
-            <td class="muted">{new Date(m.createdAt).toLocaleString()}</td>
-            <td><span class={`pill ${m.status}`}>{m.status}</span></td>
+            <td><a href={`/projects/${p.slug}`}>{p.title}</a></td>
+            <td class="muted">{new Date(p.createdAt).toLocaleString()}</td>
+            <td><span class={`pill ${p.status}`}>{p.status}</span></td>
           </tr>
         ))}
       </tbody>

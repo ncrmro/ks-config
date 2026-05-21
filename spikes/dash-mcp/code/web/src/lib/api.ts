@@ -3,14 +3,14 @@ const baseUrl =
   process.env.PUBLIC_SERVER_URL ??
   "http://127.0.0.1:7878";
 
-export type Mission = {
+export type Project = {
   id: number;
   slug: string;
-  project: string;
   title: string;
   purpose: string;
   status: "proposed" | "active" | "blocked" | "done" | "archived";
   ownerAgent: string | null;
+  missionMdPath: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -39,8 +39,8 @@ export type Repo = {
   label: string | null;
 };
 
-export type MissionDetail = {
-  mission: Mission;
+export type ProjectDetail = {
+  project: Project;
   values: string[];
   scopeIn: string[];
   scopeOut: string[];
@@ -71,9 +71,9 @@ async function get<T>(path: string): Promise<T> {
 }
 
 export const api = {
-  listMissions: () => get<{ missions: Mission[] }>("/api/missions"),
-  getMission: (slug: string) =>
-    get<MissionDetail>(`/api/missions/${encodeURIComponent(slug)}`),
+  listProjects: () => get<{ projects: Project[] }>("/api/projects"),
+  getProject: (slug: string) =>
+    get<ProjectDetail>(`/api/projects/${encodeURIComponent(slug)}`),
   listHosts: () => get<{ hosts: Host[] }>("/api/hosts"),
   listAgents: () => get<{ agents: Agent[] }>("/api/agents"),
 };

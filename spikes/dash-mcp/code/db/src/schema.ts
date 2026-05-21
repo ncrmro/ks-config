@@ -9,14 +9,14 @@ import {
 
 const now = sql`(unixepoch())`;
 
-export const missionStatus = [
+export const projectStatus = [
   "proposed",
   "active",
   "blocked",
   "done",
   "archived",
 ] as const;
-export type MissionStatus = (typeof missionStatus)[number];
+export type ProjectStatus = (typeof projectStatus)[number];
 
 export const reportKind = [
   "work_started",
@@ -76,16 +76,19 @@ export const agent = sqliteTable(
   }),
 );
 
-export const mission = sqliteTable(
-  "mission",
+export const project = sqliteTable(
+  "project",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     slug: text("slug").notNull(),
-    project: text("project").notNull(),
     title: text("title").notNull(),
     purpose: text("purpose").notNull().default(""),
-    status: text("status", { enum: missionStatus }).notNull().default("proposed"),
+    status: text("status", { enum: projectStatus }).notNull().default("proposed"),
     ownerAgent: text("owner_agent"),
+    // Pointer to the Keystone-voice narrative in the notebook
+    // (e.g. ~/notes/projects/<slug>/mission.md). Optional — the project
+    // exists with or without one.
+    missionMdPath: text("mission_md_path"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(now),
@@ -94,36 +97,35 @@ export const mission = sqliteTable(
       .default(now),
   },
   (t) => ({
-    slugUq: uniqueIndex("mission_slug_uq").on(t.slug),
-    projectIdx: index("mission_project_idx").on(t.project),
-    statusIdx: index("mission_status_idx").on(t.status),
+    slugUq: uniqueIndex("project_slug_uq").on(t.slug),
+    statusIdx: index("project_status_idx").on(t.status),
   }),
 );
 
-export const missionValue = sqliteTable("mission_value", {
+export const projectValue = sqliteTable("project_value", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  missionId: integer("mission_id")
+  projectId: integer("project_id")
     .notNull()
-    .references(() => mission.id, { onDelete: "cascade" }),
+    .references(() => project.id, { onDelete: "cascade" }),
   text: text("text").notNull(),
 });
 
-export const missionScope = sqliteTable("mission_scope", {
+export const projectScope = sqliteTable("project_scope", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  missionId: integer("mission_id")
+  projectId: integer("project_id")
     .notNull()
-    .references(() => mission.id, { onDelete: "cascade" }),
+    .references(() => project.id, { onDelete: "cascade" }),
   kind: text("kind", { enum: scopeKind }).notNull(),
   text: text("text").notNull(),
 });
 
-export const missionRepo = sqliteTable(
-  "mission_repo",
+export const projectRepo = sqliteTable(
+  "project_repo",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    missionId: integer("mission_id")
+    projectId: integer("project_id")
       .notNull()
-      .references(() => mission.id, { onDelete: "cascade" }),
+      .references(() => project.id, { onDelete: "cascade" }),
     // Normalized ref per process.keystone-development rules 16-18:
     //   gh:<owner>/<repo>  or  fj:<owner>/<repo>
     ref: text("ref").notNull(),
@@ -131,15 +133,15 @@ export const missionRepo = sqliteTable(
     label: text("label"),
   },
   (t) => ({
-    refIdx: index("mission_repo_ref_idx").on(t.missionId, t.ref),
+    refIdx: index("project_repo_ref_idx").on(t.projectId, t.ref),
   }),
 );
 
-export const missionMilestone = sqliteTable("mission_milestone", {
+export const milestone = sqliteTable("milestone", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  missionId: integer("mission_id")
+  projectId: integer("project_id")
     .notNull()
-    .references(() => mission.id, { onDelete: "cascade" }),
+    .references(() => project.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   dueAt: integer("due_at", { mode: "timestamp" }),
   status: text("status", { enum: milestoneStatus })
@@ -147,13 +149,13 @@ export const missionMilestone = sqliteTable("mission_milestone", {
     .default("planned"),
 });
 
-export const missionReport = sqliteTable(
-  "mission_report",
+export const projectReport = sqliteTable(
+  "project_report",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    missionId: integer("mission_id")
+    projectId: integer("project_id")
       .notNull()
-      .references(() => mission.id, { onDelete: "cascade" }),
+      .references(() => project.id, { onDelete: "cascade" }),
     hostId: integer("host_id")
       .notNull()
       .references(() => host.id),
@@ -170,18 +172,18 @@ export const missionReport = sqliteTable(
       .default(now),
   },
   (t) => ({
-    missionIdx: index("mission_report_mission_idx").on(t.missionId, t.createdAt),
-    hostIdx: index("mission_report_host_idx").on(t.hostId, t.createdAt),
-    agentIdx: index("mission_report_agent_idx").on(t.agentId, t.createdAt),
+    projectIdx: index("project_report_project_idx").on(t.projectId, t.createdAt),
+    hostIdx: index("project_report_host_idx").on(t.hostId, t.createdAt),
+    agentIdx: index("project_report_agent_idx").on(t.agentId, t.createdAt),
   }),
 );
 
-export type Mission = typeof mission.$inferSelect;
-export type NewMission = typeof mission.$inferInsert;
-export type MissionReport = typeof missionReport.$inferSelect;
-export type NewMissionReport = typeof missionReport.$inferInsert;
-export type MissionRepo = typeof missionRepo.$inferSelect;
-export type NewMissionRepo = typeof missionRepo.$inferInsert;
-export type MissionMilestone = typeof missionMilestone.$inferSelect;
+export type Project = typeof project.$inferSelect;
+export type NewProject = typeof project.$inferInsert;
+export type ProjectReport = typeof projectReport.$inferSelect;
+export type NewProjectReport = typeof projectReport.$inferInsert;
+export type ProjectRepo = typeof projectRepo.$inferSelect;
+export type NewProjectRepo = typeof projectRepo.$inferInsert;
+export type Milestone = typeof milestone.$inferSelect;
 export type Host = typeof host.$inferSelect;
 export type Agent = typeof agent.$inferSelect;

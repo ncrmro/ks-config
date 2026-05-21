@@ -1,10 +1,10 @@
 import { error, json } from "./http.js";
 import {
-  createMission,
-  getMissionBySlug,
-  listMissions,
-  updateMission,
-} from "./routes/missions.js";
+  createProject,
+  getProjectBySlug,
+  listProjects,
+  updateProject,
+} from "./routes/projects.js";
 import { createReport } from "./routes/reports.js";
 import { listAgents, listHosts } from "./routes/fleet.js";
 
@@ -31,17 +31,17 @@ const server = Bun.serve({
 
     if (pathname === "/healthz") return json({ ok: true });
 
-    if (pathname === "/api/missions" && method === "GET") return listMissions(url);
-    if (pathname === "/api/missions" && method === "POST") return createMission(req);
+    if (pathname === "/api/projects" && method === "GET") return listProjects(url);
+    if (pathname === "/api/projects" && method === "POST") return createProject(req);
 
-    const missionMatch = pathname.match(/^\/api\/missions\/([^/]+)$/);
-    if (missionMatch) {
-      const slug = decodeURIComponent(missionMatch[1]!);
-      if (method === "GET") return getMissionBySlug(slug);
-      if (method === "PATCH") return updateMission(slug, req);
+    const projectMatch = pathname.match(/^\/api\/projects\/([^/]+)$/);
+    if (projectMatch) {
+      const slug = decodeURIComponent(projectMatch[1]!);
+      if (method === "GET") return getProjectBySlug(slug);
+      if (method === "PATCH") return updateProject(slug, req);
     }
 
-    const reportMatch = pathname.match(/^\/api\/missions\/([^/]+)\/reports$/);
+    const reportMatch = pathname.match(/^\/api\/projects\/([^/]+)\/reports$/);
     if (reportMatch && method === "POST") {
       const slug = decodeURIComponent(reportMatch[1]!);
       return createReport(slug, req);

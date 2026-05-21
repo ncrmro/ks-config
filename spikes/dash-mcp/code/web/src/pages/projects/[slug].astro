@@ -3,23 +3,26 @@ import Base from "../../layouts/Base.astro";
 import { api } from "../../lib/api";
 
 const { slug } = Astro.params as { slug: string };
-let detail: Awaited<ReturnType<typeof api.getMission>> | null = null;
+let detail: Awaited<ReturnType<typeof api.getProject>> | null = null;
 let err: string | null = null;
 try {
-  detail = await api.getMission(slug);
+  detail = await api.getProject(slug);
 } catch (e) {
   err = e instanceof Error ? e.message : String(e);
 }
 ---
-<Base title={detail?.mission.title ?? slug}>
+<Base title={detail?.project.title ?? slug}>
   {err && <p class="empty">{err}</p>}
   {detail && (
     <>
-      <h2>{detail.mission.title} <span class={`pill ${detail.mission.status}`}>{detail.mission.status}</span></h2>
+      <h2>{detail.project.title} <span class={`pill ${detail.project.status}`}>{detail.project.status}</span></h2>
       <p class="muted">
-        {detail.mission.project} · owner {detail.mission.ownerAgent ?? "—"}
+        owner {detail.project.ownerAgent ?? "—"}
+        {detail.project.missionMdPath && (
+          <> · <code>{detail.project.missionMdPath}</code></>
+        )}
       </p>
-      {detail.mission.purpose && <p>{detail.mission.purpose}</p>}
+      {detail.project.purpose && <p>{detail.project.purpose}</p>}
 
       {detail.values.length > 0 && (
         <>

@@ -1,11 +1,11 @@
 [
   {
     "slug": "keystone",
-    "project": "keystone",
     "title": "Keystone",
     "purpose": "Self-sovereign NixOS infrastructure platform for secure, encrypted systems on any hardware.",
     "status": "active",
     "ownerAgent": "drago",
+    "missionMdPath": "projects/keystone/mission.md",
     "values": [
       "Operational rigor over novelty",
       "Conventions as code",
@@ -37,7 +37,7 @@
         "host": "ncrmro-workstation",
         "agent": "drago",
         "kind": "work_started",
-        "summary": "Picked up Keystone mission ownership for this fleet rotation.",
+        "summary": "Picked up Keystone ownership for this fleet rotation.",
         "refs": ["gh:ncrmro/keystone"]
       },
       {
@@ -51,11 +51,11 @@
   },
   {
     "slug": "ks-systems",
-    "project": "ks.systems",
     "title": "Managed Kubernetes for B2B SaaS",
     "purpose": "Cut managed-service premiums by delivering turnkey, production-grade Kubernetes to mid-sized B2B SaaS companies.",
     "status": "active",
     "ownerAgent": "luce",
+    "missionMdPath": "projects/ks.systems/mission.md",
     "values": [
       "Operational rigor over novelty",
       "Turnkey, not framework",
@@ -102,11 +102,11 @@
   },
   {
     "slug": "plant-caravan",
-    "project": "plant-caravan",
     "title": "Plant Caravan",
     "purpose": "Autonomous agricultural systems that precede human exploration of the solar system; Earth ops fund and validate space-bound tech.",
     "status": "active",
     "ownerAgent": null,
+    "missionMdPath": "projects/plant-caravan/mission.md",
     "values": [
       "Plants precede people",
       "Democratize horticulture",
@@ -147,11 +147,11 @@
   },
   {
     "slug": "catalyst",
-    "project": "catalyst",
     "title": "Catalyst",
-    "purpose": "Business platform; status snapshot pending fuller mission write-up in ~/notes.",
+    "purpose": "Business platform; status snapshot pending fuller project write-up in ~/notes.",
     "status": "proposed",
     "ownerAgent": null,
+    "missionMdPath": null,
     "values": [],
     "scopeIn": [],
     "scopeOut": [],
@@ -170,11 +170,11 @@
   },
   {
     "slug": "meze",
-    "project": "meze",
     "title": "Meze",
     "purpose": "Make meal planning easy for households.",
     "status": "proposed",
     "ownerAgent": null,
+    "missionMdPath": null,
     "values": [],
     "scopeIn": [
       "Meal-plan generation",
