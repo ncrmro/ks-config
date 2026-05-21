@@ -4,6 +4,9 @@ import {
   updateProjectInputSchema,
   projectInsertSchema,
   projectReportInsertSchema,
+  createTaskInputSchema,
+  updateTaskInputSchema,
+  listTasksQuerySchema,
 } from "@dash-mcp/db/zod";
 import { api } from "./api.js";
 import { resolveIdentity } from "./identity.js";
@@ -43,6 +46,42 @@ export const tools = {
     }),
     run: async (args: { slug: string; patch: unknown }) =>
       api.updateProject(args.slug, args.patch),
+  },
+
+  task_list: {
+    description:
+      "List tasks across the fleet. Filter by `project` (slug), `assignee` (agent name), `kind`, and/or `status`. Tasks are the actionable unit — reviewing a PR, replying to an issue, deciding a question, implementing a feature — and span providers via their `source_ref` (gh:, fj:, slack:, mail:, cal:, agent:, note:).",
+    input: listTasksQuerySchema,
+    run: async (args: {
+      project?: string;
+      assignee?: string;
+      kind?: string;
+      status?: string;
+    }) => api.listTasks(args),
+  },
+
+  task_get: {
+    description: "Get a single task by id.",
+    input: z.object({ id: z.number().int() }),
+    run: async (args: { id: number }) => api.getTask(args.id),
+  },
+
+  task_create: {
+    description:
+      "Create a task on a project. `assigneeAgent` is the agent on the hook; `requester` records who/what raised it. `sourceRef` is the cross-provider join key (gh:owner/repo#n, fj:owner/repo#n, slack:ws/ch/ts, mail:<msg-id>, cal:<uid>, agent:<from>/<kind>/<id>, note:<path>).",
+    input: createTaskInputSchema,
+    run: async (args: unknown) => api.createTask(args),
+  },
+
+  task_update: {
+    description:
+      "Patch a task — status transitions (open → in_progress → done|wontfix), reassignment, etc.",
+    input: z.object({
+      id: z.number().int(),
+      patch: updateTaskInputSchema,
+    }),
+    run: async (args: { id: number; patch: unknown }) =>
+      api.updateTask(args.id, args.patch),
   },
 
   project_report: {

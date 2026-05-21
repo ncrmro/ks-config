@@ -12,6 +12,7 @@ import {
   projectReport,
   projectScope,
   projectValue,
+  task,
 } from "./schema.js";
 
 // Selects — outbound payloads.
@@ -103,7 +104,64 @@ export const seedReportSchema = z.object({
   summary: z.string().min(1),
   refs: z.array(z.string().min(1)).default([]),
 });
+// Cross-provider task source ref. One regex covers all the prefixes
+// documented in docs/proposals.md.
+const sourceRefRegex =
+  /^(gh|fj|slack|mail|cal|agent|note):[^\s].*$/;
+
+export const taskSelectSchema = createSelectSchema(task);
+export const taskInsertSchema = createInsertSchema(task, {
+  title: (s) => s.min(1),
+  sourceRef: (s) =>
+    s.regex(
+      sourceRefRegex,
+      "source_ref must use a known prefix: gh:/fj:/slack:/mail:/cal:/agent:/note:",
+    ),
+  sourceUrl: (s) => s.url(),
+});
+
+// Public create-task input. Server fills timestamps + id.
+export const createTaskInputSchema = taskInsertSchema
+  .omit({ id: true, createdAt: true, updatedAt: true, projectId: true, dueAt: true })
+  .extend({
+    projectSlug: z.string().min(1),
+    milestoneId: z.number().int().nullish(),
+    dueAt: z.iso.datetime().nullish(),
+  });
+export type CreateTaskInput = z.infer<typeof createTaskInputSchema>;
+
+export const updateTaskInputSchema = taskInsertSchema
+  .pick({
+    title: true,
+    body: true,
+    kind: true,
+    status: true,
+    sourceRef: true,
+    sourceUrl: true,
+    requester: true,
+    assigneeAgent: true,
+    milestoneId: true,
+  })
+  .partial()
+  .extend({ dueAt: z.iso.datetime().nullish() });
+export type UpdateTaskInput = z.infer<typeof updateTaskInputSchema>;
+
+export const listTasksQuerySchema = z.object({
+  project: z.string().optional(),
+  assignee: z.string().optional(),
+  kind: taskInsertSchema.shape.kind.optional(),
+  status: taskInsertSchema.shape.status.optional(),
+});
+export type ListTasksQuery = z.infer<typeof listTasksQuerySchema>;
+
+// Seed-only shape: tasks are inlined inside a project so fixture data can
+// attribute realistic assigner/assignee identities.
+export const seedTaskSchema = createTaskInputSchema.omit({
+  projectSlug: true,
+});
+
 export const seedProjectInputSchema = createProjectInputSchema.extend({
   reports: z.array(seedReportSchema).default([]),
+  tasks: z.array(seedTaskSchema).default([]),
 });
 export type SeedProjectInput = z.infer<typeof seedProjectInputSchema>;

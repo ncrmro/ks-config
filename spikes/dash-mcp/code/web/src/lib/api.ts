@@ -70,12 +70,36 @@ async function get<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+export type Task = {
+  id: number;
+  projectId: number;
+  projectSlug: string;
+  milestoneId: number | null;
+  title: string;
+  body: string | null;
+  kind: "review" | "reply" | "decide" | "implement" | "triage" | "ack" | "other";
+  status: "open" | "in_progress" | "blocked" | "done" | "wontfix";
+  sourceRef: string | null;
+  sourceUrl: string | null;
+  requester: string | null;
+  assigneeAgent: string | null;
+  dueAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export const api = {
   listProjects: () => get<{ projects: Project[] }>("/api/projects"),
   getProject: (slug: string) =>
     get<ProjectDetail>(`/api/projects/${encodeURIComponent(slug)}`),
   listHosts: () => get<{ hosts: Host[] }>("/api/hosts"),
   listAgents: () => get<{ agents: Agent[] }>("/api/agents"),
+  listTasks: (q: { project?: string; assignee?: string; kind?: string; status?: string } = {}) => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(q)) if (v) params.set(k, v);
+    const qs = params.toString();
+    return get<{ tasks: Task[] }>(`/api/tasks${qs ? `?${qs}` : ""}`);
+  },
 };
 
 export { baseUrl };

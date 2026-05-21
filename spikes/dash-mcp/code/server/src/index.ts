@@ -7,6 +7,7 @@ import {
 } from "./routes/projects.js";
 import { createReport } from "./routes/reports.js";
 import { listAgents, listHosts } from "./routes/fleet.js";
+import { createTask, getTask, listTasks, updateTask } from "./routes/tasks.js";
 
 const port = Number(process.env.PORT ?? 7878);
 
@@ -45,6 +46,16 @@ const server = Bun.serve({
     if (reportMatch && method === "POST") {
       const slug = decodeURIComponent(reportMatch[1]!);
       return createReport(slug, req);
+    }
+
+    if (pathname === "/api/tasks" && method === "GET") return listTasks(url);
+    if (pathname === "/api/tasks" && method === "POST") return createTask(req);
+
+    const taskMatch = pathname.match(/^\/api\/tasks\/(\d+)$/);
+    if (taskMatch) {
+      const id = Number(taskMatch[1]);
+      if (method === "GET") return getTask(id);
+      if (method === "PATCH") return updateTask(id, req);
     }
 
     if (pathname === "/api/hosts" && method === "GET") return listHosts();

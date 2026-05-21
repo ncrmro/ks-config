@@ -47,6 +47,32 @@
         "summary": "Published per-agent MCP configs via agentctl; dash-mcp registered for drago and luce.",
         "refs": ["gh:ncrmro/keystone#280", "gh:ncrmro/keystone#281"]
       }
+    ],
+    "tasks": [
+      {
+        "title": "Review #281: claude --agent <name> CLI surface",
+        "kind": "review",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/keystone#281",
+        "sourceUrl": "https://github.com/ncrmro/keystone/pull/281",
+        "requester": "ncrmro",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Reply to vega handoff thread",
+        "kind": "reply",
+        "status": "open",
+        "sourceRef": "agent:luce/handoff/2026-05-20-keystone",
+        "requester": "luce",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Decide: Asahi MacBook tier-1 support cadence",
+        "kind": "decide",
+        "status": "open",
+        "requester": "drago",
+        "assigneeAgent": "drago"
+      }
     ]
   },
   {
@@ -98,6 +124,31 @@
         "summary": "Rook/Ceph storage profile validated on a 3-node cluster; documenting runbook.",
         "refs": []
       }
+    ],
+    "tasks": [
+      {
+        "title": "Implement: Rook/Ceph storage profile runbook draft",
+        "kind": "implement",
+        "status": "in_progress",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      },
+      {
+        "title": "Triage Mini-ITX case kit suppliers",
+        "kind": "triage",
+        "status": "open",
+        "sourceRef": "note:projects/ks.systems/case-kit-suppliers.md",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      },
+      {
+        "title": "Reply to first prospect intro email",
+        "kind": "reply",
+        "status": "open",
+        "sourceRef": "mail:<prospect-intro-2026-05-19@example.com>",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      }
     ]
   },
   {
@@ -143,6 +194,23 @@
         "summary": "Indoor sensor v1 firmware compiles clean; pending breadboard test on workstation bench.",
         "refs": ["gh:ncrmro/plant-caravan"]
       }
+    ],
+    "tasks": [
+      {
+        "title": "Implement indoor sensor v1 breadboard test plan",
+        "kind": "implement",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/plant-caravan#14",
+        "sourceUrl": "https://github.com/ncrmro/plant-caravan/issues/14",
+        "requester": "ncrmro",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Decide: outdoor sensor form-factor (waterproof vs vented)",
+        "kind": "decide",
+        "status": "open",
+        "requester": "ncrmro"
+      }
     ]
   },
   {
@@ -166,7 +234,16 @@
         "label": "main"
       }
     ],
-    "reports": []
+    "reports": [],
+    "tasks": [
+      {
+        "title": "Write mission.md for Catalyst (Purpose / Values / Scope)",
+        "kind": "implement",
+        "status": "open",
+        "sourceRef": "note:projects/catalyst/mission.md",
+        "requester": "ncrmro"
+      }
+    ]
   },
   {
     "slug": "meze",
@@ -195,6 +272,16 @@
         "label": "main"
       }
     ],
-    "reports": []
+    "reports": [],
+    "tasks": [
+      {
+        "title": "Implement weekly meal plan generator",
+        "kind": "implement",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/meze#7",
+        "sourceUrl": "https://github.com/ncrmro/meze/issues/7",
+        "requester": "ncrmro"
+      }
+    ]
   }
 ]

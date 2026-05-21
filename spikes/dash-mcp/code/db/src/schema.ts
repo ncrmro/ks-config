@@ -39,6 +39,26 @@ export const milestoneStatus = [
 ] as const;
 export type MilestoneStatus = (typeof milestoneStatus)[number];
 
+export const taskKind = [
+  "review",
+  "reply",
+  "decide",
+  "implement",
+  "triage",
+  "ack",
+  "other",
+] as const;
+export type TaskKind = (typeof taskKind)[number];
+
+export const taskStatus = [
+  "open",
+  "in_progress",
+  "blocked",
+  "done",
+  "wontfix",
+] as const;
+export type TaskStatus = (typeof taskStatus)[number];
+
 export const host = sqliteTable(
   "host",
   {
@@ -177,6 +197,52 @@ export const projectReport = sqliteTable(
     agentIdx: index("project_report_agent_idx").on(t.agentId, t.createdAt),
   }),
 );
+
+export const task = sqliteTable(
+  "task",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    projectId: integer("project_id")
+      .notNull()
+      .references(() => project.id, { onDelete: "cascade" }),
+    milestoneId: integer("milestone_id").references(() => milestone.id, {
+      onDelete: "set null",
+    }),
+    title: text("title").notNull(),
+    body: text("body"),
+    kind: text("kind", { enum: taskKind }).notNull().default("other"),
+    status: text("status", { enum: taskStatus }).notNull().default("open"),
+    // Cross-provider join key. Normalized forms:
+    //   gh:<owner>/<repo>#<n>
+    //   gh:<owner>/<repo>#<n>/review/<id>
+    //   fj:<owner>/<repo>#<n>
+    //   slack:<workspace>/<channel>/<ts>
+    //   mail:<message-id>
+    //   cal:<ics-uid>
+    //   agent:<from>/<kind>/<id>
+    //   note:<repo-relative-path>
+    sourceRef: text("source_ref"),
+    sourceUrl: text("source_url"),
+    requester: text("requester"),
+    assigneeAgent: text("assignee_agent"),
+    dueAt: integer("due_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(now),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(now),
+  },
+  (t) => ({
+    sourceRefUq: uniqueIndex("task_source_ref_uq").on(t.sourceRef),
+    projectIdx: index("task_project_idx").on(t.projectId, t.status),
+    assigneeIdx: index("task_assignee_idx").on(t.assigneeAgent, t.status),
+    kindIdx: index("task_kind_idx").on(t.kind),
+  }),
+);
+
+export type Task = typeof task.$inferSelect;
+export type NewTask = typeof task.$inferInsert;
 
 export type Project = typeof project.$inferSelect;
 export type NewProject = typeof project.$inferInsert;

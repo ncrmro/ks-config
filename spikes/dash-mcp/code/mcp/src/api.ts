@@ -31,4 +31,20 @@ export const api = {
     call("PATCH", `/api/projects/${encodeURIComponent(slug)}`, patch),
   createReport: (slug: string, body: unknown) =>
     call("POST", `/api/projects/${encodeURIComponent(slug)}/reports`, body),
+
+  listTasks: (q: {
+    project?: string;
+    assignee?: string;
+    kind?: string;
+    status?: string;
+  } = {}) => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(q)) if (v) params.set(k, v);
+    const qs = params.toString();
+    return call("GET", `/api/tasks${qs ? `?${qs}` : ""}`);
+  },
+  getTask: (id: number) => call("GET", `/api/tasks/${id}`),
+  createTask: (body: unknown) => call("POST", `/api/tasks`, body),
+  updateTask: (id: number, patch: unknown) =>
+    call("PATCH", `/api/tasks/${id}`, patch),
 };

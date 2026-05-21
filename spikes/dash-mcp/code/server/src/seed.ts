@@ -10,6 +10,7 @@ import {
   projectReport,
   projectScope,
   projectValue,
+  task,
 } from "@dash-mcp/db/schema";
 import { seedProjectInputSchema } from "@dash-mcp/db/zod";
 import { getDb } from "./db.js";
@@ -103,6 +104,24 @@ async function main() {
         summary: r.summary,
         refs: r.refs,
       });
+    }
+
+    if (item.tasks.length) {
+      await db.insert(task).values(
+        item.tasks.map((t) => ({
+          projectId: row.id,
+          milestoneId: t.milestoneId ?? null,
+          title: t.title,
+          body: t.body ?? null,
+          kind: t.kind ?? "other",
+          status: t.status ?? "open",
+          sourceRef: t.sourceRef ?? null,
+          sourceUrl: t.sourceUrl ?? null,
+          requester: t.requester ?? null,
+          assigneeAgent: t.assigneeAgent ?? null,
+          dueAt: t.dueAt ? new Date(t.dueAt) : null,
+        })),
+      );
     }
 
     inserted++;

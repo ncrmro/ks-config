@@ -80,3 +80,27 @@ CREATE TABLE `project_value` (
 	`text` text NOT NULL,
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
 );
+--> statement-breakpoint
+CREATE TABLE `task` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`project_id` integer NOT NULL,
+	`milestone_id` integer,
+	`title` text NOT NULL,
+	`body` text,
+	`kind` text DEFAULT 'other' NOT NULL,
+	`status` text DEFAULT 'open' NOT NULL,
+	`source_ref` text,
+	`source_url` text,
+	`requester` text,
+	`assignee_agent` text,
+	`due_at` integer,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`milestone_id`) REFERENCES `milestone`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `task_source_ref_uq` ON `task` (`source_ref`);--> statement-breakpoint
+CREATE INDEX `task_project_idx` ON `task` (`project_id`,`status`);--> statement-breakpoint
+CREATE INDEX `task_assignee_idx` ON `task` (`assignee_agent`,`status`);--> statement-breakpoint
+CREATE INDEX `task_kind_idx` ON `task` (`kind`);
