@@ -116,6 +116,16 @@
           updateChannel = "unstable";
         };
         shared.specialArgs = fleetSpecialArgs;
+        shared.systemModules = [
+          # Experimental: zstd-compressed zram swap at 50% of RAM with
+          # swappiness=150, so the kernel reaches for compressed swap
+          # before evicting clean page-cache. See `keystone.os.zram.*`
+          # in modules/os/zram.nix for tunables. Applies to every
+          # mkSystemFlake-managed host (maia, ncrmro-laptop, mercury,
+          # ocean, ncrmro-workstation); catalystPrimary is wired
+          # manually below and unaffected.
+          ({ ... }: { keystone.os.zram.enable = true; })
+        ];
         hosts = {
           maia = {
             kind = "server";
