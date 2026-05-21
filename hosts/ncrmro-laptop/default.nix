@@ -62,13 +62,20 @@
     file = "${inputs.agenix-secrets}/secrets/attic-push-token.age";
   };
 
-  # GitHub agents token
-  # GitHub agents token
+  # GitHub agents token (user-readable; for keystone.terminal.github future opt-in)
   age.secrets.github-agents-token = {
     file = "${inputs.agenix-secrets}/secrets/github-agents-token.age";
     owner = "ncrmro";
     mode = "0400";
   };
+
+  # GitHub token for the nix daemon (root-readable, for /etc/nix/access-tokens.conf)
+  age.secrets.nix-flake-github-token = {
+    file = "${inputs.agenix-secrets}/secrets/nix-flake-github-token.age";
+    owner = "root";
+    mode = "0400";
+  };
+  keystone.os.githubTokenNix.enable = true;
 
   # Grafana API token for MCP and dashboards
   age.secrets.grafana-api-token = {

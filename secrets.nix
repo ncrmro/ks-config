@@ -73,6 +73,10 @@ in
   # Cliflux config (Miniflux CLI client config with API key, for desktops)
   "secrets/cliflux-config.age".publicKeys = adminKeys ++ desktops;
 
-  # GitHub agents token
+  # GitHub agents token (user-readable; consumed by keystone.terminal.github)
   "secrets/github-agents-token.age".publicKeys = adminKeys ++ desktops;
+
+  # GitHub token for the nix daemon — root-readable, system-key recipients.
+  # Consumed by keystone.os.githubTokenNix; see conventions/tool.nix.md.
+  "secrets/nix-flake-github-token.age".publicKeys = adminKeys ++ desktops;
 }
