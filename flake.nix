@@ -220,6 +220,21 @@
       packages.x86_64-linux =
         let
           pkgs = pkgsForSystem "x86_64-linux";
+          # Portable devbox image — built from a standalone home-manager
+          # profile via the spike helper at modules/keystone-spike/. This
+          # whole block moves out of this repo once the staging contents
+          # graduate to ncrmro/keystone (see modules/keystone-spike/README.md).
+          devboxNcrmroHome = import ./modules/keystone-spike/lib/portable-terminal.nix {
+            inherit inputs;
+            system = "x86_64-linux";
+            fullName = adminUser.fullName;
+            email = "${adminUser.username}@ncrmro.com";
+          };
+          devboxNcrmroImage = pkgs.callPackage ./modules/keystone-spike/packages/devbox-image {
+            homeActivationPackage = devboxNcrmroHome.activationPackage;
+            ks = pkgs.keystone.ks or null;
+            imageName = "devbox-${adminUser.username}";
+          };
         in
         (fleet.packages.x86_64-linux or { })
         // {
@@ -230,6 +245,9 @@
             zesh
             ;
           inherit (pkgs) mcp-language-server devbox;
+
+          # Portable per-user devbox container image (spike).
+          "devbox-image-${adminUser.username}" = devboxNcrmroImage;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
           iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;

@@ -52,3 +52,11 @@ the full plan, library survey, and decision log.
 - Docker rootful path (option exists, implementation is a TODO stub)
 - Library-based podman SDK (launcher uses `subprocess.run(["podman", ...])`)
 - `ks devbox` subcommand in the Rust ks binary (separate workstream)
+
+## Sibling staging area
+
+`modules/keystone-spike/` (sibling) houses the **portable container
+image** half of the spike — a `dockerTools.buildLayeredImage` factory
+that bakes a keystone home-manager profile into an OCI image runnable
+on any rootless-podman host. See `modules/keystone-spike/README.md`.
+The two directories may be merged once both pieces are mature.
