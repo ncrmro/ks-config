@@ -70,8 +70,8 @@
   };
 
   # GitHub token for the nix daemon (root-readable, for /etc/nix/access-tokens.conf)
-  age.secrets.nix-flake-github-token = {
-    file = "${inputs.agenix-secrets}/secrets/nix-flake-github-token.age";
+  age.secrets.nix-github-token = {
+    file = "${inputs.agenix-secrets}/secrets/nix-github-token.age";
     owner = "root";
     mode = "0400";
   };

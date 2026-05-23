@@ -78,5 +78,5 @@ in
 
   # GitHub token for the nix daemon — root-readable, system-key recipients.
   # Consumed by keystone.os.githubTokenNix; see conventions/tool.nix.md.
-  "secrets/nix-flake-github-token.age".publicKeys = adminKeys ++ desktops;
+  "secrets/nix-github-token.age".publicKeys = adminKeys ++ desktops;
 }

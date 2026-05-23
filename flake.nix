@@ -17,8 +17,9 @@
       flake = false;
     };
 
-    # llm-agents — follows keystone's pin (updated when keystone is relocked)
-    llm-agents.follows = "keystone/llm-agents";
+    # AI coding agents — pin independently so llm-agents keeps its own nixpkgs
+    # instead of being re-evaluated against this consumer's package set.
+    llm-agents.url = "github:numtide/llm-agents.nix";
 
     # Keystone - self-sovereign infrastructure platform
     # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
@@ -26,6 +27,7 @@
     keystone = {
       url = "github:ncrmro/keystone";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.llm-agents.follows = "llm-agents";
     };
 
     # llama.cpp - latest for MXFP4 support (workstation-specific)
