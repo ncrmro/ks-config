@@ -1282,11 +1282,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1779510500,
-        "narHash": "sha256-aftmaKpcy0CFMSc06f+aEmW0Y7VhoJc9siv2/0LZZm8=",
+        "lastModified": 1779766638,
+        "narHash": "sha256-NtXpIxNvZk+yMHJLHJ+RjLj73mqkhuoAYViugsZ2WQ0=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "05510d21186a5b9d35a6aa6f18324b105ae17ebe",
+        "rev": "6789b675f4f35f19edf40482af4f35a23eaee4f6",
         "type": "github"
       },
       "original": {
