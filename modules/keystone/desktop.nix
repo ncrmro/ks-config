@@ -45,5 +45,6 @@
     ../../home-manager/common/optional/mcp/github-mcp.nix
     ../../home-manager/common/optional/mcp/kubernetes.nix
     ../../home-manager/ncrmro/base.nix
+    ./desktop/experimental
   ];
 }

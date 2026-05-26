@@ -1,4 +1,5 @@
 @../keystone/AGENTS.md
+@modules/keystone/AGENTS.md
 
 ## Repository Overview
 
@@ -50,9 +51,11 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 - **nixos-config**: Host-specific configuration, secrets, per-user overrides, local-only services
 
 **Wrapper modules in this repo** (`modules/`):
-- `modules/keystone.nix` - Imports `operating-system` + `hardwareKey`, configures YubiKeys and ncrmro user
-- `modules/keystone.server.nix` - Imports `server` module, enables it
-- `modules/keystone.desktop.nix` - Imports `desktop` module, configures for ncrmro user
+- `modules/keystone/os.nix` - Fleet-wide keystone OS glue for this repo
+- `modules/keystone/server.nix` - Enables the keystone server role
+- `modules/keystone/desktop.nix` - Enables the keystone desktop role and ncrmro desktop Home Manager imports
+- `modules/keystone/terminal.nix` - Enables ncrmro terminal Home Manager imports on non-desktop hosts
+- `modules/keystone/` subdirectories - Reserved for experimental keystone directories; see `modules/keystone/AGENTS.md`
 
 ## Clean Git History: Flake Update Workflow
 
