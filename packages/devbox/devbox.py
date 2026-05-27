@@ -16,7 +16,6 @@ import fcntl
 import json
 import os
 import re
-import shlex
 import shutil
 import subprocess
 import sys
@@ -40,22 +39,14 @@ DEFAULT_PAT = AGENIX_DIR / "ncrmro-github-pat-default"
 PORT_BASE = int(os.environ.get("DEVBOX_PORT_BASE", "20000"))
 PORT_SPAN = int(os.environ.get("DEVBOX_PORT_SPAN", "16"))
 MAX_INSTANCES = int(os.environ.get("DEVBOX_MAX_INSTANCES", "32"))
-REPOS_DIR = Path(os.environ.get("DEVBOX_REPOS_DIR", HOME / "repo"))
+REPOS_DIR = Path(os.environ.get("DEVBOX_REPOS_DIR", HOME / "repos"))
 NIX_VOLUME = os.environ.get("DEVBOX_NIX_VOLUME", "devbox-nix-shared")
 ADMIN_USER = os.environ.get("DEVBOX_ADMIN_USER") or os.environ.get("USER", "")
 PAT_SECRETS = json.loads(os.environ.get("DEVBOX_PAT_SECRETS", "{}"))
-
-PRE_RESOLVED = {
-    "ks": os.environ.get("DEVBOX_KS_PATH"),
-    "zellij": os.environ.get("DEVBOX_ZELLIJ_PATH"),
-    "ttyd": os.environ.get("DEVBOX_TTYD_PATH"),
-    "openssh": os.environ.get("DEVBOX_OPENSSH_PATH"),
-    "bash": os.environ.get("DEVBOX_BASH_PATH"),
-    "coreutils": os.environ.get("DEVBOX_COREUTILS_PATH"),
-    "git": os.environ.get("DEVBOX_GIT_PATH"),
-    "gh": os.environ.get("DEVBOX_GH_PATH"),
-    "direnv": os.environ.get("DEVBOX_DIRENV_PATH"),
-}
+DEVBOX_IMAGE = os.environ.get("DEVBOX_IMAGE") or (
+    f"localhost/devbox-{ADMIN_USER}:latest" if ADMIN_USER else "localhost/devbox:latest"
+)
+SEED_MARKER = ".devbox-seeded-image-id"
 
 
 # ---- types -----------------------------------------------------------------
@@ -83,7 +74,7 @@ class Spec:
 
     @property
     def workdir(self) -> Path:
-        # Accept ~/repo/OWNER (single-arg) or ~/repo/OWNER/REPO. Caller passes one.
+        # Accept ~/repos/OWNER/REPO. Caller passes OWNER/REPO.
         return REPOS_DIR / self.owner / self.repo
 
 
@@ -170,27 +161,52 @@ def ensure_podman_secret(name: str, source: Path) -> None:
     run(["podman", "secret", "create", name, str(source)], check=True)
 
 
-def resolve_host_github_token() -> Optional[str]:
-    """Best-effort GitHub token discovery on the host.
+def inspect_image_id(image: str) -> Optional[str]:
+    r = run(["podman", "image", "inspect", image, "--format", "{{.Id}}"], check=False, capture_output=True)
+    if r.returncode != 0:
+        return None
+    return r.stdout.strip() or None
 
-    1. $GH_TOKEN / $GITHUB_TOKEN (explicit override)
-    2. `gh auth token` (most common dev setup)
-    3. None
-    """
-    for var in ("GH_TOKEN", "GITHUB_TOKEN"):
-        v = os.environ.get(var)
-        if v:
-            return v.strip()
-    if shutil.which("gh"):
-        r = run(["gh", "auth", "token"], check=False, capture_output=True)
-        if r.returncode == 0 and r.stdout.strip():
-            return r.stdout.strip()
-    return None
+
+def ensure_nix_volume_seeded(image: str, volume: str) -> None:
+    image_id = inspect_image_id(image)
+    if not image_id:
+        die(
+            f"image {image!r} is not loaded in podman — build/load the portable devbox image first"
+        )
+
+    run(["podman", "volume", "create", volume], check=False, capture_output=True)
+    mountpoint = run(
+        ["podman", "volume", "inspect", volume, "--format", "{{.Mountpoint}}"],
+        capture_output=True,
+    ).stdout.strip()
+    if not mountpoint:
+        die(f"could not inspect podman volume {volume!r}")
+
+    marker_path = Path(mountpoint) / SEED_MARKER
+    if marker_path.is_file() and marker_path.read_text().strip() == image_id:
+        return
+
+    run(
+        [
+            "podman",
+            "run",
+            "--rm",
+            "-v",
+            f"{volume}:/mnt/root/nix",
+            "--entrypoint",
+            "sh",
+            image,
+            "-lc",
+            "nix copy --all --to /mnt/root --no-check-sigs",
+        ]
+    )
+    marker_path.write_text(f"{image_id}\n")
 
 
 # ---- quadlet rendering -----------------------------------------------------
 
-def render_quadlet(spec: Spec, index: int, pat_secret: Optional[str]) -> str:
+def render_quadlet(spec: Spec, index: int, pat_secret: Optional[str], image: str) -> str:
     port_offset = PORT_BASE + PORT_SPAN * index
     port_web = port_offset
     port_ssh = port_offset + 1
@@ -207,30 +223,9 @@ def render_quadlet(spec: Spec, index: int, pat_secret: Optional[str]) -> str:
         f"Environment=DEVBOX_OWNER={spec.owner}",
         f"Environment=DEVBOX_REPO={spec.repo}",
     ]
-    for tool, store_path in PRE_RESOLVED.items():
-        if store_path:
-            env_lines.append(f"Environment=DEVBOX_{tool.upper()}_PATH={store_path}")
-
-    # Forward a GitHub token if we can find one on the host. The in-container
-    # `nix build` flake fetcher needs authenticated requests to avoid the
-    # 60/hr unauthenticated rate limit on api.github.com.
-    host_token = resolve_host_github_token()
-    if host_token:
-        env_lines.append(f"Environment=DEVBOX_HOST_GH_TOKEN={host_token}")
 
     volume_lines = [
-        # Bind-mount the host's /nix/store read-only. This is the single most
-        # important volume in the file: it lets the pre-resolved store paths
-        # in DEVBOX_*_PATH resolve immediately inside the container, with no
-        # nix build / no GitHub fetch / no rate-limit risk on first boot.
-        # /nix/var comes from the nixos/nix:latest image rootfs (ephemeral
-        # but fine — the store is the only thing that needs to persist).
-        "Volume=/nix/store:/nix/store:ro",
-        # Optional: a small named volume for nix profile state if you want
-        # `nix profile install` to persist between restarts. Unused until the
-        # spike grows past pre-resolved tools — kept for forward-compat but
-        # mounted at /nix/var (not /nix) so it doesn't shadow the store.
-        f"Volume={NIX_VOLUME}:/nix/var",
+        f"Volume={NIX_VOLUME}:/nix",
         f"Volume={spec.workdir}:/work",
         f"Volume=devbox-zellij-{spec.slug}:/var/lib/zellij",
         f"Volume=devbox-ssh-hostkeys-{spec.slug}:/etc/ssh",
@@ -265,24 +260,6 @@ def render_quadlet(spec: Spec, index: int, pat_secret: Optional[str]) -> str:
     if pat_secret:
         secret_lines.append(f"Secret={pat_secret},type=mount,target=github-pat,mode=0400")
 
-    # Entrypoint lives on the shared /nix volume after first sync. We pass the
-    # script content via stdin so we don't have to mount a host path.
-    entrypoint = (Path(__file__).parent / "entrypoint.sh").read_text()
-    # Quadlet doesn't have a clean way to ship inline scripts, so dump it to
-    # the workdir as a hidden file and exec it. The repo bind-mount means the
-    # script lands inside the container at /work/.devbox-entrypoint.sh.
-    script_target = spec.workdir / ".devbox-entrypoint.sh"
-    spec.workdir.mkdir(parents=True, exist_ok=True)
-    script_target.write_text(entrypoint)
-    script_target.chmod(0o755)
-
-    # When we bind-mount the host's /nix/store, the image's /bin/sh symlink
-    # (which points to a path under the image's own /nix/store) breaks.
-    # Use the host's bash binary as PID 1 instead — DEVBOX_BASH_PATH is an
-    # absolute path that exists in the container thanks to the bind-mount.
-    bash_path = PRE_RESOLVED.get("bash")
-    pid1 = f"{bash_path}/bin/sh" if bash_path else "/bin/sh"
-
     return "\n".join(
         [
             "# Generated by devbox — do not edit by hand.",
@@ -295,9 +272,8 @@ def render_quadlet(spec: Spec, index: int, pat_secret: Optional[str]) -> str:
             "",
             "[Container]",
             f"ContainerName={spec.container_name}",
-            "Image=docker.io/nixos/nix:latest",
+            f"Image={image}",
             f"WorkingDir=/work",
-            f"Exec={pid1} /work/.devbox-entrypoint.sh",
             *env_lines,
             *volume_lines,
             *publish_lines,
@@ -323,6 +299,7 @@ def cmd_up(args: argparse.Namespace) -> int:
     spec = parse_spec(args.target)
     if not spec.workdir.exists():
         die(f"{spec.workdir} does not exist — clone the repo there first")
+    ensure_nix_volume_seeded(DEVBOX_IMAGE, NIX_VOLUME)
 
     state = State()
     try:
@@ -340,7 +317,7 @@ def cmd_up(args: argparse.Namespace) -> int:
         print("devbox: no GitHub PAT found in /run/agenix — continuing without")
 
     QUADLET_DIR.mkdir(parents=True, exist_ok=True)
-    spec.quadlet_path.write_text(render_quadlet(spec, index, pat_secret_name))
+    spec.quadlet_path.write_text(render_quadlet(spec, index, pat_secret_name, DEVBOX_IMAGE))
     print(f"devbox: wrote {spec.quadlet_path}")
 
     systemctl(["daemon-reload"])
@@ -403,8 +380,8 @@ def cmd_attach(args: argparse.Namespace) -> int:
     spec = parse_spec(args.target)
     os.execvp("podman", [
         "podman", "exec", "-it", spec.container_name,
-        "/bin/sh", "-lc",
-        f"zellij attach -c {shlex.quote(spec.repo)} || zellij -s {shlex.quote(spec.repo)}",
+        "bash", "-lc",
+        f"zellij attach -c {spec.repo} || zellij -s {spec.repo}",
     ])
 
 

@@ -36,7 +36,7 @@ in
 
     reposDir = mkOption {
       type = types.str;
-      default = "/home/${cfg.adminUser}/repo";
+      default = "/home/${cfg.adminUser}/repos";
       description = ''
         Host directory under which OWNER/REPO checkouts live. The launcher
         bind-mounts <reposDir>/<owner>/<repo> into the container at /work.
@@ -166,6 +166,7 @@ in
       DEVBOX_MAX_INSTANCES = toString cfg.ports.maxInstances;
       DEVBOX_REPOS_DIR = cfg.reposDir;
       DEVBOX_NIX_VOLUME = cfg.nixVolumeName;
+      DEVBOX_IMAGE = "localhost/devbox-${cfg.adminUser}:latest";
     };
   };
 }

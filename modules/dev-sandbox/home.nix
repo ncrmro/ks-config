@@ -46,7 +46,7 @@ in
 
     reposDir = mkOption {
       type = types.str;
-      default = osCfg.reposDir or "${config.home.homeDirectory}/repo";
+      default = osCfg.reposDir or "${config.home.homeDirectory}/repos";
       description = "Mirror of keystone.devSandbox.reposDir for the user shell.";
     };
 
@@ -60,33 +60,20 @@ in
   config = mkIf cfg.enable {
     home.packages = [ pkgs.devbox ];
 
-    home.sessionVariables =
-      {
-        DEVBOX_PORT_BASE = toString cfg.portBase;
-        DEVBOX_PORT_SPAN = toString cfg.portSpan;
-        DEVBOX_REPOS_DIR = cfg.reposDir;
-        DEVBOX_NIX_VOLUME = cfg.nixVolumeName;
-
-        # Pre-resolved store paths the in-container entrypoint mounts. Same
-        # mechanism as keystone.terminal.sandbox in podman-agent — saves a
-        # `nix build` round-trip on every container start.
-        DEVBOX_KS_PATH = "${pkgs.keystone.ks or pkgs.hello}";
-        DEVBOX_ZELLIJ_PATH = "${pkgs.zellij}";
-        DEVBOX_TTYD_PATH = "${pkgs.ttyd}";
-        DEVBOX_OPENSSH_PATH = "${pkgs.openssh}";
-        DEVBOX_BASH_PATH = "${pkgs.bashInteractive}";
-        DEVBOX_COREUTILS_PATH = "${pkgs.coreutils}";
-        DEVBOX_GIT_PATH = "${pkgs.git}";
-        DEVBOX_GH_PATH = "${pkgs.gh}";
-        DEVBOX_DIRENV_PATH = "${pkgs.direnv}";
-      }
-      // optionalAttrs (osCfg.adminUser or null != null) {
-        DEVBOX_ADMIN_USER = osCfg.adminUser;
-      }
-      // optionalAttrs (osCfg.github.secrets or { } != { }) {
-        # JSON blob the launcher reads to know which agenix files to probe.
-        # Format: { "<owner>": { "ownerSecret": "...", "repoSecrets": { ... } } }
-        DEVBOX_PAT_SECRETS = builtins.toJSON osCfg.github.secrets;
-      };
+    home.sessionVariables = {
+      DEVBOX_PORT_BASE = toString cfg.portBase;
+      DEVBOX_PORT_SPAN = toString cfg.portSpan;
+      DEVBOX_REPOS_DIR = cfg.reposDir;
+      DEVBOX_NIX_VOLUME = cfg.nixVolumeName;
+      DEVBOX_IMAGE = "localhost/devbox-${config.home.username}:latest";
+    }
+    // optionalAttrs (osCfg.adminUser or null != null) {
+      DEVBOX_ADMIN_USER = osCfg.adminUser;
+    }
+    // optionalAttrs (osCfg.github.secrets or { } != { }) {
+      # JSON blob the launcher reads to know which agenix files to probe.
+      # Format: { "<owner>": { "ownerSecret": "...", "repoSecrets": { ... } } }
+      DEVBOX_PAT_SECRETS = builtins.toJSON osCfg.github.secrets;
+    };
   };
 }

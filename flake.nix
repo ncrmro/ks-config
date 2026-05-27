@@ -237,6 +237,9 @@
             homeActivationPackage = devboxNcrmroHome.activationPackage;
             ks = pkgs.keystone.ks or null;
             imageName = "devbox-${adminUser.username}";
+            extraContents = [
+              inputs.llm-agents.packages.x86_64-linux.pi
+            ];
           };
         in
         (fleet.packages.x86_64-linux or { })
@@ -247,6 +250,7 @@
             gemini-cli
             zesh
             ;
+          pi = inputs.llm-agents.packages.x86_64-linux.pi;
           inherit (pkgs) mcp-language-server devbox;
 
           # Portable per-user devbox container image (spike).

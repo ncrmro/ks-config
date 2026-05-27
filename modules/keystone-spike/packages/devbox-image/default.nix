@@ -71,46 +71,6 @@ let
 
   runtimePath = lib.makeBinPath runtimeBins;
 
-  # Minimal /etc skeleton + writable dirs. The spike's container had to repair
-  # dangling /etc/passwd symlinks at runtime; here we own the rootfs from the
-  # start so the entrypoint never has to.
-  staticTree = runCommand "devbox-static-tree" { } ''
-    mkdir -p $out/etc/ssh $out/etc/profile.d $out/root/.ssh $out/var/empty
-    mkdir -p $out/work $out/tmp
-
-    cat > $out/etc/passwd <<EOF
-    root:x:0:0:root:/root:${bashInteractive}/bin/bash
-    nobody:x:65534:65534:nobody:/var/empty:/bin/false
-    sshd:x:74:74:sshd:/var/empty:/bin/false
-    EOF
-
-    cat > $out/etc/group <<'EOF'
-    root:x:0:
-    nogroup:x:65534:
-    sshd:x:74:
-    EOF
-
-    cat > $out/etc/nsswitch.conf <<'EOF'
-    passwd:    files
-    group:     files
-    hosts:     files dns
-    networks:  files dns
-    EOF
-
-    cat > $out/etc/ssh/sshd_config <<'EOF'
-    Port 22
-    PermitRootLogin prohibit-password
-    PasswordAuthentication no
-    ChallengeResponseAuthentication no
-    UsePAM no
-    AcceptEnv DEV_PORT_* DEVBOX_* GITHUB_TOKEN GH_TOKEN
-    PrintMotd no
-    EOF
-
-    chmod 1777 $out/tmp
-    chmod 0700 $out/root
-  '';
-
   entrypoint = writeShellScript "devbox-init" ''
     #!${bashInteractive}/bin/bash
     set -u
@@ -174,18 +134,84 @@ let
       ${bashInteractive}/bin/bash -lc "cd /work && ${zellij}/bin/zellij attach -c '$SESSION'"
   '';
 
+  # Minimal /etc skeleton + writable dirs. The spike's container had to repair
+  # dangling /etc/passwd symlinks at runtime; here we own the rootfs from the
+  # start so the entrypoint never has to. Install the init script at /init so
+  # a mounted /nix volume does not hide the container's startup command.
+  staticTree = runCommand "devbox-static-tree" { } ''
+    mkdir -p $out/etc/ssh $out/etc/profile.d $out/etc/nix
+    mkdir -p $out/root/.ssh
+    mkdir -p $out/root/.local/state/home-manager/gcroots
+    mkdir -p $out/root/.local/share/home-manager
+    mkdir -p $out/var/empty
+    mkdir -p $out/work $out/tmp
+
+    install -m 0755 ${entrypoint} $out/init
+
+    cat > $out/etc/passwd <<EOF
+    root:x:0:0:root:/root:${bashInteractive}/bin/bash
+    nobody:x:65534:65534:nobody:/var/empty:/bin/false
+    sshd:x:74:74:sshd:/var/empty:/bin/false
+    EOF
+
+    cat > $out/etc/group <<'EOF'
+    root:x:0:
+    nogroup:x:65534:
+    sshd:x:74:
+    EOF
+
+    cat > $out/etc/nsswitch.conf <<'EOF'
+    passwd:    files
+    group:     files
+    hosts:     files dns
+    networks:  files dns
+    EOF
+
+    cat > $out/etc/nix/nix.conf <<'EOF'
+    experimental-features = nix-command flakes
+    build-users-group =
+    EOF
+
+    cat > $out/etc/ssh/sshd_config <<'EOF'
+    Port 22
+    PermitRootLogin prohibit-password
+    PasswordAuthentication no
+    ChallengeResponseAuthentication no
+    UsePAM no
+    AcceptEnv DEV_PORT_* DEVBOX_* GITHUB_TOKEN GH_TOKEN
+    PrintMotd no
+    EOF
+
+    chmod 1777 $out/tmp
+    chmod 0700 $out/root
+  '';
+
 in
 dockerTools.buildLayeredImage {
   name = imageName;
   tag = imageTag;
+  includeNixDB = true;
   # 100 is the dockerTools default; documented here so changes to layer
   # strategy are explicit. Higher = better dedup, slower podman pull.
   maxLayers = 100;
 
-  contents = runtimeBins ++ [ staticTree ];
+  contents = runtimeBins ++ [
+    staticTree
+    homeActivationPackage
+  ];
+  extraCommands = ''
+    rm -f init etc/passwd etc/group etc/nsswitch.conf etc/nix/nix.conf etc/ssh/sshd_config
+    cp ${entrypoint} init
+    cp ${staticTree}/etc/passwd etc/passwd
+    cp ${staticTree}/etc/group etc/group
+    cp ${staticTree}/etc/nsswitch.conf etc/nsswitch.conf
+    cp ${staticTree}/etc/nix/nix.conf etc/nix/nix.conf
+    cp ${staticTree}/etc/ssh/sshd_config etc/ssh/sshd_config
+    chmod 0755 init
+  '';
 
   config = {
-    Cmd = [ entrypoint ];
+    Cmd = [ "/init" ];
     WorkingDir = "/work";
     Env = [
       "PATH=${runtimePath}"

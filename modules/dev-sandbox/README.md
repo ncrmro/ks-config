@@ -23,8 +23,10 @@ the full plan, library survey, and decision log.
 - Renders a Quadlet `~/.config/containers/systemd/devbox-<owner>-<repo>.container`
   per repo
 - `systemctl --user start devbox-<owner>-<repo>.service` brings up a long-lived
-  container with `nixos/nix:latest`, shared `devbox-nix-shared` volume, language
-  caches, repo bind mount, and a per-owner GitHub PAT loaded as a podman secret
+  container from the portable `devbox-<user>` image, seeds the shared
+  `devbox-nix-shared` volume from that image on first start, then mounts it at
+  `/nix` alongside language caches, the repo bind mount, and a per-owner
+  GitHub PAT loaded as a podman secret
 - Entrypoint starts `ttyd` (web) and `sshd` (Remote-SSH) fronting a zellij
   session named after the repo; survives reboot via the Quadlet unit + named
   volumes
@@ -46,8 +48,8 @@ the full plan, library survey, and decision log.
 ## Explicit non-goals (spike)
 
 - CRIU checkpoint/restore (zellij sessions survive reboot; in-flight processes do not)
-- Custom OCI image build (`nixos/nix:latest` is the substrate; tools install into
-  the shared `/nix` volume on first run)
+- Custom OCI image build in this staging area (the launcher expects the sibling
+  portable `modules/keystone-spike/` image to be built and loaded locally)
 - Per-repo isolated `/nix` volume (shared by default; option exists)
 - Docker rootful path (option exists, implementation is a TODO stub)
 - Library-based podman SDK (launcher uses `subprocess.run(["podman", ...])`)
