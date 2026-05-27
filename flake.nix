@@ -119,6 +119,16 @@
           updateChannel = "unstable";
         };
         shared.specialArgs = fleetSpecialArgs;
+        shared.systemModules = [
+          # Experimental: zstd-compressed zram swap at 50% of RAM with
+          # swappiness=150, so the kernel reaches for compressed swap
+          # before evicting clean page-cache. See `keystone.os.zram.*`
+          # in modules/os/zram.nix for tunables. Applies to every
+          # mkSystemFlake-managed host (maia, ncrmro-laptop, mercury,
+          # ocean, ncrmro-workstation); catalystPrimary is wired
+          # manually below and unaffected.
+          ({ ... }: { keystone.os.zram.enable = true; })
+        ];
         hosts = {
           maia = {
             kind = "server";
@@ -213,6 +223,21 @@
       packages.x86_64-linux =
         let
           pkgs = pkgsForSystem "x86_64-linux";
+          # Portable devbox image — built from a standalone home-manager
+          # profile via the spike helper at modules/keystone-spike/. This
+          # whole block moves out of this repo once the staging contents
+          # graduate to ncrmro/keystone (see modules/keystone-spike/README.md).
+          devboxNcrmroHome = import ./modules/keystone-spike/lib/portable-terminal.nix {
+            inherit inputs;
+            system = "x86_64-linux";
+            fullName = adminUser.fullName;
+            email = "${adminUser.username}@ncrmro.com";
+          };
+          devboxNcrmroImage = pkgs.callPackage ./modules/keystone-spike/packages/devbox-image {
+            homeActivationPackage = devboxNcrmroHome.activationPackage;
+            ks = pkgs.keystone.ks or null;
+            imageName = "devbox-${adminUser.username}";
+          };
         in
         (fleet.packages.x86_64-linux or { })
         // {
@@ -222,7 +247,10 @@
             gemini-cli
             zesh
             ;
-          inherit (pkgs) mcp-language-server;
+          inherit (pkgs) mcp-language-server devbox;
+
+          # Portable per-user devbox container image (spike).
+          "devbox-image-${adminUser.username}" = devboxNcrmroImage;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
           iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;
