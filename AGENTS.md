@@ -1,4 +1,4 @@
-@../keystone/AGENTS.md
+@keystone/AGENTS.md
 @modules/keystone/AGENTS.md
 
 ## Repository Overview
@@ -44,7 +44,7 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Keystone: Shared Convention Layer
 
-[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. Its canonical checkout on this host is the sibling repo at `../keystone`, and nixos-config consumes it as the `keystone` flake input (`github:ncrmro/keystone`).
+[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. Its local development checkout for this repo is the gitignored nested repo at `./keystone`, and ks-config consumes the committed `keystone` flake input from `github:ncrmro/keystone`.
 
 **When to put something in keystone vs nixos-config:**
 - **Keystone**: Reusable modules that others could benefit from (server roles, desktop setup, terminal environment, mail, DNS, binary cache, hardware key management)
@@ -59,14 +59,14 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Clean Git History: Flake Update Workflow
 
-Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by nixos-config lives in `flake.lock`.
+Keystone development happens in the nested gitignored checkout at `./keystone`. The authoritative version pin used by ks-config lives in `flake.lock`.
 
 **Local checkouts:**
-- `../keystone` - GitHub: `github:ncrmro/keystone`
+- `./keystone` - GitHub: `github:ncrmro/keystone`
 - `agenix-secrets` - Private Forgejo: `git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git`
 
 **Setup after fresh clone:**
-Keystone should already exist at `~/.keystone/repos/ncrmro/keystone` per Keystone repo conventions. Clone `agenix-secrets` locally if needed.
+Keystone should exist at `./keystone` for local development. Clone `agenix-secrets` locally if needed.
 
 ### The Golden Rule
 
@@ -82,16 +82,15 @@ nix flake update keystone agenix-secrets     # both
 
 ```bash
 # 1. Make and test changes locally
-cd ../keystone
+cd keystone
 # ... edit files ...
-keystone-dev --build         # Verify changes build (no deploy)
-cd ../nixos-config
-ks build                     # Verify nixos-config against the live keystone checkout
+./bin/dev-keystone --build   # Verify changes build (no deploy)
+cd ..
 
 # 2. Commit and push from the keystone repo
-cd ../keystone
+cd keystone
 git add -A && git commit -m "feat(server): description" && git push
-cd ../nixos-config
+cd ..
 
 # 3. Update flake lock and commit
 nix flake update keystone
@@ -99,12 +98,12 @@ git add flake.lock
 git commit -m "feat: update keystone (description)"
 ```
 
-**`keystone-dev` modes:**
-- `keystone-dev` — `nixos-rebuild switch` with the live `../keystone` checkout
-- `keystone-dev --build` — build only, no switch
-- `keystone-dev --boot` — `nixos-rebuild boot` for changes that should apply on reboot
+**`./bin/dev-keystone` modes:**
+- `./bin/dev-keystone` — `nixos-rebuild switch` with the live `./keystone` checkout
+- `./bin/dev-keystone --build` — build only, no switch
+- `./bin/dev-keystone --boot` — `nixos-rebuild boot` for changes that should apply on reboot
 
-**When the user says they ran `keystone-dev`, `ks update --dev`, or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
+**When the user says they ran `./bin/dev-keystone`, `ks update --dev`, or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
 
 ### Updating Agenix Secrets
 
@@ -257,7 +256,7 @@ To add a new service with auto-DNS, enable it in ocean's keystone config and reb
   - `keystone.nix`, `keystone.server.nix`, `keystone.desktop.nix` - Keystone wrapper modules
   - `/modules/nixos/` - Local NixOS modules (headscale, steam, bambu-studio)
   - `/modules/users/` - User definitions and SSH keys
-- `../keystone/` - Keystone sibling checkout
+- `./keystone/` - Gitignored Keystone checkout
 - `/agenix-secrets/` - Local agenix secrets clone (gitignored)
 - `/bin/` - Helper scripts
 - `/overlays/` - Nix overlays (imports keystone overlay + local packages)

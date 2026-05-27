@@ -9,5 +9,6 @@ result-desktop-vm
 .repos/
 .submodules/
 agenix-secrets/
+keystone/
 .deepwork/tmp/
 .claude/

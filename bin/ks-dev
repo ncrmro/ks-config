@@ -66,19 +66,34 @@ if [[ -z "$host" ]]; then
   host="$(hostname)"
 fi
 
+if [[ ! -f "${repo_root}/keystone/flake.nix" ]]; then
+  echo "Error: local Keystone checkout missing at ${repo_root}/keystone" >&2
+  echo "Clone git@github.com:ncrmro/keystone.git there before using ks-dev." >&2
+  exit 1
+fi
+
 override_args=()
+overridden_inputs=()
 
 add_override() {
   local input="$1"
   local path="$2"
 
-  if [[ -d "$path" ]]; then
-    override_args+=(--override-input "$input" "path:$path")
+  if [[ ! -d "$path" ]]; then
+    return
   fi
+
+  for existing in "${overridden_inputs[@]}"; do
+    if [[ "$existing" == "$input" ]]; then
+      return
+    fi
+  done
+
+  override_args+=(--override-input "$input" "path:$path")
+  overridden_inputs+=("$input")
 }
 
-add_override "keystone" "${repo_root}/../keystone"
-add_override "keystone" "${HOME}/.keystone/repos/ncrmro/keystone"
+add_override "keystone" "${repo_root}/keystone"
 add_override "agenix-secrets" "${repo_root}/agenix-secrets"
 add_override "agenix-secrets" "${HOME}/.keystone/repos/ncrmro/agenix-secrets"
 

@@ -24,6 +24,7 @@
     # Keystone - self-sovereign infrastructure platform
     # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
     # For local dev without commits, use: ./bin/dev-keystone <hostname>
+    # It prefers the gitignored ./keystone checkout when present.
     keystone = {
       url = "github:ncrmro/keystone";
       inputs.nixpkgs.follows = "nixpkgs";
