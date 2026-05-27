@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   hyprlandPkg = config.wayland.windowManager.hyprland.package;
   keystoneWindowSwitch = pkgs.writeShellScriptBin "keystone-window-switch" ''
     set -euo pipefail
@@ -83,12 +82,16 @@ let
       exit 1
     }
   '';
-in
-{
+in {
   config = lib.mkIf config.keystone.desktop.enable {
-    home.packages = [ keystoneWindowSwitch ];
+    home.packages = [keystoneWindowSwitch];
 
-    wayland.windowManager.hyprland.settings.bind = lib.mkAfter [
+    # CRITICAL: keystone's base bind list (modules/desktop/home/hyprland/bindings.nix)
+    # uses mkDefault (override priority 1000). A normal-priority addition here
+    # (e.g. lib.mkAfter, which keeps priority 100) wins outright and discards the
+    # entire base list, silently killing every window-management keybind. Match
+    # the base priority so this entry concatenates instead of replacing.
+    wayland.windowManager.hyprland.settings.bind = lib.mkDefault [
       "$mod, slash, exec, keystone-window-switch"
     ];
   };
