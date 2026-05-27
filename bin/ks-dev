@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: ks-dev [--build|--boot|--switch] [HOST] [-- EXTRA_ARGS...]
+
+Build or apply this nixos-config checkout with local development inputs.
+
+Modes:
+  --build   Build only, no activation
+  --boot    Build and set as boot generation
+  --switch  Build and switch immediately (default)
+
+HOST defaults to the current hostname.
+EOF
+}
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+repo_root="$(cd "${script_dir}/.." && pwd -P)"
+
+mode="switch"
+host=""
+extra_args=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --build)
+      mode="build"
+      shift
+      ;;
+    --boot)
+      mode="boot"
+      shift
+      ;;
+    --switch)
+      mode="switch"
+      shift
+      ;;
+    --)
+      shift
+      extra_args+=("$@")
+      break
+      ;;
+    -*)
+      extra_args+=("$1")
+      shift
+      ;;
+    *)
+      if [[ -n "$host" ]]; then
+        echo "Error: multiple hosts provided: '$host' and '$1'" >&2
+        usage
+        exit 1
+      fi
+      host="$1"
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$host" ]]; then
+  host="$(hostname)"
+fi
+
+override_args=()
+
+add_override() {
+  local input="$1"
+  local path="$2"
+
+  if [[ -d "$path" ]]; then
+    override_args+=(--override-input "$input" "path:$path")
+  fi
+}
+
+add_override "keystone" "${repo_root}/../keystone"
+add_override "keystone" "${HOME}/.keystone/repos/ncrmro/keystone"
+add_override "agenix-secrets" "${repo_root}/agenix-secrets"
+add_override "agenix-secrets" "${HOME}/.keystone/repos/ncrmro/agenix-secrets"
+
+echo "Running nixos-rebuild ${mode} for ${host}"
+echo "Config: ${repo_root}"
+if [[ ${#override_args[@]} -gt 0 ]]; then
+  echo "Using local input overrides:"
+  for ((i = 0; i < ${#override_args[@]}; i += 3)); do
+    echo "  ${override_args[i + 1]} -> ${override_args[i + 2]}"
+  done
+fi
+
+if [[ "$mode" == "build" ]]; then
+  exec nixos-rebuild "$mode" --flake "${repo_root}#${host}" "${override_args[@]}" "${extra_args[@]}"
+fi
+
+exec sudo nixos-rebuild "$mode" --flake "${repo_root}#${host}" "${override_args[@]}" "${extra_args[@]}"
