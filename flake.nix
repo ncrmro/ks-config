@@ -17,6 +17,11 @@
       flake = false;
     };
 
+    plouton = {
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git?ref=feat/plouton-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # AI coding agents — pin independently so llm-agents keeps its own nixpkgs
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
@@ -222,6 +227,7 @@
             zesh
             ;
           inherit (pkgs) mcp-language-server;
+          plouton-web = inputs.plouton.packages.x86_64-linux.default;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
           iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;

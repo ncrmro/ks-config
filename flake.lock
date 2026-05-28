@@ -1605,6 +1605,27 @@
         "type": "github"
       }
     },
+    "plouton": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1779975667,
+        "narHash": "sha256-kTlpBkBgBpRWlDa8ie7E5BjHBfSO0h+3tcyokf9yu00=",
+        "ref": "feat/plouton-flake",
+        "rev": "cb8a63d73c3e84f7ede6b3604204062c40b77be5",
+        "revCount": 27,
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+      },
+      "original": {
+        "ref": "feat/plouton-flake",
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1721,7 +1742,8 @@
           "keystone",
           "nixos-hardware"
         ],
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_4",
+        "plouton": "plouton"
       }
     },
     "rust-analyzer-src": {

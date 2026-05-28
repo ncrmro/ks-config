@@ -31,6 +31,7 @@
     ./vaultwarden.nix
     ./rsshub.nix
     ./miniflux.nix
+    ./plouton.nix
     ./observability
     ../common/optional/alloy-client.nix
     ./immich.nix
