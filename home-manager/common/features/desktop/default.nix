@@ -51,6 +51,7 @@
     discord-ptb
     papers
     gimp
+    jetbrains.gateway
     jetbrains.pycharm
     jetbrains.webstorm
     jetbrains.ruby-mine
