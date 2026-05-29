@@ -12,7 +12,7 @@ home-dir symlinks that home-manager activation creates.
 | `_shared/AGENTS.md` | Single canonical instruction file. The per-tool symlinks (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`) all resolve here. |
 | `_shared/conventions/` | Centralized conventions and roles, referenced by skills via per-skill symlinks. |
 | `<agent>/AGENTS.md` | Optional user-authored overlay for identity-specific OS-agent rules. |
-| `<agent>/pi/AGENTS.md` | Generated Pi instruction file for that OS agent: shared instructions plus the overlay. |
+| `<agent>/pi/AGENTS.md` | Generated Pi instruction file for that OS agent: shared instructions, Pi runtime instructions, plus the overlay. |
 | `skills/` | Canonical skill tree per the [`.agents/skills/` open standard][spec]. Read by every spec-compliant agent. |
 | `claude/agents/` | Claude-specific subagent personas. Read via `~/.claude/agents/`. |
 
@@ -25,7 +25,7 @@ home-dir symlinks that home-manager activation creates.
 - User-authored content in `claude/agents/<persona>.md` and
   `_shared/skills.yaml` survives sync. Per-agent overlays at
   `<agent>/AGENTS.md` also survive sync and are copied into generated
-  `<agent>/pi/AGENTS.md` files.
+  `<agent>/pi/AGENTS.md` files after the Pi runtime instructions.
 - README files in this tree (including this one) are regenerated;
   edits there will be overwritten.
 

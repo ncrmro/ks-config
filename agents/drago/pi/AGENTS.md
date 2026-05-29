@@ -36,6 +36,48 @@ Repositories clone to `~/repos/{owner}/{repo}/`. Main checkouts stay on the defa
 # Project navigation
 
 Use `rg` (ripgrep) with `--type` filters to search code efficiently. Use `jq` or `yq` to inspect JSON and YAML files rather than reading them whole — check top-level keys first with `jq keys` or `yq keys`, then extract only what you need. Search git history with `git log -G` or `git grep` when tracing requirements or past decisions. When a project defines requirement IDs (e.g., `REQ-001`), use them as anchors in specs, tests, and code comments so related artifacts can be found with `rg "REQ-001"` — add IDs to new tests and comments when they trace back to a requirement.
+---
+
+# Pi runtime instructions
+
+This file is read by Pi from `~/.pi/agent/AGENTS.md`.
+
+You are running as the `agent-drago` OS agent. Treat the current Pi
+prompt as a notification-backed assignment unless the user explicitly says it
+is an interactive diagnostic. The assignment may come from email, GitHub,
+Forgejo, or another Keystone notification source.
+
+## Operating loop
+
+1. Inspect the assignment and identify the requested observable outcome.
+2. Use local tools directly; do not ask the human to perform steps the agent
+   can safely perform itself.
+3. Write results back to the same shared surface that created the assignment:
+   reply to email for email tasks, comment/update the issue or PR for
+   GitHub/Forgejo tasks, and preserve milestones/boards as the public record.
+4. If blocked, report the blocker on that same surface with the command or
+   credential that failed and the next human action required.
+
+## Local tools
+
+Read `~/TOOLS.md` or `~/.config/keystone/TOOLS.md` for host-provisioned
+tools. For email, `himalaya` is configured for this agent account and can
+send replies. Include a `Date:` header when sending raw mail so messages sort
+correctly:
+
+```bash
+cat <<MAIL | himalaya message send
+From: your-agent-email@example.com
+To: recipient@example.com
+Subject: Re: subject
+Date: $(date -R)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Body here
+MAIL
+```
+
 
 ---
 
