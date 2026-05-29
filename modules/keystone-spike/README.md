@@ -2,7 +2,7 @@
 
 Staging area for modules, packages, and lib helpers that are destined to
 live in [`ncrmro/keystone`](https://github.com/ncrmro/keystone) but are
-iterated here in `ncrmro/nixos-config` until they are stable enough to
+iterated here in `ncrmro/ks-config` until they are stable enough to
 promote.
 
 ## Why this directory exists

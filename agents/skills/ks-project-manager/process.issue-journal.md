@@ -1,0 +1,1 @@
+../../_shared/conventions/process.issue-journal.md

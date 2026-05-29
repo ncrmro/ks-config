@@ -12,7 +12,7 @@
 #
 # Agenix note: secrets like agent-{name}-mail-password need recipients on
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
-{ pkgs, ... }:
+{ ... }:
 {
   keystone.os.agents = {
     drago = {
@@ -27,9 +27,32 @@
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
       dispatcher = {
-        enable = true;
-        command = "${pkgs.keystone.linux-task-dispatcher}/bin/linux-task-dispatcher";
+        enable = false;
       };
+      piTaskRunner = {
+        enable = true;
+        sources = "email,forgejo,github";
+      };
+      notes.taskLoop = {
+        enable = false;
+        defaults = {
+          provider = "pi";
+          model = "ollama/qwen3:4b";
+        };
+        ingest = {
+          provider = "pi";
+          model = "ollama/qwen3:4b";
+        };
+        prioritize = {
+          provider = "pi";
+          model = "ollama/qwen3:4b";
+        };
+        execute = {
+          provider = "pi";
+          model = "ollama/qwen3:4b";
+        };
+      };
+      notes.scheduler.enable = false;
     };
     luce = {
       host = "ocean";

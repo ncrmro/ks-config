@@ -5,7 +5,7 @@ usage() {
   cat >&2 <<'EOF'
 Usage: ks-dev [--build|--boot|--switch] [HOST] [-- EXTRA_ARGS...]
 
-Build or apply this nixos-config checkout with local development inputs.
+Build or apply this ks-config checkout with local development inputs.
 
 Modes:
   --build   Build only, no activation
@@ -66,12 +66,6 @@ if [[ -z "$host" ]]; then
   host="$(hostname)"
 fi
 
-if [[ ! -f "${repo_root}/keystone/flake.nix" ]]; then
-  echo "Error: local Keystone checkout missing at ${repo_root}/keystone" >&2
-  echo "Clone git@github.com:ncrmro/keystone.git there before using ks-dev." >&2
-  exit 1
-fi
-
 override_args=()
 overridden_inputs=()
 
@@ -93,7 +87,30 @@ add_override() {
   overridden_inputs+=("$input")
 }
 
-add_override "keystone" "${repo_root}/keystone"
+keystone_candidates=(
+  "${repo_root}/keystone"
+  "${repo_root}/../keystone"
+  "${HOME}/repos/ncrmro/keystone"
+  "${HOME}/.keystone/repos/ncrmro/keystone"
+)
+
+keystone_checkout=""
+for candidate in "${keystone_candidates[@]}"; do
+  if [[ -f "${candidate}/flake.nix" ]]; then
+    keystone_checkout="$(cd "$candidate" && pwd -P)"
+    break
+  fi
+done
+
+if [[ -z "$keystone_checkout" ]]; then
+  echo "Error: local Keystone checkout missing." >&2
+  echo "Expected one of:" >&2
+  printf '  - %s\n' "${keystone_candidates[@]}" >&2
+  exit 1
+fi
+
+add_override "keystone" "$keystone_checkout"
+add_override "agenix-secrets" "${HOME}/repos/ncrmro/agenix-secrets"
 add_override "agenix-secrets" "${repo_root}/agenix-secrets"
 add_override "agenix-secrets" "${HOME}/.keystone/repos/ncrmro/agenix-secrets"
 

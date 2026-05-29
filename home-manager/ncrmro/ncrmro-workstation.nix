@@ -40,7 +40,7 @@
           cmd="boot"
           shift
         fi
-        sudo nixos-rebuild "$cmd" --flake ~/nixos-config#ncrmro-workstation "$@"
+        sudo nixos-rebuild "$cmd" --flake ~/repos/ncrmro/ks-config#ncrmro-workstation "$@"
         if [[ "$cmd" == "boot" ]]; then
           echo "Reboot required to apply changes."
         fi

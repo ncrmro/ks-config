@@ -1,6 +1,6 @@
-# drago — nixos-config agent instructions
+# drago — ks-config agent instructions
 
-Per-agent overlay loaded on top of the repo-wide `nixos-config/AGENTS.md`
+Per-agent overlay loaded on top of the repo-wide `ks-config/AGENTS.md`
 and the keystone conventions cascade. Rules here are drago-specific
 behaviours for work in this repo.
 

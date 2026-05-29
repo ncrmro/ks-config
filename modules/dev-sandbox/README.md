@@ -42,7 +42,7 @@ the full plan, library survey, and decision log.
 7. Remove this spike's `hosts/common/optional/dev-sandbox.nix`,
    `home-manager/common/optional/dev-sandbox.nix`, and entries in
    `packages/default.nix` + `flake.nix:packages.x86_64-linux`
-8. In nixos-config, enable via `keystone.devSandbox.enable = true` (host) and
+8. In ks-config, enable via `keystone.devSandbox.enable = true` (host) and
    `keystone.terminal.devbox.enable = true` (home-manager)
 
 ## Explicit non-goals (spike)

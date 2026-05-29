@@ -75,7 +75,10 @@
     enable = true;
     acceleration = "vulkan";
     environmentVariables.OLLAMA_CONTEXT_LENGTH = "64000";
-    models = [ "qwen3:32b" ];
+    models = [
+      "qwen3:32b"
+      "qwen3:4b"
+    ];
   };
 
   # Attic push configuration (tokenFile defaults to /run/agenix/attic-push-token)

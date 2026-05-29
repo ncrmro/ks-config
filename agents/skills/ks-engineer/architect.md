@@ -1,0 +1,1 @@
+../../_shared/conventions/architect.md
