@@ -73,7 +73,7 @@
 
   keystone.os.services.ollama = {
     enable = true;
-    acceleration = "vulkan";
+    acceleration = "rocm";
     environmentVariables.OLLAMA_CONTEXT_LENGTH = "64000";
     models = [
       "qwen3:32b"
