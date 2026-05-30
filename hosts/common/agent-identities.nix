@@ -22,7 +22,6 @@
       archetype = "engineer";
       capabilities = [
         "engineer"
-        "notes"
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
@@ -60,7 +59,6 @@
       email = "luce@ncrmro.com";
       archetype = "product";
       capabilities = [
-        "notes"
         "executive-assistant"
       ];
       mail.provision = true;
