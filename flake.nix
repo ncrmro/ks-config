@@ -86,7 +86,6 @@
           "engineer"
           "product"
           "project-manager"
-          "notes"
         ];
       };
 
