@@ -10,9 +10,9 @@ workflow and MUST NOT execute the similarly named `ks` CLI command.
 
 ## Session context
 
-- Capabilities: ks, assistant, project, engineer, product, project-manager, notes, ks-dev
+- Capabilities: ks, assistant, project, engineer, product, project-manager, ks-dev
 - Development mode: enabled
-- Published commands: ks-system, ks-assistant, ks-notes, ks-projects, ks-dev, ks-engineer, ks-product, ks-project-manager
+- Published commands: ks-system, ks-assistant, ks-projects, ks-dev, ks-engineer, ks-product, ks-project-manager
 
 ## Operating rules
 
@@ -24,7 +24,6 @@ workflow and MUST NOT execute the similarly named `ks` CLI command.
 - If workflow startup is blocked by missing runtime prerequisites, report the blocker plainly and do not fall back to the `ks` CLI.
 - If the user asks to implement Keystone code changes and `/ks-dev` is available, direct the request through the development route instead of improvising a separate workflow.
 - If the user asks for a capability that is not available in this session, say so plainly and explain which capability is missing.
-- When work produces durable decisions, findings, or reusable operational context and `ks.notes` is available, direct the user to `ks.notes` so that context is preserved in the notebook.
 
 ## Allowed routes
 
@@ -32,7 +31,6 @@ workflow and MUST NOT execute the similarly named `ks` CLI command.
 - Feature requests, bug reports, paper cuts, and missing Keystone capabilities: start `keystone_system/issue`.
 - Keystone health checks and troubleshooting: start `keystone_system/doctor` when the user wants diagnosis rather than documentation.
 - Personal assistant requests (reservations, birthdays, calendar, photo memories): direct the user to `/ks-assistant` instead of handling directly.
-- Notes workflows (repair, inbox, init, setup): direct the user to `/ks-notes` instead of starting a notes workflow directly.
 - Project workflows (onboard, press release, success): direct the user to `/ks-projects` instead of starting a project workflow directly.
 - Engineering workflows (implementation, code review, architecture, CI): direct the user to `/ks-engineer` instead of starting engineer workflows directly.
 - Product workflows (press releases, milestones, stakeholder communication): direct the user to `/ks-product` instead of starting project workflows directly.

@@ -5,19 +5,15 @@ description: "Project workflows — may start project/onboard, project/press_rel
 
 Route project-related requests to the appropriate project DeepWork workflow.
 
-Use `ks.notes` proactively after major project events when durable decisions,
-risks, scope changes, or retrospective findings should be preserved in the
-notebook in addition to shared project tracking surfaces.
-
 ## Available workflows
 
-- **project/onboard** — onboard a new project: create hub note, scaffold structure, link repos
+- **project/onboard** — onboard a new project: scaffold structure and link repos
 - **project/press_release** — draft a press release or announcement for a project
 - **project/milestone** — parse press release or scope notes, refine user stories, create milestone, and link issue
 - **project/milestone_engineering_handoff** — internal FAQ, document review, optional spikes, specs, and plan issue — full engineering gate before implementation
 - **project/success** — run a project success review or retrospective
-- **project/doctor** — audit a project's health: hub note completeness, repo conventions, and release post coverage on the website
-- **project/wrap_up** — wind down engineering work: group uncommitted changes into logical commits, push, document in notes, and check in on open issues/PRs
+- **project/doctor** — audit a project's health: repo conventions and release post coverage on the website
+- **project/wrap_up** — wind down engineering work: group uncommitted changes into logical commits, push, and check in on open issues/PRs
 
 ## Routing rules
 
