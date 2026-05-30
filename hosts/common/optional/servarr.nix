@@ -71,6 +71,45 @@ let
     newzbin =
     priority = 0
   '';
+
+  # Jellyfin network config. EnablePublishedServerUriByRequest makes Jellyfin
+  # advertise its server URL from the inbound request (Host + X-Forwarded-Proto
+  # via the 127.0.0.1 known proxy) instead of its raw bind address — proper
+  # reverse-proxy hygiene so native clients that use the server-reported
+  # address are sent to the TLS endpoint rather than an internal :8096 URL.
+  # This is hygiene only; the actual LAN-Apple-TV streaming gotcha is handled
+  # by opening :8096 on enp4s0 below — see that block for the why.
+  jellyfinNetworkConfig = pkgs.writeText "jellyfin-network.xml" ''
+    <?xml version="1.0" encoding="utf-8"?>
+    <NetworkConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <BaseUrl />
+      <EnableHttps>false</EnableHttps>
+      <RequireHttps>false</RequireHttps>
+      <CertificatePath />
+      <CertificatePassword />
+      <InternalHttpPort>8096</InternalHttpPort>
+      <InternalHttpsPort>8920</InternalHttpsPort>
+      <PublicHttpPort>8096</PublicHttpPort>
+      <PublicHttpsPort>8920</PublicHttpsPort>
+      <AutoDiscovery>true</AutoDiscovery>
+      <EnableIPv4>true</EnableIPv4>
+      <EnableIPv6>false</EnableIPv6>
+      <EnableRemoteAccess>true</EnableRemoteAccess>
+      <LocalNetworkSubnets />
+      <LocalNetworkAddresses />
+      <KnownProxies>
+        <string>127.0.0.1</string>
+      </KnownProxies>
+      <IgnoreVirtualInterfaces>true</IgnoreVirtualInterfaces>
+      <VirtualInterfaceNames>
+        <string>veth</string>
+      </VirtualInterfaceNames>
+      <EnablePublishedServerUriByRequest>true</EnablePublishedServerUriByRequest>
+      <PublishedServerUriBySubnet />
+      <RemoteIPFilter />
+      <IsRemoteIPFilterBlacklist>false</IsRemoteIPFilterBlacklist>
+    </NetworkConfiguration>
+  '';
 in
 {
   # Allow unfree packages needed by sabnzbd (unrar)
@@ -85,6 +124,12 @@ in
     openFirewall = false;
     group = "media";
   };
+
+  # Render network.xml on every start; this file is the source of truth, so
+  # Networking changes made in the Jellyfin dashboard are reverted on rebuild.
+  systemd.services.jellyfin.preStart = ''
+    install -Dm0644 ${jellyfinNetworkConfig} /var/lib/jellyfin/config/network.xml
+  '';
 
   services.radarr = {
     enable = true;
@@ -195,6 +240,21 @@ in
       5055 # Jellyseerr
       9091 # Transmission
       8085 # SABnzbd
+    ];
+  };
+
+  # Native Apple TV apps (Swiftfin, Infuse, the official Jellyfin tvOS app)
+  # bypass the LAN's AdGuard DNS via tvOS encrypted DNS / "Limit IP Address
+  # Tracking" and resolve jellyfin.ncrmro.com to the public WAN IP, arriving
+  # over a NAT hairpin. Small API calls survive that loopback (so metadata
+  # loads), but the player's stream connection silently fails before reaching
+  # nginx — apps display the library but never play.
+  # CRITICAL: removing this rule reintroduces that "loads metadata, never
+  # plays" failure for LAN Apple TV clients. Trusted-LAN only; ocean has no
+  # public IPv4 so this is not internet-exposed. LAN streaming is plain HTTP.
+  networking.firewall.interfaces.enp4s0 = {
+    allowedTCPPorts = [
+      8096 # Jellyfin direct LAN — workaround for tvOS DNS bypass / NAT hairpin
     ];
   };
 
