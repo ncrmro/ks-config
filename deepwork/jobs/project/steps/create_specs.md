@@ -2,11 +2,20 @@
 
 ## Objective
 
-Write spec files grouped by system boundary, each containing behavioral requirements, data contracts, and edge case documentation. Commit specs to a branch, open a draft PR, and assign reviewers.
+Write spec files for one engineering scope (one spec slug) covering one or more system boundaries. Each spec contains behavioral requirements, data contracts, and edge case documentation. Spec files land in `docs/specs/NNN-<spec-slug>/`. Commit specs to a `spec/<spec-slug>` branch off `main`, open a draft PR, and assign reviewers.
 
 ## Task
 
-Read the scope analysis and review decision from prior steps, group approved stories by system boundary, and write spec files using RFC 2119 keywords. Each spec covers one system boundary and defines the behavioral requirements that implementation must satisfy. Only write specs for stories that are **in scope** or **renegotiated** per the review decision — deferred stories are excluded.
+Read the scope analysis and review decision from prior steps, group approved stories under one engineering scope (one spec), and write spec files using RFC 2119 keywords. The spec slug is chosen for the engineering scope — it is NOT auto-derived from the milestone slug. One milestone may depend on multiple specs, each with its own slug. Only write specs for stories that are **in scope** or **renegotiated** per the review decision — deferred stories are excluded.
+
+### Spec slug vs milestone slug — convention reference
+
+Per the milestone/spec convention (see `docs/conventions/milestones-and-specs.md` in the project repo when present), milestones and specs are **independent peers**, both branched off `main`:
+
+- `milestone/<ms-slug>` — product integration, owns `docs/milestones/M<N>-<ms-slug>/`
+- `spec/<spec-slug>` — engineering integration, owns `docs/specs/NNN-<spec-slug>/`
+
+A milestone declares the specs it depends on in its `milestone.yaml` `dependsOnSpecs` array. A spec stands on its own and may be depended on by zero, one, or many milestones. Pick the spec slug to describe the engineering scope (e.g., `eval-cli-runner`, `mcp-transport-upgrade`), not the milestone.
 
 ### Process
 
@@ -16,23 +25,29 @@ Read the scope analysis and review decision from prior steps, group approved sto
    - Extract the approved MVP scope — only in-scope and renegotiated stories
    - Note the system boundaries and the repository slug and platform
 
-2. **Navigate to the project repo**
+2. **Determine the spec slug**
+   - Ask the user (via `AskUserQuestion` if available) for the `<spec-slug>` describing this engineering scope. Suggest 1-2 candidate slugs based on the system boundaries in the scope analysis (e.g., `eval-cli-runner`, `recipe-search-index`).
+   - The slug MUST be kebab-case
+   - The slug is NOT auto-derived from the milestone slug — one milestone may have multiple specs with their own slugs
+   - If the user has a clear parent milestone slug from `setup_milestone`, ask whether this spec belongs to that milestone (used in the `create_plan_issue` step to update `milestone.yaml.dependsOnSpecs`)
+
+3. **Navigate to the project repo**
    - Work in `.repos/{owner}/{repo}`
    - Ensure the repo is up to date: `git fetch origin`
 
-3. **Create a branch and worktree**
-   - Derive a milestone slug from the milestone title (e.g., "Recipe Sharing Platform" → `recipe-sharing-platform`)
-   - Create a branch: `git branch docs/specs-{milestone-slug} origin/main`
-   - Create a worktree: `git worktree add "$HOME/.worktrees/{owner}/{repo}/docs/specs-{milestone-slug}" docs/specs-{milestone-slug}`
+4. **Create a branch and worktree**
+   - Create a branch off `origin/main` (NOT off the milestone branch — milestones and specs are peers): `git branch spec/<spec-slug> origin/main`
+   - Create a worktree: `git worktree add "$HOME/.worktrees/{owner}/{repo}/spec/<spec-slug>" spec/<spec-slug>`
    - Work in the worktree for all subsequent operations
 
-4. **Create spec files**
-   - Create a `specs/` directory in the repo root (if it doesn't exist)
-   - For each system boundary identified in the scope analysis (for approved stories only), create a spec file at `specs/{NNN}-{slug}.md`
-   - Number specs sequentially: `001`, `002`, etc.
-   - The slug should be a short kebab-case name derived from the boundary name
+5. **Create spec files**
+   - Find the next sequential spec number `NNN` by scanning existing `docs/specs/NNN-*/` directories — use the next free zero-padded integer (e.g., if `001`, `002`, `003` exist, use `004`). Numbers are stable and never reused.
+   - Create directory `docs/specs/NNN-<spec-slug>/` in the repo
+   - For each system boundary identified in the scope analysis (for approved stories only), create a spec file inside the directory at `docs/specs/NNN-<spec-slug>/<boundary-slug>.md`
+   - `<boundary-slug>` is a short kebab-case name derived from the boundary name (e.g., `api-layer.md`, `database-schema.md`)
+   - When only one boundary applies, a single `spec.md` inside the directory is also acceptable
 
-5. **Write each spec**
+6. **Write each spec**
    - For each spec file, include:
      - Which user stories this spec covers
      - Affected modules and files
@@ -41,56 +56,60 @@ Read the scope analysis and review decision from prior steps, group approved sto
      - Edge cases and error handling
      - ASCII art mockups for UI components (if applicable)
    - For renegotiated stories, reflect the **revised** scope from the review decision — not the original press release promise
-   - Cross-reference other specs when boundaries interact
+   - Cross-reference other specs in the same directory or in peer `docs/specs/` directories when boundaries interact
 
-6. **Commit and push**
-   - Stage all spec files: `git add specs/`
-   - Commit: `git commit -m "docs(specs): add functional requirement specs for {milestone}"`
-   - Push: `git push -u origin docs/specs-{milestone-slug}`
+7. **Commit and push**
+   - Stage all spec files: `git add docs/specs/NNN-<spec-slug>/`
+   - Commit: `git commit -m "docs(specs): add NNN-<spec-slug> functional requirement specs"`
+   - Push: `git push -u origin spec/<spec-slug>`
 
-7. **Open a draft PR**
+8. **Open a draft PR**
 
    **GitHub**:
 
    ```bash
    gh pr create --draft \
-     --title "docs(specs): functional requirement specs for {milestone}" \
-     --body "Specs for milestone #{milestone_issue_number}. Review before implementation begins."
+     --title "docs(specs): NNN-<spec-slug> functional requirement specs" \
+     --body "Spec for engineering scope <spec-slug>. Review before implementation begins."
    ```
 
    **Forgejo**:
 
    ```bash
-   fj pr create "WIP: docs(specs): functional requirement specs for {milestone}" \
-     --head docs/specs-{milestone-slug} --base main \
-     --body "Specs for milestone #{milestone_issue_number}. Review before implementation begins." \
+   fj pr create "WIP: docs(specs): NNN-<spec-slug> functional requirement specs" \
+     --head spec/<spec-slug> --base main \
+     --body "Spec for engineering scope <spec-slug>. Review before implementation begins." \
      -r {owner}/{repo}
    ```
 
-8. **Assign reviewers**
+9. **Assign reviewers**
    - Read `.agents/TEAM.md` for the correct platform usernames
    - Assign Luce (CPO) and Nicholas (human) as reviewers
    - GitHub: `gh pr edit {pr_number} --add-reviewer {username1},{username2}`
    - Forgejo: use the API to add reviewers
 
-9. **Write the specs PR report**
+10. **Write the specs PR report**
+    - Capture the spec slug, directory path, parent milestone slug (if known) so `create_plan_issue` can update the right `milestone.yaml`
 
 ## Output Format
 
 ### specs_pr_report.md
 
-A report documenting the created spec files and the draft PR.
+A report documenting the created spec directory, spec files, and the draft PR.
 
 **Structure**:
 
 ```markdown
-# Specs PR Report: [Milestone Title]
+# Specs PR Report: [Spec Slug]
 
 ## Platform
 
 - **Platform**: [github | forgejo]
 - **Repository**: [owner/repo]
-- **Branch**: docs/specs-[milestone-slug]
+- **Branch**: spec/[spec-slug]
+- **Spec Directory**: docs/specs/[NNN]-[spec-slug]/
+- **Spec Slug**: [spec-slug]
+- **Parent Milestone Slug** (if any): [ms-slug or "(orphan spec)"]
 
 ## Draft PR
 
@@ -101,21 +120,19 @@ A report documenting the created spec files and the draft PR.
 
 ## Spec Files Created
 
-| File                           | Boundary        | Stories Covered        |
-| ------------------------------ | --------------- | ---------------------- |
-| `specs/001-api-layer.md`       | API Layer       | US-001, US-002, US-003 |
-| `specs/002-database-schema.md` | Database Schema | US-001, US-002, US-004 |
-| `specs/003-auth-middleware.md` | Auth Middleware | US-003, US-005         |
+| File                                              | Boundary        | Stories Covered        |
+| ------------------------------------------------- | --------------- | ---------------------- |
+| `docs/specs/004-eval-harness/api-layer.md`        | API Layer       | US-001, US-002, US-003 |
+| `docs/specs/004-eval-harness/database-schema.md`  | Database Schema | US-001, US-002, US-004 |
+| `docs/specs/004-eval-harness/auth-middleware.md`  | Auth Middleware | US-003, US-005         |
 
 ## Spec Summary
 
-### specs/001-api-layer.md
+### docs/specs/[NNN]-[spec-slug]/[boundary].md
 
-- **Boundary**: API Layer
+- **Boundary**: [boundary name]
 - **Key requirements**: [1-2 sentence summary of MUST requirements]
 - **Data contracts**: [list of API endpoints or models defined]
-
-### specs/002-database-schema.md
 
 ...
 
@@ -126,7 +143,7 @@ A report documenting the created spec files and the draft PR.
 
 ### Spec File Format
 
-Each spec file at `specs/{NNN}-{slug}.md` should follow this structure:
+Each spec file at `docs/specs/{NNN}-{spec-slug}/{boundary}.md` should follow this structure:
 
 ````markdown
 # Spec: [Boundary Name]
@@ -211,14 +228,17 @@ Each spec file at `specs/{NNN}-{slug}.md` should follow this structure:
 
 ## Quality Criteria
 
-- Every system boundary identified in the scope analysis (for approved stories) has a corresponding spec file
+- The spec slug was chosen for the engineering scope (not auto-derived from the milestone slug) and is kebab-case
+- The `spec/<spec-slug>` branch was created off `origin/main` (not off `milestone/<ms-slug>` — milestones and specs are peers)
+- Spec files live under `docs/specs/NNN-<spec-slug>/` with a fresh, never-reused `NNN`
+- Every system boundary identified in the scope analysis (for approved stories) has a corresponding spec file under the spec directory
 - Specs use RFC 2119 keywords (MUST, SHOULD, MAY) for behavioral requirements
 - API contracts, data models, or interface definitions are specified where applicable
 - A draft PR has been created with the spec files and assigned to reviewers
 - Edge cases and error handling are documented in each spec
-- Spec files are numbered sequentially and use kebab-case slugs
 - Specs reflect renegotiated scope from the review decision, not the original press release promises
+- The report records the parent milestone slug (if any) so the next step can update `milestone.yaml.dependsOnSpecs`
 
 ## Context
 
-This step bridges analysis and implementation planning. Specs serve as the contract between product and engineering: they define what the system must do (behavioral requirements) without prescribing how (implementation details). The specs PR goes through review before implementation starts, ensuring alignment between Luce (product), Nicholas (human), and Drago (engineering). Subsequent steps reference these specs when creating the plan issue.
+This step bridges analysis and implementation planning. Specs serve as the contract between product and engineering: they define what the system must do (behavioral requirements) without prescribing how (implementation details). The `spec/<spec-slug>` branch is a peer to any `milestone/<ms-slug>` — both branch off `main`. Orphan specs (no milestone parent) are valid; they ship engineering work on their own merits. The specs PR goes through review before implementation starts, ensuring alignment between Luce (product), Nicholas (human), and Drago (engineering). The next step (`create_plan_issue`) creates the `Spec: <spec-slug>` tracking issue and, if a parent milestone was identified, updates that milestone's `milestone.yaml` to append `<spec-slug>` to `dependsOnSpecs`.
