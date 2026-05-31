@@ -2515,29 +2515,37 @@ workflows:
 
       - name: create_plan_issue
         instructions: |
-          # Create Implementation Plan Issue
+          # Create Spec Tracking Issue
 
           ## Objective
 
-          Create a **single** plan issue on the milestone that serves as the sole tracking issue for all implementation work. This issue includes happy paths, test expectations, design mockups, demo artifacts, **and a phased task checklist documenting parallelism and blocking dependencies**. PRs are opened directly against this issue — no child issues are created.
+          Create a **single** `Spec: <spec-slug>` tracking issue that serves as the sole tracking issue for all implementation work on this spec. This issue includes happy paths, test expectations, design mockups, demo artifacts, a "Used by milestones" reverse-lookup section, **and a phased task checklist documenting parallelism and blocking dependencies**. PRs are opened directly against this issue — no child issues are created. After the issue succeeds, append `<spec-slug>` to the parent milestone's `milestone.yaml` `dependsOnSpecs` (if a parent milestone was identified).
 
           ## Task
 
-          Read the scope analysis, review decision, and specs PR report from prior steps, then compose and create one comprehensive plan issue on the project's platform. This issue becomes the single reference point for all implementation work on the milestone. Multiple PRs will reference this issue via `Part of #N` or `Closes #N`.
+          Read the scope analysis, review decision, and specs PR report from prior steps, then compose and create one comprehensive `Spec:` issue on the project's platform. This issue becomes the single reference point for all implementation work tied to the spec. Multiple PRs will reference this issue via `Part of #N` or `Closes #N`.
 
           **IMPORTANT: Do NOT create child issues.** All work is tracked in this issue's task checklist.
 
-          **ISSUE COUNT CAP**: Create exactly ONE plan issue. If you identify a genuinely distinct feature that warrants its own issue (large delineating feature, not just a subtask), you MUST stop and ask the human for approval before creating it. The absolute maximum is 1-3 additional issues, and each requires explicit human sign-off. Issue bloat (10+ issues per milestone) has been a recurring problem — err on fewer issues.
+          **ISSUE COUNT CAP**: Create exactly ONE `Spec:` issue per spec. If you identify a genuinely distinct feature that warrants its own issue (large delineating feature, not just a subtask), you MUST stop and ask the human for approval before creating it. The absolute maximum is 1-3 additional issues, and each requires explicit human sign-off. Issue bloat (10+ issues per milestone) has been a recurring problem — err on fewer issues.
+
+          ### Convention reference — Spec issue title and labels
+
+          Per the milestone/spec convention (see `docs/conventions/milestones-and-specs.md` in the project repo when present):
+
+          - Title: `Spec: <spec-slug>` (e.g., `Spec: eval-cli-runner`). Do NOT use `Plan: <milestone title>` or `(M#)` suffixes.
+          - Label: `kind:spec`
+          - Body must include a **"Used by milestones"** section listing every milestone whose `milestone.yaml` `dependsOnSpecs` includes this spec, or `(none yet)` if no parent.
 
           ### Process
 
           1. **Read prior step outputs**
              - Load `scope_analysis.md` — for the story-to-system map and prerequisites
              - Load `review_decision.md` — for the approved MVP scope (in scope + renegotiated stories only)
-             - Load `specs_pr_report.md` — for the specs PR number/URL and spec file details
-             - Extract the milestone title, issue number, and platform
+             - Load `specs_pr_report.md` — for the spec slug, spec directory path, specs PR number/URL, parent milestone slug (if any), and spec file details
+             - Extract the platform and repo
 
-          2. **Compose the plan issue body**
+          2. **Compose the spec issue body**
              For each **approved** user story from the review decision, include:
              - **Happy path requirements** — the expected user flow when everything works correctly
              - **Red/green test expectations** — what test should fail before implementation (red) and pass after (green). Be specific about the assertion, not just "it should work."
@@ -2547,9 +2555,32 @@ workflows:
              Also include:
              - **Implementation order** — which stories can be parallelized and which have dependencies
              - **Feature flag requirements** — which stories need feature flags for safe deployment
-             - References to the specs PR, the review decision, and the original milestone issue
+             - References to the specs PR, the review decision, and the parent milestone issue (if any)
+             - A **"Used by milestones"** section (see step 3)
 
-          3. **Compose the phased task checklist**
+          3. **Compose the "Used by milestones" section**
+
+             Scan every `docs/milestones/*/milestone.yaml` in the repo for entries whose `dependsOnSpecs` already contains `<spec-slug>`:
+
+             ```bash
+             # In the project repo, on main:
+             for f in docs/milestones/*/milestone.yaml; do
+               yq -r 'select(.dependsOnSpecs[]? == "<spec-slug>") | .slug + " (" + .forgejoIssue + ")"' "$f"
+             done
+             ```
+
+             Render the result inside the issue body:
+
+             ```markdown
+             ## Used by milestones
+
+             - eval-harness (#10)
+             - cli-onboarding (#23)
+             ```
+
+             If no milestones currently depend on this spec, render `(none yet)`. The later sub-step (step 6) will add the parent milestone declared at workflow start, so the reverse-lookup will be live as soon as that yaml is committed.
+
+          4. **Compose the phased task checklist**
 
              Break the work into tasks grouped by phase. Each task should map to a single small PR (2-3 files max). Use conventional commit prefixes for task names. Document parallelism and blocking:
 
@@ -2570,7 +2601,7 @@ workflows:
 
              - [ ] test: add recipe API integration tests
 
-             ### Future Work (out of milestone scope)
+             ### Future Work (out of spec scope)
 
              - Recipe ratings and reviews
              - Recipe import from external sites
@@ -2582,65 +2613,85 @@ workflows:
              - Feature tasks should depend on infrastructure, not on each other
              - Use feature flags to avoid blocking on deployment order
 
-          4. **Create the plan issue**
+          5. **Create the spec issue**
 
              **GitHub**:
 
              ```bash
              gh issue create --repo {owner}/{repo} \
-               --title "Plan: {milestone title}" \
+               --title "Spec: <spec-slug>" \
                --body "$BODY" \
-               --label "engineering" --label "plan" \
-               --milestone "{milestone title}" \
+               --label "kind:spec" --label "engineering" \
                --assignee {drago_username}
              ```
 
              **Forgejo**:
 
              ```bash
-             fj issue create "Plan: {milestone title}" \
+             fj issue create "Spec: <spec-slug>" \
                --body "$BODY" \
-               --label "engineering" --label "plan" \
+               --label "kind:spec" --label "engineering" \
                -r {owner}/{repo}
              ```
 
-             Then link to milestone and assign via API.
-             - Ensure `engineering` and `plan` labels exist (create if missing)
+             Then assign via API.
+             - Ensure `kind:spec` and `engineering` labels exist (create if missing)
              - Assign to Drago (CTO) — read username from `.agents/TEAM.md`
-             - Link to the milestone
+             - The `Spec:` issue is NOT linked to a Forgejo milestone — the milestone-spec relationship lives in `milestone.yaml.dependsOnSpecs` (the next step), and the parent milestone issue cross-references the spec issue in its own body.
 
-          5. **Write the plan issue report**
+          6. **Update the parent milestone's `milestone.yaml`** (if a parent milestone was named at workflow start)
+
+             On the `milestone/<ms-slug>` branch (or in its worktree), append `<spec-slug>` to `dependsOnSpecs` in `docs/milestones/M<N>-<ms-slug>/milestone.yaml`. Skip this step entirely if the spec is orphan (no parent milestone).
+
+             ```bash
+             # In the milestone worktree:
+             yq -i ".dependsOnSpecs += [\"<spec-slug>\"] | .dependsOnSpecs |= unique" \
+               docs/milestones/M<N>-<ms-slug>/milestone.yaml
+             git add docs/milestones/M<N>-<ms-slug>/milestone.yaml
+             git commit -m "docs(milestone): depend on spec <spec-slug>"
+             git push origin milestone/<ms-slug>
+             ```
+
+             Use `unique` to avoid duplicate entries on re-runs.
+
+          7. **Write the plan issue report**
+             - Record whether the parent milestone yaml was updated (and the resulting `dependsOnSpecs` list), or "no parent milestone — orphan spec"
 
           ## Output Format
 
           ### plan_issue_report.md
 
-          A report documenting the created plan issue.
+          A report documenting the created spec issue.
 
           **Structure**:
 
           ```markdown
-          # Plan Issue Report: [Milestone Title]
+          # Spec Issue Report: [Spec Slug]
 
           ## Platform
 
           - **Platform**: [github | forgejo]
           - **Repository**: [owner/repo]
 
-          ## Plan Issue
+          ## Spec Issue
 
           - **Number**: #[number]
-          - **Title**: Plan: [milestone title]
+          - **Title**: Spec: [spec-slug]
           - **URL**: [issue URL]
-          - **Milestone**: [milestone title]
           - **Assignee**: [Drago's username]
-          - **Labels**: engineering, plan
+          - **Labels**: kind:spec, engineering
 
           ## References
 
-          - **Milestone Issue**: #[milestone_issue_number]
+          - **Parent Milestone Issue**: #[milestone_issue_number] (or "(orphan spec)")
           - **Specs PR**: #[specs_pr_number] ([URL])
           - **Review Decision**: [link or summary]
+
+          ## Used by milestones (committed to milestone.yaml)
+
+          - [ms-slug] (#[issue]) — appended by this step
+          - [other-ms-slug] (#[issue]) — pre-existing
+          (or: "(none yet) — orphan spec")
 
           ## Stories Included
 
@@ -2664,28 +2715,31 @@ workflows:
 
           ## Quality Criteria
 
-          - **No child issues created** — all work tracked in this single plan issue's task checklist
-          - Every approved user story from the review decision appears in the plan with happy path requirements
+          - The issue title is `Spec: <spec-slug>` (NOT `Plan: <milestone title>`; NO `(M#)` suffix)
+          - The `kind:spec` and `engineering` labels are applied
+          - **No child issues created** — all work tracked in this single spec issue's task checklist
+          - A "Used by milestones" section is present (with either parent milestone entries or `(none yet)`)
+          - If a parent milestone was named at workflow start, that milestone's `milestone.yaml` was updated to append `<spec-slug>` to `dependsOnSpecs` and committed/pushed on `milestone/<ms-slug>`
+          - Every approved user story from the review decision appears in the issue with happy path requirements
           - A phased task checklist documents all work items with conventional commit prefixes
           - Parallelism and blocking dependencies are clearly documented per phase
           - Each story includes red/green test expectations describing what fails before and passes after implementation
           - ASCII art mockups are included for new UI components or layouts
           - Expected demo artifacts are described for each story (screenshots, videos, preview URLs)
-          - The specs PR is referenced in the plan issue body
-          - The plan issue is linked to the milestone
+          - The specs PR and the spec directory path are referenced in the issue body
 
           ## After this step
 
-          Once the plan issue is created, suggest the following to the user:
+          Once the spec issue is created, suggest the following to the user:
 
-          > The plan issue is ready. Next steps:
+          > The `Spec: <spec-slug>` issue is ready. Next steps:
           >
-          > 1. **`engineer/implement`** — use this workflow for each task in the plan checklist to drive implementation through to merged PRs.
+          > 1. **`engineer/implement`** — use this workflow for each task in the spec issue's task checklist to drive implementation through to merged PRs. Per-task PRs target `spec/<spec-slug>`; `spec/<spec-slug>` merges to `main` when engineering is complete.
           > 2. **`ks.notes` / `notes/process_inbox`** — capture the scope analysis, design decisions, and review outcome into personal notes before implementation begins. Key decisions made during the document review are worth preserving in the Zettelkasten.
 
           ## Context
 
-          This step creates the engineering blueprint for the milestone. The plan issue serves as the **single tracking issue** for all implementation work — no child issues are created. Instead, the plan issue contains a phased task checklist where each task maps to one PR. This avoids issue sprawl (10+ granular issues per milestone) and keeps all context, parallelism notes, and blocking info in one place. PRs reference the plan issue with `Part of #N`. The test expectations follow TDD principles — defining what should fail and pass before writing code. The demo artifacts ensure that every story has a verifiable outcome visible to stakeholders.
+          This step creates the engineering tracking issue for the spec. The `Spec:` issue serves as the **single tracking issue** for all implementation work tied to this engineering scope — no child issues are created. Instead, it contains a phased task checklist where each task maps to one PR. This avoids issue sprawl (10+ granular issues per milestone) and keeps all context, parallelism notes, and blocking info in one place. PRs reference the spec issue with `Part of #N`. The test expectations follow TDD principles — defining what should fail and pass before writing code. The demo artifacts ensure that every story has a verifiable outcome visible to stakeholders. The "Used by milestones" section and the `milestone.yaml.dependsOnSpecs` update are the two halves of the milestone-spec link: one for humans reading the issue, one for tooling reading the yaml.
         inputs:
           scope_analysis: { required: true }
           review_decision: { required: true }
