@@ -2166,14 +2166,26 @@ workflows:
              - `yellow`: some stories have unresolved questions — spikes required before specs can be written
              - `red`: one or more stories are infeasible or require scope renegotiation before proceeding
 
-          6. **Post the internal FAQ as a comment**
-             - Post the internal FAQ as a comment on the milestone issue (visible to all stakeholders)
+          6. **Publish the internal FAQ to the milestone directory**
+
+             Per the milestone/spec convention (see `docs/conventions/milestones-and-specs.md`), the canonical in-repo home for a milestone's internal FAQ is `docs/milestones/M<N>-<ms-slug>/internal-faq.md` on the `milestone/<ms-slug>` branch.
+
+             - Derive `<ms-slug>` and the Forgejo milestone id `<N>` from the milestone issue's milestone metadata (or the prior `setup_milestone` artifacts)
+             - Check out `milestone/<ms-slug>` (or work in its worktree)
+             - Write the full internal FAQ to `docs/milestones/M<N>-<ms-slug>/internal-faq.md`, replacing the stub created by `setup_milestone`
+             - Commit: `git commit -m "docs(milestone): publish internal FAQ for <ms-slug>"`
+             - Push: `git push origin milestone/<ms-slug>`
+
+          7. **Post the internal FAQ as a comment**
+             - Post the internal FAQ as a comment on the milestone issue (visible to all stakeholders); the comment body MAY link back to the canonical `docs/milestones/M<N>-<ms-slug>/internal-faq.md` written in step 6
              - GitHub: `gh issue comment {number} --repo {owner}/{repo} --body "$BODY"`
              - Forgejo: `fj issue comment {number} -r {owner}/{repo} --body "$BODY"`
 
           ## Output Format
 
-          ### internal_faq.md
+          ### docs/milestones/M<N>-<ms-slug>/internal-faq.md
+
+          The canonical in-repo home for the internal FAQ. Written to the `milestone/<ms-slug>` branch by step 6. The DeepWork artifact tracked as `internal_faq` is this file (or a copy of its content under `.deepwork/tmp/` for handoff purposes).
 
           ```markdown
           # Internal FAQ: [Milestone Title]
@@ -2218,6 +2230,7 @@ workflows:
           - T-shirt sizing is concrete (not "TBD") with a written justification for each story
           - Required spikes are listed with a clear blocking question (not just "needs investigation")
           - Summary verdict is one of `green`, `yellow`, or `red` with supporting rationale
+          - The internal FAQ is committed to `docs/milestones/M<N>-<ms-slug>/internal-faq.md` on the `milestone/<ms-slug>` branch and pushed before the step completes
           - Internal FAQ is posted as a comment on the milestone issue before the step completes
 
           ## Context
