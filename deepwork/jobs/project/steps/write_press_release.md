@@ -100,8 +100,20 @@ Read the context brief from the previous step and the conventions at `.agents/co
     - Label the issue with `press-release` (create the label if it doesn't exist)
     - Record the **full URL** of the created issue in `.deepwork/tmp/<slug>-press-release-issue-url.md`
     - Update the zk note's `issue_ref` frontmatter field with the created issue URL
-    - If the project repo already stores press releases as tracked content, publish the finalized draft there as a separate explicit step after the issue is created
-    - If the project does not store press releases in-repo, keep `.deepwork/tmp/press_release.mdx` as the transient local artifact and treat the issue as the canonical published record
+
+13. **Publish the canonical in-repo copy to the milestone directory**
+
+    Per the milestone/spec convention (see `docs/conventions/milestones-and-specs.md`), the canonical in-repo home for a milestone's press release is `docs/milestones/M<N>-<ms-slug>/press-release.md` on the `milestone/<ms-slug>` branch.
+
+    - If a milestone for this press release already exists (the user can supply `<ms-slug>` and the Forgejo milestone id `<N>`, or you can derive them from prior `setup_milestone` artifacts):
+      - Check out the `milestone/<ms-slug>` branch (or work in its worktree)
+      - Write the audience-facing press release content to `docs/milestones/M<N>-<ms-slug>/press-release.md`, replacing the stub created by `setup_milestone`
+      - Commit: `git commit -m "docs(milestone): publish press release for <ms-slug>"`
+      - Push: `git push origin milestone/<ms-slug>`
+    - If no milestone exists yet (the press release is running ahead of `setup_milestone`, which is normal — the press release URL feeds milestone setup):
+      - Keep `.deepwork/tmp/<slug>-press-release.mdx` as the transient handoff artifact
+      - Treat the published issue as the canonical record until `setup_milestone` runs
+      - `setup_milestone` will create the milestone dir with a press-release.md stub; either re-run this step with `<ms-slug>` + `<N>` supplied, or copy the press release content into `docs/milestones/M<N>-<ms-slug>/press-release.md` manually on the `milestone/<ms-slug>` branch as a separate explicit step
 
 ## Output Format
 
@@ -110,9 +122,9 @@ Read the context brief from the previous step and the conventions at `.agents/co
 The finished press release in MDX format. Write the local workflow artifact to a
 unique path under `.deepwork/tmp/`, such as `.deepwork/tmp/keystone-project-agent-press-release.mdx`.
 
-If the project already stores press releases in-repo, publish the finalized draft
-to the project's designated directory, typically `posts/press_releases/`, as a
-separate explicit publication step.
+When a milestone exists, also publish the finalized press release as
+`docs/milestones/M<N>-<ms-slug>/press-release.md` on the `milestone/<ms-slug>` branch
+(see step 13). This is the canonical in-repo home per the milestone/spec convention.
 
 ### zk note in the configured notes dir
 
@@ -219,6 +231,7 @@ The issue body has five parts, in order:
 - The issue title follows the `Press Release: <Product Label>` format
 - The issue body has a human-readable context header above the first `---` — no jargon or internal tool names
 - The press release blockquote is enclosed between two `---` separators
+- When a milestone is known (`<ms-slug>` + `<N>` supplied or derivable), the press release content has been written to `docs/milestones/M<N>-<ms-slug>/press-release.md` on the `milestone/<ms-slug>` branch and pushed
 
 ## Next Steps
 
