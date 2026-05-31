@@ -38,11 +38,9 @@
     };
 
     # Vega — personal dashboard + MCP server, hosted on ocean.
-    # Tracks the `experimental` branch (long-running infra branch);
-    # main doesn't yet know about the nixos module. Private repo:
-    # requires Tailscale + SSH access to git.ncrmro.com.
+    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
     vega = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git?ref=experimental";
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };
