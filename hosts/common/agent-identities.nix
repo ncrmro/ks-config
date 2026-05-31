@@ -28,30 +28,6 @@
       dispatcher = {
         enable = false;
       };
-      piTaskRunner = {
-        enable = true;
-        sources = "email,forgejo,github";
-      };
-      notes.taskLoop = {
-        enable = false;
-        defaults = {
-          provider = "pi";
-          model = "ollama/qwen3:4b";
-        };
-        ingest = {
-          provider = "pi";
-          model = "ollama/qwen3:4b";
-        };
-        prioritize = {
-          provider = "pi";
-          model = "ollama/qwen3:4b";
-        };
-        execute = {
-          provider = "pi";
-          model = "ollama/qwen3:4b";
-        };
-      };
-      notes.scheduler.enable = false;
     };
     luce = {
       host = "ocean";
