@@ -35,6 +35,7 @@
     ../common/optional/alloy-client.nix
     ./immich.nix
     ./vms.nix
+    ./vega.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering
