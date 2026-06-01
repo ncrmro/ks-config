@@ -194,7 +194,15 @@ in
     };
   };
 
-  # Stalwart Mail Admin - Tailscale only
+  # Stalwart Mail - Tailscale only
+  # Single HTTP listener on :8082 serves the admin web UI, the REST
+  # management API, JMAP, CalDAV (/dav/cal), CardDAV (/dav/card), WebDAV
+  # (/dav/file), and the DAV bootstrap endpoints (/.well-known/{caldav,carddav}).
+  # The catch-all "/" location already proxies every path to upstream; the
+  # explicit /dav/ and /.well-known/* blocks below exist so an operator
+  # auditing the vhost can see at a glance which DAV surface is exposed
+  # and so DAV-specific tweaks (e.g. larger client_max_body_size for big
+  # vCard imports) have an obvious home.
   services.nginx.virtualHosts."mail.ncrmro.com" = {
     forceSSL = true;
     useACMEHost = "wildcard-ncrmro-com";
@@ -202,6 +210,23 @@ in
     locations."/" = {
       proxyPass = "http://127.0.0.1:8082";
       proxyWebsockets = true;
+    };
+    # CalDAV bootstrap — clients hit this first for principal discovery.
+    locations."/.well-known/caldav" = {
+      proxyPass = "http://127.0.0.1:8082";
+    };
+    # CardDAV bootstrap — same role for address books.
+    locations."/.well-known/carddav" = {
+      proxyPass = "http://127.0.0.1:8082";
+    };
+    # All DAV collections live under /dav/{cal,card,file,pal,itip}/.
+    # Raise body size so calendar/address-book imports (full ICS/VCF
+    # dumps from existing clients) aren't truncated by nginx's 1m default.
+    locations."/dav/" = {
+      proxyPass = "http://127.0.0.1:8082";
+      extraConfig = ''
+        client_max_body_size 50M;
+      '';
     };
   };
 }
