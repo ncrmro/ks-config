@@ -157,15 +157,14 @@
           };
 
           mercury = {
-            kind = "server";
+            # server-vm: cloud/VPS kind. UEFI by default, no secureBoot/TPM,
+            # ext4 storage — matches Vultr's qemu-guest image. Drops the
+            # storage.devices placeholder, secureBoot/tpm off, and the
+            # host-level bootloader workaround that the old `server` kind
+            # required for mercury.
+            kind = "server-vm";
             hostname = "mercury";
             stateVersion = "25.05";
-            storage.devices = placeholderDevices;
-            # Mercury is a VPS without TPM or Secure Boot hardware. The
-            # host module turns those off, so mkSystemFlake's defaults
-            # (which would force them on) must match here too.
-            secureBoot.enable = false;
-            tpm.enable = false;
             # Mercury reads ocean's generated DNS/ACL records as a specialArg.
             # The reference into `fleet.nixosConfigurations.ocean` is lazy:
             # ocean's config is only forced when mercury's modules actually
