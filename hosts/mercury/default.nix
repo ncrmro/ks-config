@@ -1,4 +1,4 @@
-{ inputs, oceanConfig, ... }:
+{ inputs, lib, oceanConfig, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -10,6 +10,15 @@
     inputs.keystone.nixosModules.headscale-dns
     inputs.keystone.nixosModules.headscale-acl
   ];
+
+  # Mercury is a Vultr VPS that boots via grub-in-ESP, not systemd-boot.
+  # keystone's mkLinuxHost defaults `boot.loader.systemd-boot.enable = true`
+  # via mkDefault — that's fine for baremetal UEFI hosts but wrong here:
+  # the activation step runs `bootctl install`, finds no systemd-boot in
+  # the ESP, and aborts the switch. Force systemd-boot off and let grub
+  # (already declared in hardware-configuration.nix) handle the ESP.
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.grub.enable = true;
 
   boot.tmp.cleanOnBoot = true;
   zramSwap.enable = true;
