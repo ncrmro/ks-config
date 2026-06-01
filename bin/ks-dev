@@ -117,7 +117,13 @@ add_override "agenix-secrets" "${HOME}/.keystone/repos/ncrmro/agenix-secrets"
 # Detect whether $host is the local machine or a remote target. For remote
 # deploys, look up hosts.nix's sshTarget (or fall back to the bare hostname,
 # which resolves via MagicDNS on Tailscale). nixos-rebuild then copies the
-# closure over and runs switch-to-configuration on the remote with sudo.
+# closure over and runs switch-to-configuration on the remote via sudo.
+#
+# Note: the remote nix-daemon's `trusted-users` must include @wheel (or the
+# invoking user) or `nix copy` will reject unsigned local paths with
+# "lacks a signature by a trusted key". ks-config sets this in
+# keystone.os, but on a fresh host it needs to be applied once — see
+# `ks-dev --bootstrap` in the README.
 local_hostname="$(hostname)"
 remote_args=()
 if [[ "$host" != "$local_hostname" ]]; then
