@@ -12,7 +12,7 @@ in
   services.vega = {
     enable = true;
     bindHost = "127.0.0.1";
-    port = 7878;
+    port = 17878;
   };
 
   services.nginx.virtualHosts."vega.ncrmro.com" = {
@@ -20,7 +20,7 @@ in
     useACMEHost = "wildcard-ncrmro-com";
     extraConfig = tailscaleOnly;
     locations."/" = {
-      proxyPass = "http://127.0.0.1:7878";
+      proxyPass = "http://127.0.0.1:17878";
       proxyWebsockets = true;
     };
   };
