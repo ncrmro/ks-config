@@ -26,7 +26,7 @@ drives the rest of the portfolio review — every project in it will be reviewed
    # Resolve owner/repo from the notes remote, defaulting to ncrmro/notes
    NOTES_OWNER_REPO=$(git -C "$NOTES_PATH" remote get-url origin \
      | sed 's|.*[:/]\([^/]*/[^/]*\)\.git|\1|')
-   WORKTREE_PATH="${WORKTREE_DIR:-$HOME/.worktrees}/${NOTES_OWNER_REPO}/${BRANCH}"
+   WORKTREE_PATH="${WORKTREE_DIR:-$HOME/repos}/${NOTES_OWNER_REPO}/worktrees/${BRANCH}"
    ```
 
    a. **Switch the primary checkout to `main` and pull**:

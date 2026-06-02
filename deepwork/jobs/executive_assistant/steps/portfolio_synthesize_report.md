@@ -98,7 +98,7 @@ other source. Every number in the report must trace back to the input files.
    ```bash
    NOTES_OWNER_REPO=$(git -C "$NOTES_PATH" remote get-url origin \
      | sed 's|.*[:/]\([^/]*/[^/]*\)\.git|\1|')
-   WORKTREE_PATH="${WORKTREE_DIR:-$HOME/.worktrees}/${NOTES_OWNER_REPO}/portfolio-review/$(date +%Y-%m)"
+   WORKTREE_PATH="${WORKTREE_DIR:-$HOME/repos}/${NOTES_OWNER_REPO}/worktrees/portfolio-review/$(date +%Y-%m)"
    mkdir -p "${WORKTREE_PATH}/projects/portfolio/reviews/"
    ```
 

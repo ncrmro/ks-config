@@ -65,24 +65,21 @@
 
   home.sessionVariables = {
     IMMICH_URL = "https://photos.ncrmro.com";
+    # Keep user-editable DeepWork jobs visible to MCP servers generated from
+    # home.sessionVariables, not just interactive zsh shells.
+    DEEPWORK_ADDITIONAL_JOBS_FOLDERS = lib.mkForce (
+      lib.concatStringsSep ":" [
+        "$HOME/repos/ncrmro/ks-config/deepwork/jobs"
+        "$HOME/repos/Unsupervisedcom/deepwork/library/jobs"
+        "$HOME/repos/ncrmro/keystone/.deepwork/jobs"
+        "$HOME/repos/ncrmro/keystone/.deepwork/jobs-internal"
+      ]
+    );
   };
 
   programs.zsh.initExtra = ''
     if [ -f /run/agenix/ncrmro-immich-api-key ]; then
       export IMMICH_API_KEY="$(tr -d '\n' < /run/agenix/ncrmro-immich-api-key)"
-    fi
-
-    # Prepend ks-config's user-editable DeepWork jobs ahead of the upstream
-    # discovery set so locally-tweaked jobs win on name collisions (first
-    # match wins per REQ-015 edge cases). Base list is set by
-    # keystone.terminal.deepwork; we only extend it here. See
-    # ~/repos/ncrmro/ks-config/deepwork/README.md.
-    if [ -d "$HOME/repos/ncrmro/ks-config/deepwork/jobs" ]; then
-      if [ -n "''${DEEPWORK_ADDITIONAL_JOBS_FOLDERS:-}" ]; then
-        export DEEPWORK_ADDITIONAL_JOBS_FOLDERS="$HOME/repos/ncrmro/ks-config/deepwork/jobs:$DEEPWORK_ADDITIONAL_JOBS_FOLDERS"
-      else
-        export DEEPWORK_ADDITIONAL_JOBS_FOLDERS="$HOME/repos/ncrmro/ks-config/deepwork/jobs"
-      fi
     fi
   '';
 

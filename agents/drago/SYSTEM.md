@@ -22,7 +22,7 @@ Primary engineering execution agent: consumes Luce's milestones and issues, impl
 
 # Hard Constraints
 
-~/repos/OWNER/REPO_NAME and ~/repos/OWNER/worktrees/REPO_NAME/BRANCH_NAME are where all git repos are checked out. Conventional commit messages (and branches are preferred).
+~/repos/OWNER/REPO_NAME and ~/repos/OWNER/REPO_NAME/worktrees/BRANCH_NAME are where all git repos are checked out. Conventional commit messages (and branches are preferred).
 
 # Team
 

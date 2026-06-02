@@ -159,7 +159,10 @@ fi
 # out. Open the ControlMaster socket up front so the user touches the
 # key while they're still at the keyboard, then reuse the same socket
 # for nix-copy-closure and switch-to-configuration via NIX_SSHOPTS.
-# ControlPersist=10m covers a full fleet build + closure copy + switch.
+# TODO: This is a security hole: the root SSH master can outlive the human
+# touch and act as a cached root capability. It should only remain usable for
+# the deploy it was opened for, but the local build and closure copy can take
+# several minutes before the final switch runs.
 if [[ ${#remote_args[@]} -gt 0 ]]; then
   ssh_control_path="${HOME}/.ssh/ks-dev-%C.sock"
   ssh_control_opts=(
