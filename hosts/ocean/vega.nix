@@ -13,6 +13,13 @@ in
     enable = true;
     bindHost = "127.0.0.1";
     port = 17878;
+    # The browser is reached at https://vega.ncrmro.com via nginx; the
+    # SSR sees the proxy origin (http://127.0.0.1:17878) and otherwise
+    # bakes that into the rendered HTML as the API base. Override with
+    # the public URL so client-side fetches go to the right place.
+    environment = {
+      PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
+    };
   };
 
   services.nginx.virtualHosts."vega.ncrmro.com" = {
