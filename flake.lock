@@ -2129,11 +2129,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780190967,
-        "narHash": "sha256-N2hHTNPq1aXr6jB6iOU0iXEcmpw8PRcyNqLtIKPN7Ks=",
+        "lastModified": 1780399018,
+        "narHash": "sha256-adenpBjNs4rlBrQlr/ZI7cfddKkIbS7vKcbl2aSxzqI=",
         "ref": "refs/heads/main",
-        "rev": "b88a6174ee6c341b9af9a035b0c371fbffc7d611",
-        "revCount": 29,
+        "rev": "f0f65b2ec6ca480dc94449947708e462fce2414e",
+        "revCount": 38,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
       },
