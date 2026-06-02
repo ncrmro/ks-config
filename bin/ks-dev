@@ -153,6 +153,36 @@ if [[ ${#override_args[@]} -gt 0 ]]; then
   done
 fi
 
+# Pre-warm SSH for remote deploys. Without this, the FIRST SSH call
+# happens after the local build (5+ min on fleet evaluation), by which
+# point the user has walked away and the YubiKey touch prompt times
+# out. Open the ControlMaster socket up front so the user touches the
+# key while they're still at the keyboard, then reuse the same socket
+# for nix-copy-closure and switch-to-configuration via NIX_SSHOPTS.
+# ControlPersist=10m covers a full fleet build + closure copy + switch.
+if [[ ${#remote_args[@]} -gt 0 ]]; then
+  ssh_control_path="${HOME}/.ssh/ks-dev-%C.sock"
+  ssh_control_opts=(
+    -o ControlMaster=auto
+    -o ControlPath="${ssh_control_path}"
+    -o ControlPersist=10m
+  )
+  echo "Pre-warming SSH to root@${ssh_target} (touch YubiKey now)..."
+  ssh "${ssh_control_opts[@]}" "root@${ssh_target}" true
+  # nixos-rebuild's later SSH invocations append NIX_SSHOPTS — our
+  # -o ControlPath wins over its own /tmp/nixos-rebuild.* socket
+  # because ssh honours the last -o for any given option.
+  export NIX_SSHOPTS="${NIX_SSHOPTS:-} ${ssh_control_opts[*]}"
+fi
+
+# --no-write-lock-file: --override-input always mutates the lock in
+# memory, which nix-eval would otherwise warn about on every internal
+# invocation (nixos-rebuild calls nix twice — once for the rebuild
+# script, once for the system closure — so the warning + lock diff
+# print twice). The flag suppresses that noise without changing
+# behaviour, since we never want to write the lock from ks-dev.
+nix_quiet_args=(--no-write-lock-file)
+
 # Remote deploys do not run local sudo — sudo runs on the remote via
 # --use-remote-sudo. Only local switch/boot needs local sudo.
 sudo_prefix=()
@@ -164,4 +194,5 @@ exec "${sudo_prefix[@]}" nixos-rebuild "$mode" \
   --flake "${repo_root}#${host}" \
   "${remote_args[@]}" \
   "${override_args[@]}" \
+  "${nix_quiet_args[@]}" \
   "${extra_args[@]}"
