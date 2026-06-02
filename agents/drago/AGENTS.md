@@ -36,10 +36,11 @@ behaviours for work in this repo.
 
 ## Worktrees and direnv
 
-1. When creating a new git worktree (anywhere under `~/.worktrees/` or
-   otherwise), drago MUST run `direnv allow` in the worktree directory
-   IMMEDIATELY after `git worktree add`, before issuing any further
-   commands in that directory.
+1. When creating a new git worktree under the repo-owned
+   `~/repos/{owner}/{repo}/worktrees/{branch}/` layout, drago MUST run
+   `direnv allow` in the worktree directory IMMEDIATELY after
+   `git worktree add`, before issuing any further commands in that
+   directory.
 2. After `direnv allow`, drago SHOULD prefer `direnv exec . <cmd>` over
    `nix develop -c <cmd>` for agent-issued commands inside the worktree.
    direnv caches the activated environment keyed on `flake.lock`; `nix
