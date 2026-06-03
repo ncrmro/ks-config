@@ -101,14 +101,21 @@ for candidate in "${keystone_candidates[@]}"; do
   fi
 done
 
-if [[ -z "$keystone_checkout" ]]; then
-  echo "Error: local Keystone checkout missing." >&2
-  echo "Expected one of:" >&2
-  printf '  - %s\n' "${keystone_candidates[@]}" >&2
-  exit 1
+# Auto-override only when the local checkout actually contains the rev
+# flake.lock pins — otherwise it silently downgrades the deploy to whatever
+# branch the local copy happens to be on (e.g. ocean's main checkout vs.
+# ks-config locking milestone/M10-V2-os-agents).
+if [[ -n "$keystone_checkout" ]]; then
+  locked_rev="$(jq -r '.nodes.keystone.locked.rev // empty' "${repo_root}/flake.lock" 2>/dev/null || true)"
+  if [[ -n "$locked_rev" ]] && ! git -C "$keystone_checkout" cat-file -e "${locked_rev}^{commit}" 2>/dev/null; then
+    echo "Note: local keystone at $keystone_checkout missing locked rev $locked_rev — using flake-fetched keystone." >&2
+    keystone_checkout=""
+  fi
 fi
 
-add_override "keystone" "$keystone_checkout"
+if [[ -n "$keystone_checkout" ]]; then
+  add_override "keystone" "$keystone_checkout"
+fi
 add_override "agenix-secrets" "${HOME}/repos/ncrmro/agenix-secrets"
 add_override "agenix-secrets" "${repo_root}/agenix-secrets"
 
