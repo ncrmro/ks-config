@@ -36,6 +36,7 @@
     ./immich.nix
     ./vms.nix
     ./vega.nix
+    ./plouton.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering

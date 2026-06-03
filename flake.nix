@@ -45,6 +45,20 @@
       inputs.llm-agents.follows = "llm-agents";
     };
 
+    # Plouton — FastAPI + Astro SPA, hosted on ocean.
+    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
+    # The package derivation currently uses __noChroot (bun install + uv run
+    # in-derivation), so rebuilds that exercise it need `--impure`. Vendoring
+    # lockfiles via bun2nix/uv2nix will lift that requirement.
+    plouton = {
+      # First-deploy validation runs from the milestone branch so the M1
+      # wiring (uv2nix + bun2nix + template.db) gets validated on ocean
+      # without forcing a premature merge to plouton's main. Point back
+      # at main once the merge lands.
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git?ref=milestone/trade-logger-and-planner";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
