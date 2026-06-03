@@ -5,7 +5,7 @@ usage() {
   cat >&2 <<'EOF'
 Usage: ks-dev [--build|--boot|--switch] [HOST] [-- EXTRA_ARGS...]
 
-Build or apply this nixos-config checkout with local development inputs.
+Build or apply this ks-config checkout with local development inputs.
 
 Modes:
   --build   Build only, no activation
@@ -67,23 +67,91 @@ if [[ -z "$host" ]]; then
 fi
 
 override_args=()
+overridden_inputs=()
 
 add_override() {
   local input="$1"
   local path="$2"
 
-  if [[ -d "$path" ]]; then
-    override_args+=(--override-input "$input" "path:$path")
+  if [[ ! -d "$path" ]]; then
+    return
   fi
+
+  for existing in "${overridden_inputs[@]}"; do
+    if [[ "$existing" == "$input" ]]; then
+      return
+    fi
+  done
+
+  override_args+=(--override-input "$input" "path:$path")
+  overridden_inputs+=("$input")
 }
 
-add_override "keystone" "${repo_root}/../keystone"
-add_override "keystone" "${HOME}/.keystone/repos/ncrmro/keystone"
+keystone_candidates=(
+  "${repo_root}/keystone"
+  "${repo_root}/../keystone"
+  "${HOME}/repos/ncrmro/keystone"
+)
+
+keystone_checkout=""
+for candidate in "${keystone_candidates[@]}"; do
+  if [[ -f "${candidate}/flake.nix" ]]; then
+    keystone_checkout="$(cd "$candidate" && pwd -P)"
+    break
+  fi
+done
+
+# Auto-override only when local HEAD is at-or-ahead-of the lock — otherwise
+# the path override silently downgrades the deploy to whatever branch the
+# local copy is on (e.g. ocean's main checkout vs. ks-config locking
+# milestone/M10-V2-os-agents). Local-ahead-of-lock is the normal dev case
+# and stays supported.
+if [[ -n "$keystone_checkout" ]]; then
+  locked_rev="$(jq -r '.nodes.keystone.locked.rev // empty' "${repo_root}/flake.lock" 2>/dev/null || true)"
+  if [[ -n "$locked_rev" ]] && ! git -C "$keystone_checkout" merge-base --is-ancestor "$locked_rev" HEAD 2>/dev/null; then
+    echo "Note: local keystone at $keystone_checkout doesn't contain locked rev $locked_rev in HEAD — using flake-fetched keystone." >&2
+    keystone_checkout=""
+  fi
+fi
+
+if [[ -n "$keystone_checkout" ]]; then
+  add_override "keystone" "$keystone_checkout"
+fi
+add_override "agenix-secrets" "${HOME}/repos/ncrmro/agenix-secrets"
 add_override "agenix-secrets" "${repo_root}/agenix-secrets"
-add_override "agenix-secrets" "${HOME}/.keystone/repos/ncrmro/agenix-secrets"
+
+# Detect whether $host is the local machine or a remote target. For remote
+# deploys, look up hosts.nix's sshTarget (or fall back to the bare hostname,
+# which resolves via MagicDNS on Tailscale) and connect as root.
+#
+# Why root@? `nix copy` over SSH lands in the remote nix-daemon, which
+# refuses unsigned local paths from any user not listed in trusted-users.
+# Root is trusted everywhere by upstream Nix default, so going in as root
+# sidesteps the sig check without any per-host config. ks-config wires
+# YubiKey-signed root SSH access on every host via
+# keystone.hardwareKey.rootKeys, so root@ works uniformly. This matches
+# the ks-update tooling. Side benefit: --use-remote-sudo is unnecessary
+# (root doesn't sudo to itself).
+local_hostname="$(hostname)"
+remote_args=()
+if [[ "$host" != "$local_hostname" ]]; then
+  ssh_target="$(
+    nix eval --raw --impure \
+      --expr "let h = (import ${repo_root}/hosts.nix).${host} or {}; in h.sshTarget or h.hostname or \"${host}\"" \
+      2>/dev/null || echo "${host}"
+  )"
+
+  remote_args=(
+    --target-host "root@${ssh_target}"
+    --use-substitutes
+  )
+fi
 
 echo "Running nixos-rebuild ${mode} for ${host}"
 echo "Config: ${repo_root}"
+if [[ ${#remote_args[@]} -gt 0 ]]; then
+  echo "Remote deploy: target=root@${ssh_target}, build locally, copy + switch via SSH as root"
+fi
 if [[ ${#override_args[@]} -gt 0 ]]; then
   echo "Using local input overrides:"
   for ((i = 0; i < ${#override_args[@]}; i += 3)); do
@@ -91,8 +159,49 @@ if [[ ${#override_args[@]} -gt 0 ]]; then
   done
 fi
 
-if [[ "$mode" == "build" ]]; then
-  exec nixos-rebuild "$mode" --flake "${repo_root}#${host}" "${override_args[@]}" "${extra_args[@]}"
+# Pre-warm SSH for remote deploys. Without this, the FIRST SSH call
+# happens after the local build (5+ min on fleet evaluation), by which
+# point the user has walked away and the YubiKey touch prompt times
+# out. Open the ControlMaster socket up front so the user touches the
+# key while they're still at the keyboard, then reuse the same socket
+# for nix-copy-closure and switch-to-configuration via NIX_SSHOPTS.
+# TODO: This is a security hole: the root SSH master can outlive the human
+# touch and act as a cached root capability. It should only remain usable for
+# the deploy it was opened for, but the local build and closure copy can take
+# several minutes before the final switch runs.
+if [[ ${#remote_args[@]} -gt 0 ]]; then
+  ssh_control_path="${HOME}/.ssh/ks-dev-%C.sock"
+  ssh_control_opts=(
+    -o ControlMaster=auto
+    -o ControlPath="${ssh_control_path}"
+    -o ControlPersist=10m
+  )
+  echo "Pre-warming SSH to root@${ssh_target} (touch YubiKey now)..."
+  ssh "${ssh_control_opts[@]}" "root@${ssh_target}" true
+  # nixos-rebuild's later SSH invocations append NIX_SSHOPTS — our
+  # -o ControlPath wins over its own /tmp/nixos-rebuild.* socket
+  # because ssh honours the last -o for any given option.
+  export NIX_SSHOPTS="${NIX_SSHOPTS:-} ${ssh_control_opts[*]}"
 fi
 
-exec sudo nixos-rebuild "$mode" --flake "${repo_root}#${host}" "${override_args[@]}" "${extra_args[@]}"
+# --no-write-lock-file: --override-input always mutates the lock in
+# memory, which nix-eval would otherwise warn about on every internal
+# invocation (nixos-rebuild calls nix twice — once for the rebuild
+# script, once for the system closure — so the warning + lock diff
+# print twice). The flag suppresses that noise without changing
+# behaviour, since we never want to write the lock from ks-dev.
+nix_quiet_args=(--no-write-lock-file)
+
+# Remote deploys do not run local sudo — sudo runs on the remote via
+# --use-remote-sudo. Only local switch/boot needs local sudo.
+sudo_prefix=()
+if [[ "$mode" != "build" ]] && [[ ${#remote_args[@]} -eq 0 ]]; then
+  sudo_prefix=(sudo)
+fi
+
+exec "${sudo_prefix[@]}" nixos-rebuild "$mode" \
+  --flake "${repo_root}#${host}" \
+  "${remote_args[@]}" \
+  "${override_args[@]}" \
+  "${nix_quiet_args[@]}" \
+  "${extra_args[@]}"

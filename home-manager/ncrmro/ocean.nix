@@ -24,7 +24,7 @@
           cmd="boot"
           shift
         fi
-        sudo nixos-rebuild "$cmd" --flake ~/nixos-config#ocean "$@"
+        sudo nixos-rebuild "$cmd" --flake ~/repos/ncrmro/ks-config#ocean "$@"
         if [[ "$cmd" == "boot" ]]; then
           echo "Reboot required to apply changes."
         fi

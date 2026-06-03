@@ -65,6 +65,16 @@
 
   home.sessionVariables = {
     IMMICH_URL = "https://photos.ncrmro.com";
+    # Keep user-editable DeepWork jobs visible to MCP servers generated from
+    # home.sessionVariables, not just interactive zsh shells.
+    DEEPWORK_ADDITIONAL_JOBS_FOLDERS = lib.mkForce (
+      lib.concatStringsSep ":" [
+        "$HOME/repos/ncrmro/ks-config/deepwork/jobs"
+        "$HOME/repos/Unsupervisedcom/deepwork/library/jobs"
+        "$HOME/repos/ncrmro/keystone/.deepwork/jobs"
+        "$HOME/repos/ncrmro/keystone/.deepwork/jobs-internal"
+      ]
+    );
   };
 
   programs.zsh.initExtra = ''
@@ -94,7 +104,6 @@
     enable = true;
     repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
     daily.enable = true;
-    zk.enable = true;
   };
 
   keystone.terminal.aiExtensions.enable = true;

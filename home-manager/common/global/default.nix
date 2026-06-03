@@ -6,6 +6,10 @@
   ...
 }:
 {
+  imports = [
+    ../optional/mcp/ks-vega.nix
+  ];
+
   home.username = lib.mkDefault "ncrmro";
   home.homeDirectory = lib.mkDefault "/home/ncrmro";
   home.stateVersion = lib.mkDefault "25.05";

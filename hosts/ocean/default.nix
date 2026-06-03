@@ -35,6 +35,8 @@
     ../common/optional/alloy-client.nix
     ./immich.nix
     ./vms.nix
+    ./vega.nix
+    ./plouton.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering
@@ -256,6 +258,14 @@
   # due to exhaustion of multicast group slots, common in environments with
   # many virtual network interfaces (e.g., K3s containers).
   boot.kernel.sysctl."net.ipv4.igmp_max_memberships" = 1000;
+
+  # Raise per-user file descriptor cap so `nixos-rebuild` on this server can
+  # evaluate the full fleet without "Too many open files" — the kernel default
+  # 1024 trips nix when the daemon spawns many parallel evaluators.
+  security.pam.loginLimits = [
+    { domain = "*"; type = "soft"; item = "nofile"; value = "65535"; }
+    { domain = "*"; type = "hard"; item = "nofile"; value = "1048576"; }
+  ];
 
   environment.systemPackages = [
     pkgs.sbctl

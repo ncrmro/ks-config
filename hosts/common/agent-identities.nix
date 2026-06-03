@@ -12,7 +12,17 @@
 #
 # Agenix note: secrets like agent-{name}-mail-password need recipients on
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
-{ ... }:
+{ inputs, pkgs, ... }:
+let
+  vegaPkg = inputs.vega.packages.${pkgs.stdenv.hostPlatform.system}.vega;
+  ksVegaServer = {
+    command = "${vegaPkg}/bin/ks-vega";
+    args = [ ];
+    env = {
+      KS_VEGA_SERVER_URL = "https://vega.ncrmro.com";
+    };
+  };
+in
 {
   keystone.os.agents = {
     drago = {
@@ -22,10 +32,13 @@
       archetype = "engineer";
       capabilities = [
         "engineer"
-        "notes"
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
+      dispatcher = {
+        enable = false;
+      };
+      mcp.servers.ks-vega = ksVegaServer;
     };
     luce = {
       host = "ocean";
@@ -33,11 +46,11 @@
       email = "luce@ncrmro.com";
       archetype = "product";
       capabilities = [
-        "notes"
         "executive-assistant"
       ];
       mail.provision = true;
       git.provision = true;
+      mcp.servers.ks-vega = ksVegaServer;
     };
   };
 }

@@ -198,6 +198,57 @@
         "type": "github"
       }
     },
+    "bun2nix_2": {
+      "inputs": {
+        "flake-parts": "flake-parts_3",
+        "nixpkgs": [
+          "plouton",
+          "code",
+          "nixpkgs"
+        ],
+        "systems": "systems_9",
+        "treefmt-nix": "treefmt-nix_2"
+      },
+      "locked": {
+        "lastModified": 1778446047,
+        "narHash": "sha256-oQvcadh2BCkrog+SGrG6YffKJrveYpjj3TdQJWaKhaM=",
+        "owner": "nix-community",
+        "repo": "bun2nix",
+        "rev": "f2bc12af1a6369648aac41041ceeaa0b866599c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "2.1.0",
+        "repo": "bun2nix",
+        "type": "github"
+      }
+    },
+    "bun2nix_3": {
+      "inputs": {
+        "flake-parts": "flake-parts_4",
+        "nixpkgs": [
+          "vega",
+          "nixpkgs"
+        ],
+        "systems": "systems_10",
+        "treefmt-nix": "treefmt-nix_3"
+      },
+      "locked": {
+        "lastModified": 1778446047,
+        "narHash": "sha256-oQvcadh2BCkrog+SGrG6YffKJrveYpjj3TdQJWaKhaM=",
+        "owner": "nix-community",
+        "repo": "bun2nix",
+        "rev": "f2bc12af1a6369648aac41041ceeaa0b866599c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "2.1.0",
+        "repo": "bun2nix",
+        "type": "github"
+      }
+    },
     "calendula": {
       "inputs": {
         "fenix": "fenix",
@@ -243,6 +294,56 @@
         "repo": "cardamum",
         "type": "github"
       }
+    },
+    "code": {
+      "inputs": {
+        "bun2nix": "bun2nix_2",
+        "nixpkgs": [
+          "plouton",
+          "nixpkgs"
+        ],
+        "pyproject-build-systems": "pyproject-build-systems_2",
+        "pyproject-nix": "pyproject-nix_2",
+        "uv2nix": "uv2nix_2"
+      },
+      "locked": {
+        "path": "./code",
+        "type": "path"
+      },
+      "original": {
+        "path": "./code",
+        "type": "path"
+      },
+      "parent": [
+        "plouton"
+      ]
+    },
+    "code_2": {
+      "inputs": {
+        "bun2nix": [
+          "vega",
+          "bun2nix"
+        ],
+        "llm-agents": [
+          "vega",
+          "llm-agents"
+        ],
+        "nixpkgs": [
+          "vega",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./code",
+        "type": "path"
+      },
+      "original": {
+        "path": "./code",
+        "type": "path"
+      },
+      "parent": [
+        "vega"
+      ]
     },
     "comodoro": {
       "inputs": {
@@ -552,6 +653,51 @@
         "owner": "hercules-ci",
         "repo": "flake-parts",
         "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_3": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "plouton",
+          "code",
+          "bun2nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777988971,
+        "narHash": "sha256-qIoWPDs+0/8JecyYgE3gpKQxW/4bLW/gp45vow9ioCQ=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "0678d8986be1661af6bb555f3489f2fdfc31f6ff",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_4": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "vega",
+          "bun2nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777988971,
+        "narHash": "sha256-qIoWPDs+0/8JecyYgE3gpKQxW/4bLW/gp45vow9ioCQ=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "0678d8986be1661af6bb555f3489f2fdfc31f6ff",
         "type": "github"
       },
       "original": {
@@ -1282,15 +1428,16 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1779766638,
-        "narHash": "sha256-NtXpIxNvZk+yMHJLHJ+RjLj73mqkhuoAYViugsZ2WQ0=",
+        "lastModified": 1780459297,
+        "narHash": "sha256-5CFYW+Ai/6ptcQrcNA44LUIn4rod0N+cGct/qF8CW/s=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "6789b675f4f35f19edf40482af4f35a23eaee4f6",
+        "rev": "1a099e89ee08dd66201d362a379d8ad81b6827de",
         "type": "github"
       },
       "original": {
         "owner": "ncrmro",
+        "ref": "milestone/M10-V2-os-agents",
         "repo": "keystone",
         "type": "github"
       }
@@ -1605,6 +1752,27 @@
         "type": "github"
       }
     },
+    "plouton": {
+      "inputs": {
+        "code": "code",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780452504,
+        "narHash": "sha256-8JmVM+HbKJ/D53AXOVN/rJH0bYcD+Yb6gCHGGd8AYGo=",
+        "ref": "refs/heads/main",
+        "rev": "4ce3a42ede9e348bf84a2b265a5c229d6197e896",
+        "revCount": 33,
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1685,6 +1853,38 @@
         "type": "github"
       }
     },
+    "pyproject-build-systems_2": {
+      "inputs": {
+        "nixpkgs": [
+          "plouton",
+          "code",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "plouton",
+          "code",
+          "pyproject-nix"
+        ],
+        "uv2nix": [
+          "plouton",
+          "code",
+          "uv2nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1779676664,
+        "narHash": "sha256-MbXylBTkWqVm8/VYjoULtMoVRgWBN1gSHbeRKsOsPlU=",
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "rev": "7bff980f37fc24e09dbc986643719900c139bf12",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "type": "github"
+      }
+    },
     "pyproject-nix": {
       "inputs": {
         "nixpkgs": [
@@ -1707,6 +1907,28 @@
         "type": "github"
       }
     },
+    "pyproject-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "plouton",
+          "code",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780416763,
+        "narHash": "sha256-rRK3IFixgsrK6S3e14Xz9HAZm7+kMAIl3oi5zZlcwYI=",
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "rev": "ad83f1ead0e78e57b188f35cb57298affb06fc5f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix-secrets": "agenix-secrets",
@@ -1721,7 +1943,9 @@
           "keystone",
           "nixos-hardware"
         ],
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_4",
+        "plouton": "plouton",
+        "vega": "vega"
       }
     },
     "rust-analyzer-src": {
@@ -1851,6 +2075,21 @@
         "type": "github"
       }
     },
+    "systems_10": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "systems_2": {
       "locked": {
         "lastModified": 1680978846,
@@ -1956,10 +2195,70 @@
         "type": "github"
       }
     },
+    "systems_9": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
           "llm-agents",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775636079,
+        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "plouton",
+          "code",
+          "bun2nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775636079,
+        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_3": {
+      "inputs": {
+        "nixpkgs": [
+          "vega",
+          "bun2nix",
           "nixpkgs"
         ]
       },
@@ -2002,6 +2301,58 @@
         "owner": "pyproject-nix",
         "repo": "uv2nix",
         "type": "github"
+      }
+    },
+    "uv2nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "plouton",
+          "code",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "plouton",
+          "code",
+          "pyproject-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780418295,
+        "narHash": "sha256-yZVQNvmDx1SFjvlwevywsXWJnieSRqmQr7/fCTMyyd0=",
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
+        "rev": "0497ccef038da091002be7c05263a7f27820974f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
+        "type": "github"
+      }
+    },
+    "vega": {
+      "inputs": {
+        "bun2nix": "bun2nix_3",
+        "code": "code_2",
+        "llm-agents": [
+          "llm-agents"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780407384,
+        "narHash": "sha256-jpyybw9zm/njLgFpP/Ia2/ce5MGlcsAADAbwV4gW1Qg=",
+        "ref": "refs/heads/main",
+        "rev": "1a02e65802e4979399ffdb69907513692a26ef7c",
+        "revCount": 47,
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
       }
     },
     "walker": {

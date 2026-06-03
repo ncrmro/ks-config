@@ -1,9 +1,36 @@
-@../keystone/AGENTS.md
+@keystone/AGENTS.md
 @modules/keystone/AGENTS.md
 
 ## Repository Overview
 
 NixOS configuration repository using flakes for managing system configurations across multiple hosts. Manages both NixOS system configurations and Home Manager user configurations.
+
+## Repos and Branches
+
+`ks-config` (this repo) is the consumer flake — it locks every other component and is the entry point for all `nixos-rebuild` invocations.
+
+| Repo | Tracking branch | Role |
+|------|-----------------|------|
+| **ncrmro/nixos-config** (this repo, a.k.a. ks-config) | `experimental/ks-config-local-keystone-devbox` | Consumer flake; defines every host's full config. |
+| **ncrmro/keystone** | `experimental` | Shared NixOS / Home Manager modules + agent tooling. Schema is mid-refactor; `experimental` is the only branch that satisfies ks-config's current option set (`main` and tagged releases will fail to evaluate). |
+| **ncrmro/vega** | `main` | Personal dashboard + MCP server. Packaged as a NixOS service (`services.vega`); installed on `ocean`. |
+| **ncrmro/plouton** | `main` | FastAPI server + Astro static SPA (forecast/strategy diagnostics). Packaged as a NixOS service (`services.plouton`); installed on `ocean`. Package derivation is currently `__noChroot`, so rebuilds need `--impure` until lockfiles are vendored via bun2nix/uv2nix. |
+| **ncrmro/agenix-secrets** | (default branch) | Private agenix-encrypted secrets. Local checkout at `~/.keystone/repos/ncrmro/agenix-secrets`, symlinked into ks-config as `./agenix-secrets`. |
+
+The three primary hosts all build from this single ks-config tree and share the same locked inputs:
+
+| Host | Kind | Build | App services |
+|------|------|-------|--------------|
+| **ocean** | server | builds on remote (`buildOnRemote = true`) | `vega-server` (vhost `vega.ncrmro.com`) + `plouton-server` (vhost `plouton.ncrmro.com`) |
+| **ncrmro-workstation** | workstation | builds on remote | none |
+| **ncrmro-laptop** | laptop | builds locally then activates remote | none |
+
+### Deploy workflows
+
+- `bin/dev-keystone <host>` (alias of `bin/ks-dev`) — preferred for everyday rebuilds. Discovers a local Keystone checkout (`./keystone`, `../keystone`, `~/repos/ncrmro/keystone`, `~/.keystone/repos/ncrmro/keystone`, in that order) and passes it as `--override-input keystone path:...`. Lets you iterate on Keystone without committing.
+- `sudo nixos-rebuild switch --flake .#<host>` — uses only the locked inputs from `flake.lock`. `keystone`, `vega`, and `plouton` are pinned to their respective `experimental` / `main` branches above, so this works without overrides. Plouton additionally needs `--impure` until its package derivation drops `__noChroot`.
+
+If you change Keystone schema (add/rename options), commit + push to `keystone@experimental` and then `nix flake update keystone` in ks-config so the locked rev catches up — otherwise non-overridden builds will start failing with "unknown option" errors.
 
 ## Investigating Issues on Hosts
 
@@ -44,11 +71,11 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Keystone: Shared Convention Layer
 
-[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. Its canonical checkout on this host is the sibling repo at `../keystone`, and nixos-config consumes it as the `keystone` flake input (`github:ncrmro/keystone`).
+[Keystone](https://github.com/ncrmro/keystone) is the upstream platform providing reusable NixOS modules that any user could adopt for their own infrastructure. Its local development checkout is expected at sibling path `../keystone`, with gitignored nested `./keystone` kept as a compatibility fallback. ks-config consumes the committed `keystone` flake input from `github:ncrmro/keystone`.
 
-**When to put something in keystone vs nixos-config:**
+**When to put something in keystone vs ks-config:**
 - **Keystone**: Reusable modules that others could benefit from (server roles, desktop setup, terminal environment, mail, DNS, binary cache, hardware key management)
-- **nixos-config**: Host-specific configuration, secrets, per-user overrides, local-only services
+- **ks-config**: Host-specific configuration, secrets, per-user overrides, local-only services
 
 **Wrapper modules in this repo** (`modules/`):
 - `modules/keystone/os.nix` - Fleet-wide keystone OS glue for this repo
@@ -59,14 +86,15 @@ The user runs the script once, then you read `/tmp/stalwart-logs.txt` etc. direc
 
 ## Clean Git History: Flake Update Workflow
 
-Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by nixos-config lives in `flake.lock`.
+Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by ks-config lives in `flake.lock`.
 
 **Local checkouts:**
-- `../keystone` - GitHub: `github:ncrmro/keystone`
+- `../keystone` - GitHub: `github:ncrmro/keystone` (preferred)
+- `./keystone` - GitHub: `github:ncrmro/keystone` (legacy fallback)
 - `agenix-secrets` - Private Forgejo: `git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git`
 
 **Setup after fresh clone:**
-Keystone should already exist at `~/.keystone/repos/ncrmro/keystone` per Keystone repo conventions. Clone `agenix-secrets` locally if needed.
+Keystone should exist at `../keystone` for local development. Clone `agenix-secrets` locally if needed.
 
 ### The Golden Rule
 
@@ -84,14 +112,13 @@ nix flake update keystone agenix-secrets     # both
 # 1. Make and test changes locally
 cd ../keystone
 # ... edit files ...
-keystone-dev --build         # Verify changes build (no deploy)
-cd ../nixos-config
-ks build                     # Verify nixos-config against the live keystone checkout
+./bin/dev-keystone --build   # Verify changes build (no deploy)
+cd ../ks-config
 
 # 2. Commit and push from the keystone repo
 cd ../keystone
 git add -A && git commit -m "feat(server): description" && git push
-cd ../nixos-config
+cd ../ks-config
 
 # 3. Update flake lock and commit
 nix flake update keystone
@@ -99,12 +126,12 @@ git add flake.lock
 git commit -m "feat: update keystone (description)"
 ```
 
-**`keystone-dev` modes:**
-- `keystone-dev` — `nixos-rebuild switch` with the live `../keystone` checkout
-- `keystone-dev --build` — build only, no switch
-- `keystone-dev --boot` — `nixos-rebuild boot` for changes that should apply on reboot
+**`./bin/dev-keystone` modes:**
+- `./bin/dev-keystone` — `nixos-rebuild switch` with the live `../keystone` checkout
+- `./bin/dev-keystone --build` — build only, no switch
+- `./bin/dev-keystone --boot` — `nixos-rebuild boot` for changes that should apply on reboot
 
-**When the user says they ran `keystone-dev`, `ks update --dev`, or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
+**When the user says they ran `./bin/dev-keystone`, `ks update --dev`, or `nix flake update`**: treat the deployment as complete. Immediately proceed with verification (check logs, test services, confirm behavior) rather than waiting or asking the user to confirm it finished.
 
 ### Updating Agenix Secrets
 
@@ -150,7 +177,7 @@ git rebase --continue
 ### Adding External Nix Package Sources
 
 Add as **flake inputs**. Choose the appropriate flake:
-- **nixos-config flake.nix**: Packages/modules specific to this configuration
+- **ks-config flake.nix**: Packages/modules specific to this configuration
 - **keystone flake.nix**: Packages/modules that should be part of the upstream platform
 
 ## Host Inventory
@@ -257,7 +284,8 @@ To add a new service with auto-DNS, enable it in ocean's keystone config and reb
   - `keystone.nix`, `keystone.server.nix`, `keystone.desktop.nix` - Keystone wrapper modules
   - `/modules/nixos/` - Local NixOS modules (headscale, steam, bambu-studio)
   - `/modules/users/` - User definitions and SSH keys
-- `../keystone/` - Keystone sibling checkout
+- `../keystone/` - Preferred sibling Keystone checkout
+- `./keystone/` - Gitignored Keystone checkout fallback
 - `/agenix-secrets/` - Local agenix secrets clone (gitignored)
 - `/bin/` - Helper scripts
 - `/overlays/` - Nix overlays (imports keystone overlay + local packages)
@@ -315,7 +343,7 @@ Home Manager is integrated into NixOS and activated automatically during `nixos-
 
 OS agents are user accounts on the host provisioned via `keystone.os.agents.<name>`. Each agent has its own identity, credentials, SSH keys, email, and workspace ("space") repos. See keystone AGENTS.md "Agent Provisioning" for full option reference.
 
-### nixos-config Specific Paths
+### ks-config Specific Paths
 
 - Agent-specific home-manager configs: `home-manager/<name>/agent.nix`
 - Shared agent home config: `home-manager/common/agents/`

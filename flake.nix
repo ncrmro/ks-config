@@ -24,8 +24,9 @@
     # Keystone - self-sovereign infrastructure platform
     # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
     # For local dev without commits, use: ./bin/dev-keystone <hostname>
+    # It prefers the gitignored ./keystone checkout when present.
     keystone = {
-      url = "github:ncrmro/keystone";
+      url = "github:ncrmro/keystone/milestone/M10-V2-os-agents";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };
@@ -33,6 +34,24 @@
     # llama.cpp - latest for MXFP4 support (workstation-specific)
     llama-cpp = {
       url = "github:ggml-org/llama.cpp";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Vega — personal dashboard + MCP server, hosted on ocean.
+    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
+    vega = {
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.llm-agents.follows = "llm-agents";
+    };
+
+    # Plouton — FastAPI + Astro SPA, hosted on ocean.
+    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
+    # The package derivation currently uses __noChroot (bun install + uv run
+    # in-derivation), so rebuilds that exercise it need `--impure`. Vendoring
+    # lockfiles via bun2nix/uv2nix will lift that requirement.
+    plouton = {
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -85,7 +104,6 @@
           "engineer"
           "product"
           "project-manager"
-          "notes"
         ];
       };
 
@@ -118,6 +136,16 @@
           updateChannel = "unstable";
         };
         shared.specialArgs = fleetSpecialArgs;
+        shared.systemModules = [
+          # Experimental: zstd-compressed zram swap at 50% of RAM with
+          # swappiness=150, so the kernel reaches for compressed swap
+          # before evicting clean page-cache. See `keystone.os.zram.*`
+          # in modules/os/zram.nix for tunables. Applies to every
+          # mkSystemFlake-managed host (maia, ncrmro-laptop, mercury,
+          # ocean, ncrmro-workstation); catalystPrimary is wired
+          # manually below and unaffected.
+          ({ ... }: { keystone.os.zram.enable = true; })
+        ];
         hosts = {
           maia = {
             kind = "server";
@@ -139,15 +167,14 @@
           };
 
           mercury = {
-            kind = "server";
+            # server-vm: cloud/VPS kind. UEFI by default, no secureBoot/TPM,
+            # ext4 storage — matches Vultr's qemu-guest image. Drops the
+            # storage.devices placeholder, secureBoot/tpm off, and the
+            # host-level bootloader workaround that the old `server` kind
+            # required for mercury.
+            kind = "server-vm";
             hostname = "mercury";
             stateVersion = "25.05";
-            storage.devices = placeholderDevices;
-            # Mercury is a VPS without TPM or Secure Boot hardware. The
-            # host module turns those off, so mkSystemFlake's defaults
-            # (which would force them on) must match here too.
-            secureBoot.enable = false;
-            tpm.enable = false;
             # Mercury reads ocean's generated DNS/ACL records as a specialArg.
             # The reference into `fleet.nixosConfigurations.ocean` is lazy:
             # ocean's config is only forced when mercury's modules actually
@@ -212,6 +239,24 @@
       packages.x86_64-linux =
         let
           pkgs = pkgsForSystem "x86_64-linux";
+          # Portable devbox image — built from a standalone home-manager
+          # profile via the spike helper at modules/keystone-spike/. This
+          # whole block moves out of this repo once the staging contents
+          # graduate to ncrmro/keystone (see modules/keystone-spike/README.md).
+          devboxNcrmroHome = import ./modules/keystone-spike/lib/portable-terminal.nix {
+            inherit inputs;
+            system = "x86_64-linux";
+            fullName = adminUser.fullName;
+            email = "${adminUser.username}@ncrmro.com";
+          };
+          devboxNcrmroImage = pkgs.callPackage ./modules/keystone-spike/packages/devbox-image {
+            homeActivationPackage = devboxNcrmroHome.activationPackage;
+            ks = pkgs.keystone.ks or null;
+            imageName = "devbox-${adminUser.username}";
+            extraContents = [
+              inputs.llm-agents.packages.x86_64-linux.pi
+            ];
+          };
         in
         (fleet.packages.x86_64-linux or { })
         // {
@@ -221,7 +266,11 @@
             gemini-cli
             zesh
             ;
-          inherit (pkgs) mcp-language-server;
+          pi = inputs.llm-agents.packages.x86_64-linux.pi;
+          inherit (pkgs) mcp-language-server devbox;
+
+          # Portable per-user devbox container image (spike).
+          "devbox-image-${adminUser.username}" = devboxNcrmroImage;
 
           # Installer ISO — keys auto-collected from keystone.os.users (wheel) + hardware root keys
           iso = fleet.nixosConfigurations.ncrmro-workstation.config.keystone.os.installer.isoImage;

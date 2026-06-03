@@ -19,6 +19,11 @@
           TERM = "xterm-256color";
         };
       };
+      "ncrmro-laptop-14" = {
+        setEnv = {
+          TERM = "xterm-256color";
+        };
+      };
     };
   };
 }

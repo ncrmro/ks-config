@@ -29,7 +29,7 @@ This is a NixOS configuration repository using flakes for managing system config
 
 ### Local Repo Clones
 
-Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by nixos-config lives in `flake.lock`.
+Keystone development happens in the sibling checkout at `../keystone`. The authoritative version pin used by ks-config lives in `flake.lock`.
 
 **Setup after fresh clone:**
 ```bash
@@ -66,7 +66,7 @@ ks update --boot                     # nixos-rebuild boot (reboot required)
 ```
 
 `ks` is installed globally via `keystone.terminal`. It discovers the repo via
-`$NIXOS_CONFIG_DIR`, the git root of the current directory, or `~/nixos-config`.
+`$NIXOS_CONFIG_DIR`, the git root of the current directory, `/run/current-system/keystone-system-flake`, or `~/repos/<user>/ks-config`.
 The `bin/build` and `bin/update` shims delegate to `ks` for backwards compatibility.
 
 ### Committing and Pushing Keystone / Agenix Changes
@@ -75,8 +75,8 @@ When changes span keystone or agenix-secrets:
 
 1. Commit and push from the source repo (`cd ../keystone && git push` or `cd agenix-secrets && git push`)
 2. Update the flake lock for the changed inputs: `nix flake update keystone` (or `agenix-secrets`, or both)
-3. Commit `flake.lock` in nixos-config
-4. Push nixos-config
+3. Commit `flake.lock` in ks-config
+4. Push ks-config
 
 Before pushing, always build the workstation host to verify:
 `ks build` or `nixos-rebuild build --flake .#ncrmro-workstation`

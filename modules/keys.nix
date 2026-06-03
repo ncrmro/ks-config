@@ -31,10 +31,14 @@
         yubi-black = {
           description = "Primary YubiKey 5 NFC (USB-A, black)";
           publicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAILEOo3uKwbDN1SJemQx8UPVXv0TjKn2VfZSTVFfp3tlcAAAACnNzaDpuY3Jtcm8=";
+          handleSource = ../hardware-keys/yubi-black;
+          handlePubSource = ../hardware-keys/yubi-black.pub;
         };
         yubi-green = {
           description = "Backup YubiKey 5C NFC (USB-C, green sticker)";
           publicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDtwsz3zAJokZ3rnVyXUxmeUGba61b8KIW3u4aE52dK2AAAAFXNzaDpuY3Jtcm8teXViaS1ncmVlbg==";
+          handleSource = ../hardware-keys/yubi-green;
+          handlePubSource = ../hardware-keys/yubi-green.pub;
         };
       };
     };

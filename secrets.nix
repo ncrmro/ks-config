@@ -61,6 +61,12 @@ in
   # TODO: add systems.agent-drago back once the real host key replaces the placeholder
   "secrets/agent-drago-mail-password.age".publicKeys = adminKeys ++ [ users.ncrmro-ocean ];
 
+  # Vega runtime config (Stalwart CalDAV/CardDAV creds + room for future
+  # tokens). Single yaml file read at process boot by code/server/src/config.ts.
+  # Exposed to the non-root vega service via systemd LoadCredential. See
+  # docs/specs/007-stalwart-integration/ for the convention.
+  "secrets/vega-config.yaml.age".publicKeys = adminKeys ++ [ systems.ocean ];
+
   # Miniflux admin credentials (ocean RSS reader)
   "secrets/miniflux-admin.age".publicKeys = adminKeys ++ [ systems.ocean ];
 
