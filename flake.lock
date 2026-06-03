@@ -1760,16 +1760,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1780450114,
-        "narHash": "sha256-AaMb3QuWjhsX6AS7spdHWM8XcnjKnQy69M1VPa84aBc=",
-        "ref": "milestone/trade-logger-and-planner",
-        "rev": "1ab29ae18d283cc7ba506e98242988c3e5912e01",
-        "revCount": 43,
+        "lastModified": 1780452504,
+        "narHash": "sha256-8JmVM+HbKJ/D53AXOVN/rJH0bYcD+Yb6gCHGGd8AYGo=",
+        "ref": "refs/heads/main",
+        "rev": "4ce3a42ede9e348bf84a2b265a5c229d6197e896",
+        "revCount": 33,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
       },
       "original": {
-        "ref": "milestone/trade-logger-and-planner",
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
       }
