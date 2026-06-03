@@ -18,5 +18,6 @@ usually contain symlinks back to those canonical skill directories.
 
 ## Current skills
 
+- `ks-host-sync` -> `../../skills/ks-host-sync`
 - `repo-development-pipeline-operator` -> `../../skills/repo-development-pipeline-operator`
 - `repo-release-operator` -> `../../skills/repo-release-operator`
