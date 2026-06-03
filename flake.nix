@@ -26,7 +26,7 @@
     # For local dev without commits, use: ./bin/dev-keystone <hostname>
     # It prefers the gitignored ./keystone checkout when present.
     keystone = {
-      url = "github:ncrmro/keystone/experimental";
+      url = "github:ncrmro/keystone/milestone/M10-V2-os-agents";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };

@@ -1428,16 +1428,16 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1780372887,
-        "narHash": "sha256-vITziY8AVgNkyMZH2Sw5ZwAODkGqQlkq/KAt1p3JKts=",
+        "lastModified": 1780459297,
+        "narHash": "sha256-5CFYW+Ai/6ptcQrcNA44LUIn4rod0N+cGct/qF8CW/s=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "ad63115f0415f196e0c7964e8f815147f73611b9",
+        "rev": "1a099e89ee08dd66201d362a379d8ad81b6827de",
         "type": "github"
       },
       "original": {
         "owner": "ncrmro",
-        "ref": "experimental",
+        "ref": "milestone/M10-V2-os-agents",
         "repo": "keystone",
         "type": "github"
       }
