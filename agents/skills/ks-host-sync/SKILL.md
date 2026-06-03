@@ -184,11 +184,24 @@ ssh <host> 'cd ~/repos/ncrmro/ks-config && git remote set-url origin git@github.
 
 ### 7. Verify per-host closure builds
 
-Build each host's toplevel **from workstation** (so the closure is built once and substitutable). Use plain `nix build` rather than `bin/ks-dev` — `bin/ks-dev` pre-warms SSH which prompts for YubiKey even in `--build` mode:
+**Two-stage gate. Do not build anything unprompted.** Closure builds are slow and the user often won't want them — e.g. a doc-only catch-up doesn't need a fleet rebuild to prove correctness.
+
+**Stage 1 — ask whether to build at all.** Use `AskUserQuestion` with a single yes/no question, and **the default / recommended answer is No**. Phrase it so the user can confirm the sync is done without any build at all.
+
+**Stage 2 — only if the answer is yes, follow up with the full host list.** Enumerate available hosts:
 
 ```bash
 cd ~/repos/ncrmro/ks-config
-for host in ncrmro-workstation ncrmro-laptop ocean mercury; do
+nix eval --json '.#nixosConfigurations' --apply 'builtins.attrNames' | jq -r '.[]'
+```
+
+Then present every name from that list as its own option in a second `AskUserQuestion` (multi-select). Do NOT preselect. Only build what the user picks.
+
+Build each chosen host's toplevel **from workstation** (so the closure is built once and substitutable). Use plain `nix build` rather than `bin/ks-dev` — `bin/ks-dev` pre-warms SSH which prompts for YubiKey even in `--build` mode:
+
+```bash
+cd ~/repos/ncrmro/ks-config
+for host in <user-selected hosts>; do
   echo "=== building $host ==="
   nix build --no-link --print-out-paths ".#nixosConfigurations.$host.config.system.build.toplevel" 2>&1 | tail -2
 done
