@@ -11,7 +11,7 @@ NixOS configuration repository using flakes for managing system configurations a
 
 | Repo | Tracking branch | Role |
 |------|-----------------|------|
-| **ncrmro/nixos-config** (this repo, a.k.a. ks-config) | `main` | Consumer flake; defines every host's full config. |
+| **ncrmro/ks-config** (this repo; previously `ncrmro/nixos-config`) | `main` | Consumer flake; defines every host's full config. |
 | **ncrmro/keystone** | `milestone/M10-V2-os-agents` | Shared NixOS / Home Manager modules + agent tooling. `milestone/M10-V2-os-agents` is canonical for now; keystone's `main` does not satisfy ks-config's current option set. |
 | **ncrmro/vega** | `main` | Personal dashboard + MCP server. Packaged as a NixOS service (`services.vega`); installed on `ocean`. |
 | **ncrmro/plouton** | `main` | FastAPI server + Astro static SPA (forecast/strategy diagnostics). Packaged as a NixOS service (`services.plouton`); installed on `ocean`. |

@@ -44,7 +44,7 @@ Verify that the deployed changes are working correctly across all hosts. This st
    - For each issue found (failed units, stuck agents, unhealthy services), search GitHub before treating it as new:
      ```bash
      gh issue list --search "<keyword>" --repo ncrmro/keystone
-     gh issue list --search "<keyword>" --repo ncrmro/nixos-config
+     gh issue list --search "<keyword>" --repo ncrmro/ks-config
      ```
    - If an existing issue is found: link it in the report — do not create a duplicate
    - If no existing issue: document it as a new finding requiring a new issue
@@ -77,7 +77,7 @@ Verify that the deployed changes are working correctly across all hosts. This st
      NOTES_DIR="${NOTES_DIR:-$HOME/notes}"
      zk --notebook-dir "$NOTES_DIR" list reports/ \
        --tag "report/keystone-system" \
-       --tag "repo/ncrmro/nixos-config" \
+       --tag "repo/ncrmro/ks-config" \
        --tag "source/deepwork/ks-doctor" \
        --sort created- --limit 1 --format json
      ```

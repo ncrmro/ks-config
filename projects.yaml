@@ -5,7 +5,7 @@ keystone:
   mission: "Self-sovereign NixOS infrastructure platform for deploying secure, encrypted systems on any hardware"
   repos:
     - ncrmro/keystone
-    - ncrmro/nixos-config
+    - ncrmro/ks-config
     - ncrmro/agenix-secrets
 
 agents:
@@ -33,10 +33,10 @@ ks-systems-hardware:
   repos:
     - ncrmro/ks-systems-hardware
 
-nixos-config:
+ks-config:
   mission: "Personal NixOS infrastructure for laptop, workstation, homelab, and VPS"
   repos:
-    - ncrmro/nixos-config
+    - ncrmro/ks-config
 
 meze:
   mission: "Meal planning app optimizing for nutrition, wellbeing, physique, budget, and culinary curiosity"

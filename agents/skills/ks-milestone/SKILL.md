@@ -17,7 +17,7 @@ If the change is purely in one repo, use the normal ks-dev or ks-engineer flow i
 - **Keystone branch:** always `experimental`. Never push to `main` from this skill.
 - **ks-config working copy:** `~/repos/ncrmro/ks-config` (the parent of the Keystone checkout above).
 - **ks-config branch:** `experimental/ks-config-local-keystone-devbox` is the default working branch. Stay on it unless the user explicitly names a different one.
-- **Remotes:** keystone → `git@github.com:ncrmro/keystone.git`. ks-config → `git@github.com:ncrmro/nixos-config.git`.
+- **Remotes:** keystone → `git@github.com:ncrmro/keystone.git`. ks-config → `git@github.com:ncrmro/ks-config.git`.
 
 ## Steps
 

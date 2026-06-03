@@ -70,7 +70,7 @@ See `.claude/commands/ks.develop.md`, `.claude/commands/ks.convention.md`, `.cla
 
 ### v1.7.0 — Doctor report quality (2026-03-24)
 
-- **Always cross-reference issues with GitHub before flagging as new**: When the doctor finds failed units or health problems, search GitHub first (`gh issue list --search "<keyword>" --repo ncrmro/keystone` and `ncrmro/nixos-config`). There is already an existing GitHub issue for the `syncoid-rpool-to-*` ZFS backup sync failures — link to it rather than treating it as new.
+- **Always cross-reference issues with GitHub before flagging as new**: When the doctor finds failed units or health problems, search GitHub first (`gh issue list --search "<keyword>" --repo ncrmro/keystone` and `ncrmro/ks-config`). There is already an existing GitHub issue for the `syncoid-rpool-to-*` ZFS backup sync failures — link to it rather than treating it as new.
 - **Agent health needs task-level detail**: The report should show each agent's task queue depth, recent job names, and any blocking issues — not just "services running." Use `agentctl <agent> jobs` (or equivalent) to get recent activity.
 - **Tailscale offline for agents is expected (TODO)**: Agent Tailscale integration is a planned feature, not yet implemented. Tailscale offline status for agent nodes should be documented as informational, not flagged as an alert. Only flag host-level Tailscale nodes going offline.
 
@@ -89,7 +89,7 @@ See `.claude/commands/ks.develop.md`, `.claude/commands/ks.convention.md`, `.cla
 - **Reboot resume instructions**: When `--boot` is used and a reboot is required, the session is lost. Before the reboot, write `.deepwork/tmp/resume_context.md` with the current workflow state (step, deployed hosts, remaining hosts, verification checklist, next command) and output instructions for the human on how to resume in a new claude/gemini session. The resume file survives the reboot and gives the next agent full context.
 - **LFS history rewrites inflate commit counts**: When keystone history is rewritten (e.g., to remove LFS), `git log locked..main` shows the entire rewritten history. Use `--since=<lock-date>` to find the real delta instead of relying on `locked..main` when commit counts seem unreasonably high.
 - **The survey_fleet step is reused by doctor**: Both `update` and `doctor` workflows now start with survey_fleet, making it the standard fleet state collection step.
-- **Config repo path standardization**: `nixos-config` will become `keystone-config`. Use `~/.keystone/repos/nixos-config` as canonical path with fallbacks.
+- **Config repo path standardization**: The config repo was renamed from `nixos-config` → `ks-config`. Canonical layout is `~/repos/ncrmro/ks-config/` (per CLAUDE.md); the legacy `~/.keystone/repos/nixos-config` path may still appear in older workflow steps — treat it as a fallback only.
 
 ## Nix Eval for System Context
 
