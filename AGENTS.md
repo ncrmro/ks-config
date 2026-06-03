@@ -11,11 +11,13 @@ NixOS configuration repository using flakes for managing system configurations a
 
 | Repo | Tracking branch | Role |
 |------|-----------------|------|
-| **ncrmro/nixos-config** (this repo, a.k.a. ks-config) | `experimental/ks-config-local-keystone-devbox` | Consumer flake; defines every host's full config. |
-| **ncrmro/keystone** | `experimental` | Shared NixOS / Home Manager modules + agent tooling. Schema is mid-refactor; `experimental` is the only branch that satisfies ks-config's current option set (`main` and tagged releases will fail to evaluate). |
+| **ncrmro/nixos-config** (this repo, a.k.a. ks-config) | `main` | Consumer flake; defines every host's full config. |
+| **ncrmro/keystone** | `milestone/M10-V2-os-agents` | Shared NixOS / Home Manager modules + agent tooling. `milestone/M10-V2-os-agents` is canonical for now; keystone's `main` does not satisfy ks-config's current option set. |
 | **ncrmro/vega** | `main` | Personal dashboard + MCP server. Packaged as a NixOS service (`services.vega`); installed on `ocean`. |
-| **ncrmro/plouton** | `main` | FastAPI server + Astro static SPA (forecast/strategy diagnostics). Packaged as a NixOS service (`services.plouton`); installed on `ocean`. Package derivation is currently `__noChroot`, so rebuilds need `--impure` until lockfiles are vendored via bun2nix/uv2nix. |
-| **ncrmro/agenix-secrets** | (default branch) | Private agenix-encrypted secrets. Local checkout at `~/.keystone/repos/ncrmro/agenix-secrets`, symlinked into ks-config as `./agenix-secrets`. |
+| **ncrmro/plouton** | `main` | FastAPI server + Astro static SPA (forecast/strategy diagnostics). Packaged as a NixOS service (`services.plouton`); installed on `ocean`. |
+| **ncrmro/agenix-secrets** | (default branch) | Private agenix-encrypted secrets. Local checkout at `~/repos/ncrmro/agenix-secrets`, symlinked into ks-config as `./agenix-secrets`. |
+
+**Canonical for now:** ks-config tracks `main`; its `flake.nix` always pins keystone at `milestone/M10-V2-os-agents`. Revisit when keystone's `main` catches up.
 
 The three primary hosts all build from this single ks-config tree and share the same locked inputs:
 
@@ -28,9 +30,9 @@ The three primary hosts all build from this single ks-config tree and share the 
 ### Deploy workflows
 
 - `bin/dev-keystone <host>` (alias of `bin/ks-dev`) — preferred for everyday rebuilds. Discovers a local Keystone checkout (`./keystone`, `../keystone`, `~/repos/ncrmro/keystone`, `~/.keystone/repos/ncrmro/keystone`, in that order) and passes it as `--override-input keystone path:...`. Lets you iterate on Keystone without committing.
-- `sudo nixos-rebuild switch --flake .#<host>` — uses only the locked inputs from `flake.lock`. `keystone`, `vega`, and `plouton` are pinned to their respective `experimental` / `main` branches above, so this works without overrides. Plouton additionally needs `--impure` until its package derivation drops `__noChroot`.
+- `sudo nixos-rebuild switch --flake .#<host>` — uses only the locked inputs from `flake.lock`. `keystone` is pinned to `milestone/M10-V2-os-agents` (canonical for now); `vega` and `plouton` are pinned to their `main` branches.
 
-If you change Keystone schema (add/rename options), commit + push to `keystone@experimental` and then `nix flake update keystone` in ks-config so the locked rev catches up — otherwise non-overridden builds will start failing with "unknown option" errors.
+If you change Keystone schema (add/rename options), commit + push to `keystone@milestone/M10-V2-os-agents` and then `nix flake update keystone` in ks-config so the locked rev catches up — otherwise non-overridden builds will start failing with "unknown option" errors.
 
 ## Investigating Issues on Hosts
 

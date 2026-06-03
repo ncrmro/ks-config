@@ -5,6 +5,8 @@ description: "Land a coupled change that touches both Keystone and ks-config —
 
 # ks-experimental
 
+> **Active branch (until this notice is removed):** Keystone work goes to `milestone/M10-V2-os-agents`, not `experimental`. ks-config tracks `main`. Where the steps below say `experimental` / `experimental/ks-config-local-keystone-devbox`, read `milestone/M10-V2-os-agents` / `main`.
+
 Use this skill when a change requires edits in **both** the Keystone library (option schema, modules, helpers, tests) **and** the ks-config consumer flake (host config, host registry, agenix-secrets, binary assets). Examples: adding a new option that's set in ks-config, fixing a module bug that ks-config relies on, extending host taxonomy, adding new agenix patterns.
 
 If the change is purely in one repo, use the normal ks-dev or ks-engineer flow instead — this skill exists to coordinate the two-repo dance, the lock bump, and the verification.
