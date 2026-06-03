@@ -101,14 +101,15 @@ for candidate in "${keystone_candidates[@]}"; do
   fi
 done
 
-# Auto-override only when the local checkout actually contains the rev
-# flake.lock pins — otherwise it silently downgrades the deploy to whatever
-# branch the local copy happens to be on (e.g. ocean's main checkout vs.
-# ks-config locking milestone/M10-V2-os-agents).
+# Auto-override only when local HEAD is at-or-ahead-of the lock — otherwise
+# the path override silently downgrades the deploy to whatever branch the
+# local copy is on (e.g. ocean's main checkout vs. ks-config locking
+# milestone/M10-V2-os-agents). Local-ahead-of-lock is the normal dev case
+# and stays supported.
 if [[ -n "$keystone_checkout" ]]; then
   locked_rev="$(jq -r '.nodes.keystone.locked.rev // empty' "${repo_root}/flake.lock" 2>/dev/null || true)"
-  if [[ -n "$locked_rev" ]] && ! git -C "$keystone_checkout" cat-file -e "${locked_rev}^{commit}" 2>/dev/null; then
-    echo "Note: local keystone at $keystone_checkout missing locked rev $locked_rev — using flake-fetched keystone." >&2
+  if [[ -n "$locked_rev" ]] && ! git -C "$keystone_checkout" merge-base --is-ancestor "$locked_rev" HEAD 2>/dev/null; then
+    echo "Note: local keystone at $keystone_checkout doesn't contain locked rev $locked_rev in HEAD — using flake-fetched keystone." >&2
     keystone_checkout=""
   fi
 fi
