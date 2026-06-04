@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
 let
   tailscaleOnly = ''
     allow 100.64.0.0/10;
@@ -35,6 +35,13 @@ in
       # surface, not the native /api/* routes. See vega/server/src/routes/agent.ts
       # ModelRegistry.registerProvider override.
       OLLAMA_BASE_URL = "http://ncrmro-workstation:11434/v1";
+
+      # Vega's website surfaces the fleet's default OS agent as its in-process
+      # LLM persona (label, placeholders, voice). The slug + fullName flow into
+      # SSR via these env vars; React islands receive them as hydration props.
+      VEGA_DEFAULT_OS_AGENT = config.keystone.os.defaultAgent;
+      VEGA_DEFAULT_OS_AGENT_FULL_NAME =
+        config.keystone.os.agents.${config.keystone.os.defaultAgent}.fullName;
     };
   };
 

@@ -45,6 +45,7 @@ in
       fullName = "Luce";
       email = "luce@ncrmro.com";
       archetype = "product";
+      default = true;
       capabilities = [
         "executive-assistant"
       ];
