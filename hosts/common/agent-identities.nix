@@ -35,9 +35,6 @@ in
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
-      dispatcher = {
-        enable = false;
-      };
       mcp.servers.ks-vega = ksVegaServer;
     };
     luce = {
