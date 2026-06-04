@@ -1,10 +1,22 @@
-{ inputs, config, ... }:
+{ inputs, config, lib, pkgs, ... }:
 let
   tailscaleOnly = ''
     allow 100.64.0.0/10;
     allow fd7a:115c:a1e0::/48;
     deny all;
   '';
+
+  # Materialise keystone.os.agents as a YAML on disk so vega's
+  # /api/agents reflects the fleet's declared identities at startup,
+  # not lazily after each agent first POSTs a report. Schema is owned
+  # by vega (server/src/config.ts); see vega/code/docs/config-yaml.md.
+  vegaConfig = (pkgs.formats.yaml { }).generate "vega-config.yaml" {
+    agents = lib.mapAttrsToList (name: agent: {
+      inherit name;
+      inherit (agent) host fullName;
+    }) config.keystone.os.agents;
+    defaultAgent = config.keystone.os.defaultAgent;
+  };
 in
 {
   imports = [ inputs.vega.nixosModules.default ];
@@ -13,6 +25,7 @@ in
     enable = true;
     bindHost = "127.0.0.1";
     port = 17878;
+    configFile = vegaConfig;
     # The browser is reached at https://vega.ncrmro.com via nginx; the
     # SSR fetches loop back to this same process. The browser-side base
     # URL needs the public host (PUBLIC_BROWSER_SERVER_URL). The SSR
