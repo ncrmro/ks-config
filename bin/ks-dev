@@ -197,11 +197,74 @@ nix_quiet_args=(--no-write-lock-file)
 sudo_prefix=()
 if [[ "$mode" != "build" ]] && [[ ${#remote_args[@]} -eq 0 ]]; then
   sudo_prefix=(sudo)
+  # Preserve the user's SSH agent so root can fetch private git+ssh
+  # flake inputs (e.g. vega). Without this, root has no key + no agent
+  # and the fetcher fails with "Permission denied (publickey)".
+  if [[ -n "${SSH_AUTH_SOCK:-}" ]]; then
+    sudo_prefix+=(--preserve-env=SSH_AUTH_SOCK)
+  fi
 fi
 
-exec "${sudo_prefix[@]}" nixos-rebuild "$mode" \
-  --flake "${repo_root}#${host}" \
-  "${remote_args[@]}" \
-  "${override_args[@]}" \
-  "${nix_quiet_args[@]}" \
-  "${extra_args[@]}"
+run_rebuild() {
+  "${sudo_prefix[@]}" nixos-rebuild "$mode" \
+    --flake "${repo_root}#${host}" \
+    "${remote_args[@]}" \
+    "${override_args[@]}" \
+    "${nix_quiet_args[@]}" \
+    "${extra_args[@]}"
+}
+
+# Without local sudo there's no env-passing gap to recover from.
+if [[ ${#sudo_prefix[@]} -eq 0 ]]; then
+  exec nixos-rebuild "$mode" \
+    --flake "${repo_root}#${host}" \
+    "${remote_args[@]}" \
+    "${override_args[@]}" \
+    "${nix_quiet_args[@]}" \
+    "${extra_args[@]}"
+fi
+
+# Local sudo path: tee output so we can detect a root-side host-key
+# miss, populate /root/.ssh/known_hosts from flake.lock's git+ssh
+# entries, and retry once. The agent is already passed through above,
+# so this only kicks in when root has never talked to the git host.
+log_file="$(mktemp)"
+trap 'rm -f "$log_file"' EXIT
+
+set +e
+run_rebuild 2>&1 | tee "$log_file"
+status=${PIPESTATUS[0]}
+
+if [[ $status -ne 0 ]] && grep -q "Host key verification failed" "$log_file"; then
+  echo >&2
+  echo "Detected SSH host-key failure — populating /root/.ssh/known_hosts from flake.lock." >&2
+  sudo install -d -m 700 /root/.ssh
+
+  jq -r '[.nodes[].locked?.url? // empty] | map(select(startswith("ssh://"))) | unique[]' \
+    "${repo_root}/flake.lock" |
+    while IFS= read -r url; do
+      # ssh://user@host[:port]/path
+      hostport="${url#ssh://*@}"
+      hostport="${hostport%%/*}"
+      if [[ "$hostport" == *:* ]]; then
+        host_only="${hostport%:*}"
+        port="${hostport##*:}"
+      else
+        host_only="$hostport"
+        port=22
+      fi
+      if sudo ssh-keygen -F "[${host_only}]:${port}" -f /root/.ssh/known_hosts >/dev/null 2>&1; then
+        continue
+      fi
+      echo "  scanning ${host_only}:${port}" >&2
+      ssh-keyscan -p "$port" "$host_only" 2>/dev/null | sudo tee -a /root/.ssh/known_hosts >/dev/null
+    done
+
+  echo >&2
+  echo "Retrying rebuild..." >&2
+  run_rebuild
+  status=$?
+fi
+set -e
+
+exit "$status"
