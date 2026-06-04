@@ -347,6 +347,43 @@ nix build .#nixosConfigurations.test-vm.config.system.build.vm
 
 Home Manager is integrated into NixOS and activated automatically during `nixos-rebuild switch`. **Never run `home-manager switch` directly** - it conflicts with the NixOS-managed home-manager service.
 
+## Agent-asset symlinks
+
+Keystone's terminal module (`modules/terminal/agents/assets.nix`) installs per-tool home-dir paths as symlinks into the active consumer flake's `agents/` tree:
+
+| Link site | Target (inside consumer flake) |
+|-----------|--------------------------------|
+| `~/.claude/CLAUDE.md` | `agents/_shared/AGENTS.md` |
+| `~/.gemini/GEMINI.md` | `agents/_shared/AGENTS.md` |
+| `~/.codex/AGENTS.md`  | `agents/_shared/AGENTS.md` |
+| `~/.claude/skills`    | `agents/skills/` |
+| `~/.claude/agents`    | `agents/claude/agents/` |
+| `~/.gemini/skills`    | `agents/skills/` |
+| `~/.codex/skills`     | `agents/skills/` |
+| `~/.agents/skills`    | `agents/skills/` |
+
+The activation script **refuses to clobber a pre-existing regular file or non-empty directory** at any of those paths — it logs `keystone-agent-asset-symlinks: refusing to replace ...` to stderr and skips. The refusal scrolls past in long `nixos-rebuild` output and is easy to miss, so a host can run for weeks with stale on-disk content while every subsequent rebuild silently no-ops on those paths.
+
+Common cause: the host had a pre-symlink generation of keystone deployed once and the old regular file is in the way. This often surfaces on hosts where keystone dev mode was previously enabled and wrote concrete files that the current declarative wiring now expects to own as symlinks.
+
+**Fix on the affected host** (skips paths that are already symlinks or absent):
+
+```bash
+ts=$(date -Idate)
+for p in \
+  ~/.claude/CLAUDE.md ~/.gemini/GEMINI.md ~/.codex/AGENTS.md \
+  ~/.claude/skills ~/.claude/agents \
+  ~/.gemini/skills ~/.codex/skills ~/.agents/skills; do
+  [ -L "$p" ] && continue
+  [ ! -e "$p" ] && continue
+  if [ -d "$p" ] && [ -z "$(ls -A "$p")" ]; then rmdir "$p"; continue; fi
+  mv "$p" "$p.bak.$ts"
+done
+# Then re-activate home-manager via `ks update` / nixos-rebuild switch.
+```
+
+`ks-host-sync` includes a fleet-wide check (§1) that surveys these link sites on every host and surfaces any that are blocking the symlinks.
+
 ## OS Agents
 
 OS agents are user accounts on the host provisioned via `keystone.os.agents.<name>`. Each agent has its own identity, credentials, SSH keys, email, and workspace ("space") repos. See keystone AGENTS.md "Agent Provisioning" for full option reference.

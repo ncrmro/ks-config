@@ -68,6 +68,28 @@ for repo in ks-config keystone vega plouton; do
 done
 ```
 
+**Also inspect agent-asset symlinks across the fleet.** Keystone's home-manager activation (`modules/terminal/agents/assets.nix`) installs per-tool home-dir paths (`~/.claude/CLAUDE.md`, `~/.claude/skills`, `~/.gemini/GEMINI.md`, etc.) as symlinks into the active consumer flake's `agents/` tree, but **refuses to clobber a pre-existing regular file or non-empty directory** at any of those paths. The refusal logs (`keystone-agent-asset-symlinks: refusing to replace ...`) scroll past in long rebuild output and are easy to miss — see `ks-config/AGENTS.md` § "Agent-asset symlinks" for the full link table and the per-host fix. This frequently surfaces on hosts where keystone dev mode previously wrote concrete files. Check every host directly:
+
+```bash
+for host in ncrmro-workstation ncrmro-laptop ocean; do
+  echo "=== $host ==="
+  cmd='for p in .claude/CLAUDE.md .gemini/GEMINI.md .codex/AGENTS.md \
+              .claude/skills .claude/agents .gemini/skills .codex/skills .agents/skills; do
+         full="$HOME/$p"
+         if [ -L "$full" ]; then kind=symlink; extra=$(readlink "$full")
+         elif [ -d "$full" ] && [ -n "$(ls -A "$full" 2>/dev/null)" ]; then kind=BLOCKED-dir;  extra="$(ls -A "$full" | wc -l) entries"
+         elif [ -d "$full" ]; then kind=empty-dir;  extra="-"
+         elif [ -f "$full" ]; then kind=BLOCKED-file; extra="-"
+         else kind=missing; extra="-"
+         fi
+         printf "  %-26s %-14s %s\n" "$p" "$kind" "$extra"
+       done'
+  if [ "$host" = "$(hostname)" ]; then bash -c "$cmd"; else ssh "$host" "$cmd"; fi
+done
+```
+
+Anything reported as `BLOCKED-file` or `BLOCKED-dir` will silently skip during home-manager activation and the on-disk content will rot relative to ks-config. Record the offenders per host — they get fixed in §9 cleanup. (`empty-dir` is harmless; the activation script auto-converts those.)
+
 ### 2. Fold stray branches back to `main` (if any)
 
 If a host (or origin) carries a transient branch like `milestone/<slug>` or `experimental/<slug>` that should land on `main`, merge it on workstation:
@@ -256,6 +278,24 @@ Common categories to offer:
    ```
 
 5. **Sweep remaining cosmetic doc artifacts.** Stale filesystem paths (`/home/ncrmro/<old-name>/...`), old skill names referenced from prompts, etc. These often surface during §4's sweep but get deferred.
+
+6. **Unblock agent-asset symlinks.** For each `BLOCKED-file` or `BLOCKED-dir` entry from the §1 symlink survey, back it up so the next home-manager activation can install the symlink. Empty dirs do NOT need cleanup — activation `rmdir`s them automatically.
+
+   ```bash
+   # Per host, for each blocked path (substitute the actual paths reported in §1):
+   ssh <host> '
+     ts=$(date -Idate)
+     for p in <list of blocked paths reported in §1>; do
+       link="$HOME/$p"
+       [ -L "$link" ] && continue
+       [ ! -e "$link" ] && continue
+       if [ -d "$link" ] && [ -z "$(ls -A "$link")" ]; then rmdir "$link"; continue; fi
+       mv "$link" "$link.bak.$ts"
+     done
+   '
+   ```
+
+   The user re-runs `bin/ks-dev <host>` in §10 to re-activate; the symlinks will appear on the next pass. Leave the `*.bak.<date>` artifacts for the user to inspect — don't delete them as part of the sync.
 
 Report exactly what's a candidate, what command you'd run, and what's left over. Wait for the user's per-item decision. They may say "yes do all", "only #1 and #2", or "skip — I'll do it myself".
 
