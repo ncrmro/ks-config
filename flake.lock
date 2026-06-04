@@ -1760,11 +1760,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780452504,
-        "narHash": "sha256-8JmVM+HbKJ/D53AXOVN/rJH0bYcD+Yb6gCHGGd8AYGo=",
+        "lastModified": 1780586751,
+        "narHash": "sha256-X4vgblF6CPqIYl8ezlxDjCHaHzTqKSPkApiplMci87k=",
         "ref": "refs/heads/main",
-        "rev": "4ce3a42ede9e348bf84a2b265a5c229d6197e896",
-        "revCount": 33,
+        "rev": "cf78dade7042efb91db23d3f989a953d8aac786d",
+        "revCount": 34,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
       },
