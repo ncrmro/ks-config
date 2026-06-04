@@ -14,11 +14,21 @@ in
     bindHost = "127.0.0.1";
     port = 17878;
     # The browser is reached at https://vega.ncrmro.com via nginx; the
-    # SSR sees the proxy origin (http://127.0.0.1:17878) and otherwise
-    # bakes that into the rendered HTML as the API base. Override with
-    # the public URL so client-side fetches go to the right place.
+    # SSR fetches loop back to this same process. The browser-side base
+    # URL needs the public host (PUBLIC_BROWSER_SERVER_URL). The SSR
+    # base URL needs to point at the listener's own port — vega's
+    # api.ts now picks $PORT when PUBLIC_SERVER_PORT is unset, but we
+    # also pin it explicitly here as defense in depth: ocean's 7878
+    # belongs to Radarr (servarr.nix), and an SSR loop into a 401-
+    # returning neighbour is the worst kind of silent failure.
+    #
+    # TODO(keystone): assign-time port-conflict detection across
+    # `services.*` modules keystone owns. Vega/Radarr collision on
+    # ocean only surfaced as a 401 in rendered HTML; a doctor check or
+    # a central port registry would catch it before deploy.
     environment = {
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
+      PUBLIC_SERVER_PORT = "17878";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's
       # tailnet ollama (RX 9070 XT, hosts nemotron-3-nano:4b + qwen3:32b
       # + friends). URL must end in /v1 — pi-ai uses the OpenAI-compat
