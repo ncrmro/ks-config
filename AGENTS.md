@@ -27,6 +27,12 @@ The three primary hosts all build from this single ks-config tree and share the 
 | **ncrmro-workstation** | workstation | builds on remote | none |
 | **ncrmro-laptop** | laptop | builds locally then activates remote | none |
 
+### Adding a new intranet (tailnet-only) service
+
+Hosts on the tailnet resolve `*.ncrmro.com` via headscale's `extra_records`, served from `mercury`. **Every new `*.ncrmro.com` vhost that runs on the tailnet must be hand-registered** in `modules/nixos/headscale/default.nix`'s `extra_records` list, then mercury must be redeployed. There is no auto-registration path from `services.nginx.virtualHosts` into MagicDNS.
+
+Symptom of forgetting this: a vhost on ocean returns `NXDOMAIN` from `dig @100.100.100.100` (or `getent hosts`) while other vhosts on the same host resolve. Nginx is up, but no one can reach the name.
+
 ### Deploy workflows
 
 - `bin/dev-keystone <host>` (alias of `bin/ks-dev`) — preferred for everyday rebuilds. Discovers a local Keystone checkout (`./keystone`, `../keystone`, `~/repos/ncrmro/keystone`, `~/.keystone/repos/ncrmro/keystone`, in that order) and passes it as `--override-input keystone path:...`. Lets you iterate on Keystone without committing.
