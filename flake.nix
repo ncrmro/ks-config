@@ -21,12 +21,31 @@
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    # Keystone - self-sovereign infrastructure platform
-    # NEVER CHANGE THIS URL TO A LOCAL PATH. EVER. USE THE GITHUB REPO.
-    # For local dev without commits, use: ./bin/dev-keystone <hostname>
-    # It prefers the gitignored ./keystone checkout when present.
+    # Active milestone-M10 dev: keystone, vega, and plouton are pinned to
+    # local working trees on the user's standard layout. Letting the
+    # flake follow whatever's in those trees removes the
+    # commit → push → bump-lock → push round-trip that was eating dev
+    # cycles. Restore the remote URLs (and `nix flake update`) once
+    # these repos stabilise; this block is the easy revert.
+    #
+    # Assumed checkouts (workstation + laptop):
+    #   /home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents
+    #   /home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config
+    #   /home/ncrmro/repos/ncrmro/plouton                                      (main)
+    # keystone + vega point at worktrees that haven't merged back to
+    # their main branches yet but carry the option schema ocean depends
+    # on (keystone.os.agents.<n>.default + defaultAgent;
+    # services.vega.configFile). plouton's main has the static-SPA flip.
+    #
+    # Remote targets (ocean, mercury) never fetch inputs — ks-dev builds
+    # locally and copies the closure — so they need nothing extra.
+
+    # NEVER CHANGE THIS URL. EVER. milestone/M10-V2-os-agents is the
+    # single canonical branch for keystone work right now — squash /
+    # cherry-pick new commits onto it instead of repointing the flake
+    # at a different branch. If a change is needed here, ask first.
     keystone = {
-      url = "github:ncrmro/keystone/feat/agent-default-flag-m10";
+      url = "path:/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };
@@ -38,20 +57,15 @@
     };
 
     # Vega — personal dashboard + MCP server, hosted on ocean.
-    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
     vega = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git";
+      url = "path:/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };
 
     # Plouton — FastAPI + Astro SPA, hosted on ocean.
-    # Private repo: requires Tailscale + SSH access to git.ncrmro.com.
-    # The package derivation currently uses __noChroot (bun install + uv run
-    # in-derivation), so rebuilds that exercise it need `--impure`. Vendoring
-    # lockfiles via bun2nix/uv2nix will lift that requirement.
     plouton = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git";
+      url = "path:/home/ncrmro/repos/ncrmro/plouton";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

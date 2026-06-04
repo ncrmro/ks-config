@@ -1428,18 +1428,14 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1780590376,
-        "narHash": "sha256-tWmIWRjECSaVMmXIL/SKF7k/eNI9rhSgnatrDi1A9z8=",
-        "owner": "ncrmro",
-        "repo": "keystone",
-        "rev": "db8aecd0e8fd538d1f77a8e61a30b45fc5d12302",
-        "type": "github"
+        "lastModified": 1780597714,
+        "narHash": "sha256-X1EW49N1GPXoYF38zmca/gWoHhwqV/2PM+MeQSGo+Qc=",
+        "path": "/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents",
+        "type": "path"
       },
       "original": {
-        "owner": "ncrmro",
-        "ref": "feat/agent-default-flag-m10",
-        "repo": "keystone",
-        "type": "github"
+        "path": "/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents",
+        "type": "path"
       }
     },
     "kinda-nvim-hx": {
@@ -1760,17 +1756,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1780586751,
-        "narHash": "sha256-X4vgblF6CPqIYl8ezlxDjCHaHzTqKSPkApiplMci87k=",
-        "ref": "refs/heads/main",
-        "rev": "cf78dade7042efb91db23d3f989a953d8aac786d",
-        "revCount": 34,
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+        "lastModified": 1780594698,
+        "narHash": "sha256-nuzHHD7ca7wErTOb4oqP5h7rywnkYIx03my+kuZTFb8=",
+        "path": "/home/ncrmro/repos/ncrmro/plouton",
+        "type": "path"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
+        "path": "/home/ncrmro/repos/ncrmro/plouton",
+        "type": "path"
       }
     },
     "pre-commit": {
@@ -2342,17 +2335,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1780592108,
-        "narHash": "sha256-XQ+jqJ4AR94kYFj0bhi2/D9vTasfumUn0Z2InC9s0iY=",
-        "ref": "feat/declarative-config",
-        "rev": "5649767943afad99978bdc46c0108fca87a96529",
-        "revCount": 64,
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
+        "lastModified": 1780592075,
+        "narHash": "sha256-8KYTIKMAh9MIcmo6CFXrF8h4BJkk2dsjS18QqBhwExg=",
+        "path": "/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config",
+        "type": "path"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
+        "path": "/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config",
+        "type": "path"
       }
     },
     "walker": {
