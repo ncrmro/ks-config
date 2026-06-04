@@ -745,6 +745,10 @@ programs.zellij = {
         "bind \"Ctrl Shift Tab\"" = { GoToPreviousTab = {}; };
         "bind \"Ctrl Tab\"" = { GoToNextTab = {}; };
 
+        # Home-row alternative for Framework laptop (no Fn juggling)
+        "bind \"Alt [\"" = { GoToPreviousTab = {}; };
+        "bind \"Alt ]\"" = { GoToNextTab = {}; };
+
         # New tab (works on all keyboards)
         "bind \"Ctrl t\"" = { NewTab = {}; };
 
@@ -1305,9 +1309,9 @@ This table shows how the same window management operations are performed across 
 | Pane Mode Navigation | N/A | ❌ Disabled | `Ctrl+P` then `h/j/k/l` | N/A | N/A |
 | Cycle/Toggle Panes | N/A | ❌ Disabled | `Ctrl+P` then `p` | N/A | N/A |
 | **Tab Navigation (W/E/R/C Pattern)** |
-| Previous Tab | N/A | Not used† | `Alt+W`‡ or `Ctrl+PgUp` | N/A | `Alt+W`‡ or `Ctrl+PgUp` or `J` |
+| Previous Tab | N/A | Not used† | `Alt+[` or `Ctrl+PgUp` or `Ctrl+Shift+Tab` | N/A | `Alt+W`‡ or `Ctrl+PgUp` or `J` |
 | New Tab | N/A | Not used† | `Alt+E`‡ or `Ctrl+T` | N/A | `Alt+E`‡ or `Ctrl+T` or `t` |
-| Next Tab | N/A | Not used† | `Alt+R`‡ or `Ctrl+PgDn` | N/A | `Alt+R`‡ or `Ctrl+PgDn` or `K` |
+| Next Tab | N/A | Not used† | `Alt+]` or `Ctrl+PgDn` or `Ctrl+Tab` | N/A | `Alt+R`‡ or `Ctrl+PgDn` or `K` |
 | Close Tab | N/A | Not used† | `Alt+C`‡ or `Ctrl+W` | N/A | `Alt+C`‡ or `Ctrl+W` or `x` |
 | Move Tab Left | N/A | Not used† | `Ctrl+Shift+PgUp` | N/A | N/A |
 | Move Tab Right | N/A | Not used† | `Ctrl+Shift+PgDn` | N/A | N/A |

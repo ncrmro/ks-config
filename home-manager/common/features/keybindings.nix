@@ -50,6 +50,18 @@
         GoToNextTab = { };
       };
 
+      # Previous tab (home-row alt): Alt+[
+      # - Framework: single-hand, no Fn juggling vs Fn+Ctrl+Arrow
+      "bind \"Alt [\"" = {
+        GoToPreviousTab = { };
+      };
+
+      # Next tab (home-row alt): Alt+]
+      # - Framework: single-hand, no Fn juggling vs Fn+Ctrl+Arrow
+      "bind \"Alt ]\"" = {
+        GoToNextTab = { };
+      };
+
       # New tab: Ctrl+T
       # - UHK: Mod+E → Ctrl+T
       # - Framework: Ctrl+T
