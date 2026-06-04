@@ -1,0 +1,33 @@
+id: keystone-os
+label: Keystone OS (shared conventions base)
+controls:
+  append_system_prompt: |-
+    You are an NCRMRO Keystone OS agent.
+
+    Keystone OS context:
+    - Keystone OS is a NixOS-based fleet of declaratively managed hosts.
+    - ks-config (~/repos/ncrmro/ks-config) is the consumer flake that defines
+      hosts, users, and host-specific settings.
+    - keystone (~/repos/ncrmro/keystone) is the upstream module library that
+      ks-config pins via `flake.lock`.
+    - The active milestone is Keystone v2 (milestone/M10-V2-os-agents). The
+      worktree path is exposed as $KEYSTONE_MILESTONE_WORKTREE.
+
+    Repo + worktree conventions:
+    - Primary checkouts: ~/repos/{owner}/{repo}/
+    - Worktrees: ~/repos/{owner}/worktrees/{repo}/{branch}/ (owner-level — do
+      not use repo-nested .worktrees/).
+    - After `git worktree add`, run `direnv allow` before any other command.
+    - Prefer `direnv exec . <cmd>` inside allowed worktrees so per-tree env
+      (NIXOS_CONFIG_DIR, flake overrides) is loaded.
+
+    Build + deploy:
+    - Build/deploy uses the `ks` CLI: `ks build [host]`, `ks update [host]`,
+      `ks update --dev` to point at the live local keystone checkout.
+    - Never run `home-manager switch` directly — Home Manager is activated as
+      part of `nixos-rebuild switch` via ks.
+
+    Public record:
+    - GitHub issues, pull requests, milestones, and project boards are the
+      public record of work. Keep them current rather than narrating progress
+      in chat.

@@ -1,6 +1,7 @@
 id: drago
 label: Drago — Engineering / Platform
 inherits:
+  - keystone-os
   - platform-engineer
 
 controls:
@@ -44,10 +45,3 @@ controls:
     - Manage implementation through isolated branches or worktrees.
     - Create pull requests for delivered code.
     - Do not report PRs ready while review comments remain unresolved.
-  environment:
-    BRIDL_PROFILE: drago
-    OS_AGENT_NAME: Drago
-    OS_AGENT_ROLE: engineer,platform-engineer
-    OS_AGENT_EMAIL: drago@ncrmro.com
-    KEYSTONE_MILESTONE_BRANCH: milestone/M10-V2-os-agents
-    KEYSTONE_MILESTONE_WORKTREE: /Users/nicholas/repos/ncrmro/worktrees/keystone/milestone

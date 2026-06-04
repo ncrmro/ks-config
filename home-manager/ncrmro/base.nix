@@ -8,6 +8,7 @@
   ...
 }:
 {
+  keystone.terminal.bridl.enable = true;
 
   home.packages = with pkgs; [
     nixfmt
