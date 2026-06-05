@@ -8,7 +8,7 @@ result-desktop-vm
 .direnv
 .repos/
 .submodules/
-agenix-secrets/
-keystone/
+/agenix-secrets/
+/keystone/
 .deepwork/tmp/
 .claude/
