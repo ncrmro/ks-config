@@ -10,6 +10,7 @@
   imports = [
     ../common/global
     ../common/features/macos-dev.nix
+    ../common/features/macos-ocean-mounts.nix
     ../common/optional/eternal-terminal.nix
   ];
 

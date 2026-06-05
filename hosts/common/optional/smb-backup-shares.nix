@@ -116,6 +116,20 @@ in
           "directory mask" = "0755";
           "vfs objects" = "catia streams_xattr";
         };
+
+        # macOS-friendly media share. Reuses the Time Machine SMB credential
+        # but forces filesystem access through the existing media user/group.
+        "media" = {
+          "path" = "/ocean/media";
+          "valid users" = "timemachine";
+          "force user" = "media";
+          "force group" = "media";
+          "read only" = "no";
+          "browseable" = "yes";
+          "create mask" = "0664";
+          "directory mask" = "0775";
+          "vfs objects" = "catia fruit streams_xattr";
+        };
       };
     };
 

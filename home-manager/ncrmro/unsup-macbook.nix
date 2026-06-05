@@ -6,6 +6,7 @@
 {
   imports = [
     ../common/global
+    ../common/features/macos-ocean-mounts.nix
     inputs.keystone.homeModules.terminal
   ];
 
