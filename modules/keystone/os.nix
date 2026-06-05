@@ -20,6 +20,7 @@
     ../../hosts/common/global/openssh.nix
     ../../hosts/common/global/bridl.nix
     ../../hosts/common/agent-identities.nix
+    ./os/agents/auto-secrets.nix
   ];
 
   # Fleet-wide identity

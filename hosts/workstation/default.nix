@@ -31,33 +31,6 @@
     ../../modules/nixos/steam.nix
   ];
 
-  # Agenix secrets for agent-drago (decrypted on workstation host)
-  age.secrets.agent-drago-mail-password = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-mail-password.age";
-    owner = "agent-drago";
-    mode = "0400";
-  };
-  age.secrets.agent-drago-tailscale-auth-key = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-tailscale-auth-key.age";
-    owner = "agent-drago";
-    mode = "0400";
-  };
-  age.secrets.workstation-agent-drago-ssh-key = {
-    file = "${inputs.agenix-secrets}/secrets/workstation-agent-drago-ssh-key.age";
-    owner = "agent-drago";
-    mode = "0400";
-  };
-  age.secrets.workstation-agent-drago-ssh-passphrase = {
-    file = "${inputs.agenix-secrets}/secrets/workstation-agent-drago-ssh-passphrase.age";
-    owner = "agent-drago";
-    mode = "0400";
-  };
-  age.secrets.agent-drago-bitwarden-password = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-bitwarden-password.age";
-    owner = "agent-drago";
-    mode = "0400";
-  };
-
   keystone.os.hypervisor.connections = [ "qemu+ssh://ncrmro@ocean/session" ];
   keystone.os.hypervisor.allowedBridges = [
     "virbr0"
