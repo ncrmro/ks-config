@@ -20,7 +20,7 @@
     stateVersion = "25.05";
   };
 
-  # macOS-specific configurations can be added here
-  # For example:
-  # programs.alacritty.settings.font.size = lib.mkForce 14.0;
+  keystone.terminal.ai.enable = false;
+  keystone.terminal.deepwork.enable = false;
+  keystone.terminal.sandbox.enable = false;
 }
