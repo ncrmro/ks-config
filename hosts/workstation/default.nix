@@ -42,13 +42,13 @@
     owner = "agent-drago";
     mode = "0400";
   };
-  age.secrets.agent-drago-ssh-key = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-ssh-key.age";
+  age.secrets.workstation-agent-drago-ssh-key = {
+    file = "${inputs.agenix-secrets}/secrets/workstation-agent-drago-ssh-key.age";
     owner = "agent-drago";
     mode = "0400";
   };
-  age.secrets.agent-drago-ssh-passphrase = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-ssh-passphrase.age";
+  age.secrets.workstation-agent-drago-ssh-passphrase = {
+    file = "${inputs.agenix-secrets}/secrets/workstation-agent-drago-ssh-passphrase.age";
     owner = "agent-drago";
     mode = "0400";
   };

@@ -113,6 +113,11 @@
         username = "ncrmro";
         fullName = "Nicholas Romero";
         terminal.enable = true;
+        # Auto-load ncrmro's SSH key from agenix on every fleet host. Each host
+        # must have ${hostname}-ncrmro-ssh-passphrase.age enrolled in
+        # agenix-secrets; the assertion in keystone/modules/os/users.nix prints
+        # the enrollment steps if missing.
+        sshAutoLoad.enable = true;
         capabilities = [
           "ks"
           "engineer"

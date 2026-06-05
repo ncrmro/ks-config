@@ -131,13 +131,13 @@
     owner = "agent-luce";
     mode = "0400";
   };
-  age.secrets.agent-luce-ssh-key = {
-    file = "${inputs.agenix-secrets}/secrets/agent-luce-ssh-key.age";
+  age.secrets.ocean-agent-luce-ssh-key = {
+    file = "${inputs.agenix-secrets}/secrets/ocean-agent-luce-ssh-key.age";
     owner = "agent-luce";
     mode = "0400";
   };
-  age.secrets.agent-luce-ssh-passphrase = {
-    file = "${inputs.agenix-secrets}/secrets/agent-luce-ssh-passphrase.age";
+  age.secrets.ocean-agent-luce-ssh-passphrase = {
+    file = "${inputs.agenix-secrets}/secrets/ocean-agent-luce-ssh-passphrase.age";
     owner = "agent-luce";
     mode = "0400";
   };
