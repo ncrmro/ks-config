@@ -1,0 +1,80 @@
+keystone_auto_managed_settings:
+  description: "Flag ks-config host settings that should be auto-set by keystone modules from keystone.os.agents / keystone.os.users declarations."
+  match:
+    include:
+      - "hosts/**/*.nix"
+      - "modules/**/*.nix"
+  review:
+    strategy: individual
+    instructions: |
+      Review this NixOS file for settings that ks-config is declaring manually
+      when they should instead be auto-declared by a keystone module given the
+      higher-level `keystone.os.agents.*` (or related) configuration.
+
+      ## Background
+
+      ks-config consumes the keystone flake input. Many low-level options
+      (`age.secrets.*`, systemd services, users.users.*, home-manager modules,
+      etc.) are wired up automatically by keystone modules in
+      `../keystone/modules/os/` once an agent or user is declared via
+      `keystone.os.agents.<name> = { ... }` or `keystone.os.users.<name> = ...`.
+
+      When ks-config redeclares those values, two things go wrong:
+      1. The host config carries boilerplate that should not be its concern.
+      2. Drift: keystone evolves its naming/owner/mode conventions, but the
+         hand-declared copies in ks-config silently diverge.
+
+      ## What to Flag
+
+      Flag any block in this file that looks like it is doing work the
+      keystone module should do. Common patterns to look for:
+
+      - `age.secrets.agent-<name>-*` or `age.secrets.<host>-agent-<name>-*`
+        entries — per-agent secrets (ssh key, ssh passphrase, mail password,
+        tailscale auth key, bitwarden password, etc.) should be declared by
+        the relevant keystone agent module
+        (`../keystone/modules/os/agents/{ssh,mail-client,tailscale,...}.nix`)
+        based on `keystone.os.agents.<name>` and the agent's `host`. The host
+        config should only declare the agent identity in `agent-identities.nix`.
+      - Manual `users.users.agent-<name>` definitions, group memberships, or
+        `home-manager.users.agent-<name>` blocks for declared agents.
+      - Per-agent systemd services (ssh-agent, mail-trigger, etc.) when an
+        archetype module already provides them.
+      - `keystone.terminal.*`, `keystone.notes.*` per-user wiring that the
+        archetype/user module would set from `keystone.os.users.<name>`.
+
+      ## How to Check
+
+      1. Open `../keystone/modules/os/agents/` (and sibling modules) and skim
+         for `mkIf`-gated blocks that mirror the suspect declaration. If a
+         keystone module already sets the same option for any agent whose
+         `host == config.networking.hostName`, the ks-config declaration is
+         redundant.
+      2. Confirm by reading `agent-identities.nix` (or equivalent) — if the
+         agent is declared there, the per-agent infrastructure should be
+         automatic.
+      3. If keystone does NOT currently auto-manage the value but logically
+         should, flag it as a keystone gap. The fix belongs in keystone — but
+         while a change is mid-flight (not yet merged / pinned in
+         `flake.lock`), the staging location is `modules/keystone/`, NOT host
+         configs or scattered modules. See `modules/keystone/AGENTS.md`:
+         experimental keystone-shaped code lives under `modules/keystone/`
+         (e.g. `modules/keystone/os/...`) so it can move into `../keystone`
+         unchanged once promoted. Flag any keystone-style logic that has
+         leaked outside `modules/keystone/` and recommend relocating it.
+
+      ## What NOT to Flag
+
+      - Genuinely host-specific values (hardware config, disk layout, network
+        interfaces, host-unique service config, secrets owned by a non-agent
+        principal).
+      - Bootstrapping or override cases where the comment / surrounding code
+        explicitly documents why the manual declaration is necessary.
+
+      ## Output Format
+
+      - PASS: No host-level declarations duplicate keystone-managed settings.
+      - FAIL: For each finding, list the file:line, the redundant block, the
+        keystone module that should own it (or note "keystone gap" if none
+        exists yet), and the suggested fix (delete from ks-config, or open a
+        keystone change first).
