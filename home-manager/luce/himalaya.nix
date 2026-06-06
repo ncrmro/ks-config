@@ -14,6 +14,6 @@
     displayName = "Luce";
     login = "luce";
     host = "mail.ncrmro.com";
-    passwordCommand = "cat /run/agenix/agent-luce-mail-password";
+    passwordCommand = "cat /run/agenix/ocean-agent-luce-mail-password";
   };
 }

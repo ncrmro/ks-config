@@ -12,6 +12,6 @@
     displayName = "Drago";
     login = "drago";
     host = "mail.ncrmro.com";
-    passwordCommand = "cat /run/agenix/agent-drago-mail-password";
+    passwordCommand = "cat /run/agenix/ncrmro-workstation-agent-drago-mail-password";
   };
 }

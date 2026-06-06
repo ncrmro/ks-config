@@ -118,34 +118,18 @@
     mode = "0400";
   };
 
-  # Agent mail password for Stalwart provisioning (plaintext, used to create account)
-  # NOTE: This secret must also be re-encrypted for ocean's host key in agenix-secrets.
-  age.secrets.agent-drago-mail-password = {
-    file = "${inputs.agenix-secrets}/secrets/agent-drago-mail-password.age";
+  # Drago's mail password as a Stalwart provisioning input. Drago runs on
+  # workstation (host-prefix `ncrmro-workstation-`), but the password also
+  # needs to be readable on ocean so `provision-agent-mail-drago` can create
+  # the IMAP/SMTP account. Owner left as root (the default) — only
+  # stalwart-mail.service consumes it here, not agent-drago.
+  age.secrets.ncrmro-workstation-agent-drago-mail-password = {
+    file = "${inputs.agenix-secrets}/secrets/ncrmro-workstation-agent-drago-mail-password.age";
     mode = "0400";
   };
-
-  # Agent luce secrets (luce.host = "ocean", so all secrets live here)
-  age.secrets.agent-luce-mail-password = {
-    file = "${inputs.agenix-secrets}/secrets/agent-luce-mail-password.age";
-    owner = "agent-luce";
-    mode = "0400";
-  };
-  age.secrets.ocean-agent-luce-ssh-key = {
-    file = "${inputs.agenix-secrets}/secrets/ocean-agent-luce-ssh-key.age";
-    owner = "agent-luce";
-    mode = "0400";
-  };
-  age.secrets.ocean-agent-luce-ssh-passphrase = {
-    file = "${inputs.agenix-secrets}/secrets/ocean-agent-luce-ssh-passphrase.age";
-    owner = "agent-luce";
-    mode = "0400";
-  };
-  age.secrets.agent-luce-bitwarden-password = {
-    file = "${inputs.agenix-secrets}/secrets/agent-luce-bitwarden-password.age";
-    owner = "agent-luce";
-    mode = "0400";
-  };
+  # Luce's per-host secrets are auto-declared by
+  # `modules/keystone/os/agents/auto-secrets.nix` (which now host-prefixes
+  # them). No manual declarations needed here.
 
   # Configure Stalwart TLS and admin auth
   services.stalwart-mail = {

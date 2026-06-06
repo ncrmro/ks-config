@@ -32,10 +32,24 @@ let
     "bitwarden-password"
     "tailscale-auth-key"
   ];
+  # Secret names are host-prefixed so the same logical agent secret can
+  # coexist across the fleet without collisions and so each agenix entry
+  # carries its routing in the filename. `host` should always be set for
+  # an agent that owns secrets; the conditional keeps eval safe if it's
+  # null on some test fixture.
+  agentSecretName =
+    name: agentCfg: suffix:
+    if agentCfg.host != null then
+      "${agentCfg.host}-agent-${name}-${suffix}"
+    else
+      "agent-${name}-${suffix}";
   mkAgentSecret =
-    name: suffix:
-    nameValuePair "agent-${name}-${suffix}" {
-      file = "${secretsRepo}/secrets/agent-${name}-${suffix}.age";
+    name: agentCfg: suffix:
+    let
+      secretName = agentSecretName name agentCfg suffix;
+    in
+    nameValuePair secretName {
+      file = "${secretsRepo}/secrets/${secretName}.age";
       owner = "agent-${name}";
       mode = "0400";
     };
@@ -44,7 +58,9 @@ in
   config = mkIf (osCfg.enable && cfg != { } && secretsRepo != null) {
     age.secrets = listToAttrs (
       concatLists (
-        mapAttrsToList (name: _: map (suffix: mkAgentSecret name suffix) agentSecretSuffixes) localAgents
+        mapAttrsToList (
+          name: agentCfg: map (suffix: mkAgentSecret name agentCfg suffix) agentSecretSuffixes
+        ) localAgents
       )
     );
   };
