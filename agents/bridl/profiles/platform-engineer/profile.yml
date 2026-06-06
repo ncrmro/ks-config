@@ -1,3 +1,6 @@
 id: platform-engineer
 label: Platform Engineer (role base)
-controls: {}
+controls:
+  skills:
+    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/platform-web
+    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/platform-ci-cd
