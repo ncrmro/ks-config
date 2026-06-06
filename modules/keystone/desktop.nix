@@ -17,6 +17,14 @@
   ];
 
   users.mutableUsers = true;
+
+  # bitwarden-desktop in nixpkgs (2026.5.0) still pins electron 39, which is
+  # now flagged insecure. Upstream is mid-migration (bitwarden/clients#20448).
+  # Accept the warning until that PR lands and nixpkgs rebases on electron 40+.
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+  ];
+
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";

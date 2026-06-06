@@ -41,9 +41,12 @@
   #     sensitivity = 0.35;
   #   };
   # };
+  keystone.passwordManagers.bitwarden = {
+    cli.enable = true;
+    desktop.enable = true;
+  };
+
   home.packages = with pkgs; [
-    bitwarden-cli
-    bitwarden-desktop
     code-cursor
     zoom-us
     postman
