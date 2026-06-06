@@ -149,6 +149,13 @@
 
   # Configure Stalwart TLS and admin auth
   services.stalwart-mail = {
+    # Pin to the nixpkgs at first deploy (2025-11-29). The new module
+    # added a required stateVersion (no default) so a nixpkgs relock
+    # can't silently flip the underlying service from `stalwart-mail`
+    # to `stalwart` (0.10+) and orphan the existing data dir. See
+    # https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md
+    # for the upstream upgrade path when we eventually move to >= 26.05.
+    stateVersion = "25.11";
     settings = {
       certificate.default = {
         cert = "%{file:/var/lib/acme/wildcard-ncrmro-com/fullchain.pem}%";
