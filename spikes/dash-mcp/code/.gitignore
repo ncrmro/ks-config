@@ -1,0 +1,13 @@
+node_modules/
+.astro/
+dist/
+build/
+.data/
+*.sqlite
+*.sqlite-journal
+*.db
+.direnv/
+.envrc.local
+.pc.sock
+.ports.env
+process-compose-*.log
