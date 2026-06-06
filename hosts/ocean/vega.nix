@@ -23,6 +23,13 @@ in
 
   services.vega = {
     enable = true;
+    # vega-server runs AS this agent's user, with HOME=/home/agent-<slug>.
+    # That places ks-config writes (SOUL.md/AGENTS.md/...) into the symlink
+    # keystone provisions into the agent home, which points at the admin's
+    # canonical checkout. Coincidentally also matches VEGA_DEFAULT_OS_AGENT
+    # below (the UI persona), but they're kept as separate references so a
+    # future host can split them.
+    operatorAgent = config.keystone.os.defaultAgent;
     bindHost = "127.0.0.1";
     port = 17878;
     configFile = vegaConfig;
