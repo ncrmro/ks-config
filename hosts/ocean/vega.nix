@@ -1,4 +1,9 @@
-{ inputs, config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   tailscaleOnly = ''
     allow 100.64.0.0/10;
@@ -18,35 +23,48 @@ let
     defaultAgent = config.keystone.os.defaultAgent;
   };
 in
+let
+  operatorAgent = config.keystone.os.defaultAgent;
+  agentUser = "agent-${operatorAgent}";
+  agentHome = "/home/${agentUser}";
+  stateDir = "${agentHome}/.local/share/vega";
+in
 {
-  imports = [ inputs.vega.nixosModules.default ];
+  systemd.tmpfiles.rules = [
+    "d ${stateDir} 0750 ${agentUser} agents -"
+    "d ${stateDir}/data 0750 ${agentUser} agents -"
+  ];
 
-  services.vega = {
+  keystone.os.containers.workloads.vega = {
     enable = true;
-    # vega-server runs AS this agent's user, with HOME=/home/agent-<slug>.
-    # That places ks-config writes (SOUL.md/AGENTS.md/...) into the symlink
-    # keystone provisions into the agent home, which points at the admin's
-    # canonical checkout. Coincidentally also matches VEGA_DEFAULT_OS_AGENT
-    # below (the UI persona), but they're kept as separate references so a
-    # future host can split them.
-    operatorAgent = config.keystone.os.defaultAgent;
-    bindHost = "127.0.0.1";
-    port = 17878;
-    configFile = vegaConfig;
-    # The browser is reached at https://vega.ncrmro.com via nginx; the
-    # SSR fetches loop back to this same process. The browser-side base
-    # URL needs the public host (PUBLIC_BROWSER_SERVER_URL). The SSR
-    # base URL needs to point at the listener's own port — vega's
-    # api.ts now picks $PORT when PUBLIC_SERVER_PORT is unset, but we
-    # also pin it explicitly here as defense in depth: ocean's 7878
-    # belongs to Radarr (servarr.nix), and an SSR loop into a 401-
-    # returning neighbour is the worst kind of silent failure.
-    #
-    # TODO(keystone): assign-time port-conflict detection across
-    # `services.*` modules keystone owns. Vega/Radarr collision on
-    # ocean only surfaced as a 401 in rendered HTML; a doctor check or
-    # a central port registry would catch it before deploy.
+    user = agentUser;
+    group = "agents";
+    home = agentHome;
+    createHome = false;
+    description = "Vega — containerized dashboard and API";
+    image = "git.ncrmro.com/ncrmro/vega:latest";
+    serviceName = "vega";
+    containerName = "vega";
+    workingDir = agentHome;
+    ports = [ "127.0.0.1:17878:17878" ];
+    volumes = [
+      "${agentHome}:${agentHome}"
+      "${vegaConfig}:/etc/vega/config.yaml:ro"
+    ];
+    registryLogin = {
+      enable = true;
+      registry = "git.ncrmro.com";
+      username = "ncrmro";
+      passwordFile = "/run/agenix/vega-registry-token";
+    };
     environment = {
+      PORT = "17878";
+      # Bind inside the container; Podman publishes only to host loopback.
+      BIND_HOST = "0.0.0.0";
+      DATABASE_URL = "file:${stateDir}/data/vega.db";
+      HOME = agentHome;
+      NODE_ENV = "production";
+      VEGA_CONFIG_PATH = "/etc/vega/config.yaml";
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
       PUBLIC_SERVER_PORT = "17878";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's
@@ -59,9 +77,8 @@ in
       # Vega's website surfaces the fleet's default OS agent as its in-process
       # LLM persona (label, placeholders, voice). The slug + fullName flow into
       # SSR via these env vars; React islands receive them as hydration props.
-      VEGA_DEFAULT_OS_AGENT = config.keystone.os.defaultAgent;
-      VEGA_DEFAULT_OS_AGENT_FULL_NAME =
-        config.keystone.os.agents.${config.keystone.os.defaultAgent}.fullName;
+      VEGA_DEFAULT_OS_AGENT = operatorAgent;
+      VEGA_DEFAULT_OS_AGENT_FULL_NAME = config.keystone.os.agents.${operatorAgent}.fullName;
     };
   };
 

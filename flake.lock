@@ -994,11 +994,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1780658045,
-        "narHash": "sha256-7vV7Dikk+rJVWOH7y3VBevFBsIeKg0G7672ZgfHNpEM=",
+        "lastModified": 1780694402,
+        "narHash": "sha256-gAnq7tsOsLnu/rR0tKxI5pMCjMps5CYaHU6rUdXHXyE=",
         "owner": "hyprwm",
         "repo": "Hyprland",
-        "rev": "ef9b62356dd01579ee0ea9921afe471fbcb9aa0a",
+        "rev": "fcbbd6d4d80033c40e3b702518e1a2ba3f479452",
         "type": "github"
       },
       "original": {
@@ -1427,8 +1427,8 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1780776351,
-        "narHash": "sha256-WBb2dqc4hTQw3h05QdrxJzB6sMBekuSBHB8gB7Kii7Y=",
+        "lastModified": 1780853045,
+        "narHash": "sha256-9MzzovuLjbSSh44+CvZ1Vv1aLZUGzkAA8koDrSREZWg=",
         "path": "/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents",
         "type": "path"
       },
@@ -2447,11 +2447,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1780290961,
-        "narHash": "sha256-XPSfzLmyGeGMU5o1gaRp8XVVFFLxri93TXpzTr38Ti8=",
+        "lastModified": 1780727712,
+        "narHash": "sha256-DLiicdEFCAL+seHErNwbs7P6+TMGI+VycShqZ7p1q2A=",
         "owner": "sxyazi",
         "repo": "yazi",
-        "rev": "8e80798984864799cd72b3625b21edc33b1ba1e5",
+        "rev": "ea7fa2127cc032b669a4825157ace244f06cf31c",
         "type": "github"
       },
       "original": {
