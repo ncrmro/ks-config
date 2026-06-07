@@ -58,7 +58,7 @@
 
     # Vega — personal dashboard + MCP server, hosted on ocean.
     vega = {
-      url = "path:/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config";
+      url = "git+file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };

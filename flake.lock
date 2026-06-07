@@ -2354,14 +2354,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1780708298,
-        "narHash": "sha256-Ws9fIje3QlhxxUh1iX8gzHzKJgLq69xt2wIAZi9T9tI=",
-        "path": "/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config",
-        "type": "path"
+        "lastModified": 1780708581,
+        "narHash": "sha256-GAoZB1+o4ygC7fxC/DUNlSc294YuJ3rnlb0f8e0FH38=",
+        "ref": "refs/heads/feat/declarative-config",
+        "rev": "044e6940888d73ada57e2c52dd20f308247d5eaf",
+        "revCount": 67,
+        "type": "git",
+        "url": "file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config"
       },
       "original": {
-        "path": "/home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config",
-        "type": "path"
+        "type": "git",
+        "url": "file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config"
       }
     },
     "walker": {
