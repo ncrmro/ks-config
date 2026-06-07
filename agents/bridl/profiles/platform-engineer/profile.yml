@@ -21,3 +21,4 @@ controls:
     - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/wrap-up
     - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-web
     - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-ci-cd
+    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-devenv
