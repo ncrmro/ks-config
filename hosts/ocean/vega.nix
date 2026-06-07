@@ -92,8 +92,15 @@ in
     useACMEHost = "wildcard-ncrmro-com";
     extraConfig = tailscaleOnly;
     locations."/" = {
+      # Vega is now served by the rootless Quadlet workload above. Keep nginx
+      # as the stable TLS/tailnet boundary and forward to the host-loopback
+      # port published by Podman.
       proxyPass = "http://127.0.0.1:17878";
       proxyWebsockets = true;
+      extraConfig = ''
+        proxy_buffering off;
+        proxy_request_buffering off;
+      '';
     };
   };
 }
