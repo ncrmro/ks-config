@@ -177,10 +177,20 @@ in
   services.nginx.virtualHosts."git.ncrmro.com" = {
     forceSSL = true;
     useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
+    extraConfig = ''
+      ${tailscaleOnly}
+      # Forgejo Container Registry pushes upload large OCI layer blobs through
+      # this vhost. Leave size enforcement to Forgejo/storage quotas rather
+      # than nginx's default 1 MiB request limit.
+      client_max_body_size 0;
+    '';
     locations."/" = {
       proxyPass = "http://127.0.0.1:3001";
       proxyWebsockets = true;
+      extraConfig = ''
+        proxy_request_buffering off;
+        proxy_buffering off;
+      '';
     };
   };
 
