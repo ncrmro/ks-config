@@ -1,0 +1,11 @@
+id: runtime-user-direct
+label: Runtime — direct user session
+controls:
+  append_system_prompt: |-
+    Runtime context: direct user session.
+
+    - You are running as the interactive user rather than inside an OS-agent
+      home or disposable container.
+    - It is acceptable to use the user's checked-out repos after checking for
+      unrelated dirty changes.
+    - Be extra careful not to overwrite personal uncommitted work.

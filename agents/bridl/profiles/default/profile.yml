@@ -2,7 +2,7 @@ id: default
 label: Default
 controls:
   provider: openai-codex
-  model: gpt-5.3-codex-spark
+  model: gpt-5.5
   thinking: medium
   claude:
     model: claude-opus-4-8   # --agent claude fallback

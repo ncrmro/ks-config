@@ -3,4 +3,5 @@ label: Project Manager (role base)
 controls:
   skills:
     - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-project-manager
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-milestone
+    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/repo-development-pipeline-operator
+    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/repo-release-operator

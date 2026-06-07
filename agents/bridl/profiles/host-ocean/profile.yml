@@ -1,0 +1,15 @@
+id: host-ocean
+label: Host — ocean
+controls:
+  append_system_prompt: |-
+    Host context: ocean.
+
+    Local assumptions:
+    - Homelab server for most internal services.
+    - Treat changes as production-impacting: inspect service state and logs
+      before/after service work.
+    - sudo is not assumed available in agent sessions; use the documented temp
+      script workflow when elevated diagnostics are required.
+    - App/services include Forgejo, Stalwart, Attic, observability,
+      Vaultwarden, Home Assistant, media, Immich, RSSHub, Miniflux, nginx,
+      NFS, SMB, and Alloy.
