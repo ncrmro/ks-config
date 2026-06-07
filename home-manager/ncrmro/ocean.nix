@@ -15,6 +15,12 @@
     passwordCommand = "cat /run/agenix/stalwart-mail-ncrmro-password";
   };
 
+  keystone.notes = {
+    enable = true;
+    repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
+    daily.enable = true;
+  };
+
   programs.zsh = {
     initContent = ''
       # NixOS rebuild function with --boot support for critical changes
