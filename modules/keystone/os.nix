@@ -31,6 +31,7 @@
     git.host = "ocean";
     immich.host = "ocean";
     immich.workers = [ "ncrmro-workstation" ];
+    notesDaily.host = "ocean";
   };
   keystone.hosts = import ../../hosts.nix;
 

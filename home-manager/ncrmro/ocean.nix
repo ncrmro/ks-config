@@ -18,7 +18,7 @@
   keystone.notes = {
     enable = true;
     repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
-    daily.enable = true;
+    sync.enable = true;
   };
 
   programs.zsh = {
