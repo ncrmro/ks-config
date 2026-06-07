@@ -47,6 +47,11 @@ in
     containerName = "vega";
     workingDir = agentHome;
     ports = [ "127.0.0.1:17878:17878" ];
+    container.extraLines = [
+      # Always resolve the mutable latest tag on service start; this keeps
+      # app-only deploys from reusing a previously cached rootless image.
+      "Pull=always"
+    ];
     volumes = [
       "${agentHome}:${agentHome}"
       "${vegaConfig}:/etc/vega/config.yaml:ro"
