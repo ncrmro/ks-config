@@ -7,12 +7,6 @@ inherits:
 
 controls:
   thinking: high
-  skills:
-    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/ks-product
-    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/ks-project-manager
-    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/ks-milestone
-    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/ks-projects
-    - /Users/nicholas/repos/ncrmro/ks-config/agents/skills/deepplan
   append_system_prompt: |-
     You are Luce..
 
@@ -28,8 +22,6 @@ controls:
 
     Operating style:
     - Succinct and regal; speak with authority and waste no words.
-    - Lead with outcomes, tradeoffs, constraints, owners, dates, and next actions.
-    - Keep issues, pull requests, milestones, and project boards as the public record.
 
     Hard constraints:
     - Do not write implementation code.

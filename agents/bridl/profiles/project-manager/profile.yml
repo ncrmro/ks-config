@@ -1,3 +1,6 @@
 id: project-manager
 label: Project Manager (role base)
-controls: {}
+controls:
+  skills:
+    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-project-manager
+    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-milestone

@@ -23,15 +23,17 @@ Don't pre-emptively document trade-offs you didn't take. Defending a decision ag
 
 # Nix dev shells
 
-All repos use `flake.nix` with a dev shell providing project dependencies. Run commands via `nix develop -c <cmd>` or from a direnv-activated shell (`.envrc` with `use flake`; run `direnv allow` before first use). To add a missing tool, add it to `devShells.default.buildInputs` in `flake.nix`. Never run `playwright install` — the devshell provides browsers via `playwright-driver.browsers`; pin `@playwright/test` to match `nix eval --raw nixpkgs#playwright-driver.version`.
+New repos use **devenv** (`devenv.nix` + `devenv.yaml` + `.envrc` with `use devenv`; run `direnv allow` before first use). Add tools to `packages = with pkgs; [ ... ]` in `devenv.nix`. Pin `inputs.nixpkgs.url` in `devenv.yaml` to a specific rev (e.g. `github:cachix/devenv-nixpkgs/<rev>`) — bumping it forces from-source rebuilds of anything not in the binary cache. Never run `playwright install` — the devshell provides browsers via `playwright-driver.browsers`; pin `@playwright/test` to match `nix eval --raw nixpkgs#playwright-driver.version`.
+
+Legacy repos may still use `flake.nix` with `use flake`; tools live in `devShells.default.buildInputs`. Same playwright rule applies.
 
 # Process compose
 
-In `process-compose.yaml`, assign ports dynamically using the `env_cmds` block (e.g., `DB_PORT: "shuf -i 10000-60000 -n 1"`). Reference these variables with `$${VAR}` (double-dollar) in process commands and environment — single `${VAR}` resolves at parse time and produces empty values. Set `PC_NO_SERVER=1` in the `environment` block unless the API server is needed; when it is, use `--use-uds` for Unix domain socket instead of TCP. Never launch the TUI — use the CLI with `-o json`. Read logs with `--tail N --log-no-color`, never `-f`.
+devenv has process-compose built in — declare processes in `devenv.nix` as `processes.<name>.exec = "..."`, then `devenv up` (foreground) or `devenv up -d` (detached). `devenv processes down` stops them. Don't write a standalone `process-compose.yaml` — devenv generates one at `$PC_CONFIG_FILES` and exposes the UDS at `$PC_SOCKET_PATH` (no TCP server, no TUI).
 
-# Git repos
+Process-compose settings live under `process.managers.process-compose.settings`. For dynamic port assignment, use `env_cmds` there (e.g. `env_cmds.DB_PORT = "shuf -i 10000-60000 -n 1"`). **Do not** also list the var in the process's `environment` block — that triggers parse-time `${VAR}` substitution which produces an empty value. env_cmds vars are exported into process-compose's own env and inherited by child processes automatically; the child reads them like any other env var.
 
-Repositories clone to `~/repos/{owner}/{repo}/`. Main checkouts stay on the default branch. Implementation work happens in git worktrees at `~/repos/{owner}/{repo}/worktrees/{branch}/`.
+Inspect state via the CLI inside the devenv shell — `process-compose` isn't on the host PATH. Find the socket with `find /run/user/$UID -maxdepth 2 -name pc.sock`, then `devenv shell -- process-compose process list -u "$SOCK" --use-uds -o json`. Read logs with `--tail N --log-no-color`, never `-f`. Avoid `readiness_probe.http_get.port` for dynamic-port processes — that field isn't Go-templated, so `{{.VAR}}` is interpreted literally; use an `exec` probe instead, or skip the probe.
 
 # Project navigation
 

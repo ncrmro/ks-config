@@ -15,6 +15,7 @@ controls:
 
     Repo + worktree conventions:
     - Primary checkouts: ~/repos/{owner}/{repo}/
+    - Main checkouts stay on the default/tracking branch by default.
     - Worktrees: ~/repos/{owner}/worktrees/{repo}/{branch}/ (owner-level — do
       not use repo-nested .worktrees/).
     - After `git worktree add`, run `direnv allow` before any other command.
