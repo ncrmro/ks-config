@@ -6,6 +6,8 @@ result-desktop-vm
 *.qcow2
 *GGUF
 .direnv
+.devenv/
+.devenv.flake.nix
 .repos/
 .submodules/
 /agenix-secrets/
