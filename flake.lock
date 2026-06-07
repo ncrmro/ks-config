@@ -1427,8 +1427,8 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1780873990,
-        "narHash": "sha256-A+/Ko6ntP9gwmLYdunpG/1yEZtHqvx9aGqMv/ouUME0=",
+        "lastModified": 1780876524,
+        "narHash": "sha256-8/sB6gASYVXTkcqC7dEavpdxwDnCV5P35xbtK9fHsAw=",
         "path": "/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents",
         "type": "path"
       },
