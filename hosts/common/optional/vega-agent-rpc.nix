@@ -49,7 +49,7 @@ let
 
   piWorkloadFor =
     name:
-    nameValuePair "vega-pi-rpc-${name}" {
+    nameValuePair "os-agent-${name}" {
       enable = true;
       user = agentUser name;
       group = "agents";
@@ -57,8 +57,8 @@ let
       createHome = false;
       description = "Vega pi-rpc bridge for ${name}";
       inherit image registryLogin;
-      serviceName = "vega-pi-rpc-${name}";
-      containerName = "vega-pi-rpc-${name}";
+      serviceName = "os-agent-${name}";
+      containerName = "os-agent-${name}";
       workingDir = agentHome name;
       ports = [ "0.0.0.0:${toString (portFor name)}:${toString (portFor name)}" ];
       volumes = [ "${agentHome name}:${agentHome name}" ];

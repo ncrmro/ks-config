@@ -25,36 +25,47 @@ let
 in
 let
   operatorAgent = config.keystone.os.defaultAgent;
-  workloadUser = "agent-${operatorAgent}";
-  workloadGroup = "agents";
-  workloadHome = "/home/${workloadUser}";
-  stateDir = "${workloadHome}/.local/state/vega/server";
+  workloadName = "os-agents";
+  workloadUser = workloadName;
+  workloadGroup = workloadName;
+  workloadHome = "/var/lib/${workloadName}";
+  stateDir = "${workloadHome}/state";
   ksConfigDir = "/home/${config.keystone.os.adminUsername}/repos/ncrmro/ks-config";
 in
 {
-  assertions = [
-    {
-      assertion = config.keystone.os.agents.${operatorAgent}.host == config.networking.hostName;
-      message = "Ocean's Vega web/API workload must run under a local OS-agent user; ${operatorAgent} is declared for ${config.keystone.os.agents.${operatorAgent}.host}.";
-    }
-  ];
+  users.groups.${workloadGroup} = { };
+  users.users.${workloadUser} = {
+    isSystemUser = true;
+    group = workloadGroup;
+    home = workloadHome;
+    createHome = false;
+    subUidRanges = [
+      {
+        startUid = 362144;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 362144;
+        count = 65536;
+      }
+    ];
+  };
 
   systemd.tmpfiles.rules = [
-    "d ${workloadHome}/.local 0700 ${workloadUser} ${workloadGroup} -"
-    "d ${workloadHome}/.local/state 0700 ${workloadUser} ${workloadGroup} -"
-    "d ${workloadHome}/.local/state/vega 0700 ${workloadUser} ${workloadGroup} -"
+    "d ${workloadHome} 0700 ${workloadUser} ${workloadGroup} -"
     "d ${stateDir} 0700 ${workloadUser} ${workloadGroup} -"
     "d ${stateDir}/data 0750 ${workloadUser} ${workloadGroup} -"
-    # Let ocean's OS-agent user bind-mount and edit the admin-owned checkout.
-    # The recursive ACL keeps existing/default ks-config ACLs while adding only
-    # the local agent's access.
+    # Let the app workload bind-mount and edit the admin-owned checkout without
+    # making it an admin user or an OS-agent account.
     "a+ /home/${config.keystone.os.adminUsername} - - - - u:${workloadUser}:rx"
     "a+ /home/${config.keystone.os.adminUsername}/repos - - - - u:${workloadUser}:rx"
     "a+ /home/${config.keystone.os.adminUsername}/repos/ncrmro - - - - u:${workloadUser}:rx"
     "A+ ${ksConfigDir} - - - - u:${workloadUser}:rwX,d:u:${workloadUser}:rwX"
   ];
 
-  keystone.os.containers.workloads.vega = {
+  keystone.os.containers.workloads.${workloadName} = {
     enable = true;
     user = workloadUser;
     group = workloadGroup;
@@ -62,8 +73,8 @@ in
     createHome = false;
     description = "Vega — containerized dashboard and API";
     image = "git.ncrmro.com/ncrmro/vega:latest";
-    serviceName = "vega";
-    containerName = "vega";
+    serviceName = workloadName;
+    containerName = workloadName;
     workingDir = workloadHome;
     ports = [ "127.0.0.1:17878:17878" ];
     container.extraLines = [
