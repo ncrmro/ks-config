@@ -25,27 +25,55 @@ let
 in
 let
   operatorAgent = config.keystone.os.defaultAgent;
-  agentUser = "agent-${operatorAgent}";
-  agentHome = "/home/${agentUser}";
-  stateDir = "${agentHome}/.local/share/vega";
+  workloadUser = "vega";
+  workloadGroup = "vega";
+  workloadHome = "/var/lib/vega";
+  stateDir = workloadHome;
+  ksConfigDir = "/home/${config.keystone.os.adminUsername}/repos/ncrmro/ks-config";
 in
 {
+  users.groups.${workloadGroup} = { };
+  users.users.${workloadUser} = {
+    isSystemUser = true;
+    group = workloadGroup;
+    home = workloadHome;
+    createHome = false;
+    extraGroups = [
+      # Read/write access to the admin-owned ks-config checkout is granted via
+      # ACLs on /home/ncrmro/repos/ncrmro/ks-config. Vega still runs as its own
+      # service user; it is not hosted by an OS agent account.
+      "agents"
+    ];
+    subUidRanges = [
+      {
+        startUid = 362144;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 362144;
+        count = 65536;
+      }
+    ];
+  };
+
   systemd.tmpfiles.rules = [
-    "d ${stateDir} 0750 ${agentUser} agents -"
-    "d ${stateDir}/data 0750 ${agentUser} agents -"
+    "d ${stateDir} 0700 ${workloadUser} ${workloadGroup} -"
+    "d ${stateDir}/data 0750 ${workloadUser} ${workloadGroup} -"
   ];
 
   keystone.os.containers.workloads.vega = {
     enable = true;
-    user = agentUser;
-    group = "agents";
-    home = agentHome;
+    user = workloadUser;
+    group = workloadGroup;
+    home = workloadHome;
     createHome = false;
     description = "Vega — containerized dashboard and API";
     image = "git.ncrmro.com/ncrmro/vega:latest";
     serviceName = "vega";
     containerName = "vega";
-    workingDir = agentHome;
+    workingDir = workloadHome;
     ports = [ "127.0.0.1:17878:17878" ];
     container.extraLines = [
       # Always resolve the mutable latest tag on service start; this keeps
@@ -53,7 +81,8 @@ in
       "Pull=always"
     ];
     volumes = [
-      "${agentHome}:${agentHome}"
+      "${workloadHome}:${workloadHome}"
+      "${ksConfigDir}:${ksConfigDir}"
       "${vegaConfig}:/etc/vega/config.yaml:ro"
     ];
     registryLogin = {
@@ -67,9 +96,17 @@ in
       # Bind inside the container; Podman publishes only to host loopback.
       BIND_HOST = "0.0.0.0";
       DATABASE_URL = "file:${stateDir}/data/vega.db";
-      HOME = agentHome;
+      HOME = workloadHome;
       NODE_ENV = "production";
       VEGA_CONFIG_PATH = "/etc/vega/config.yaml";
+      VEGA_KS_CONFIG_DIR = ksConfigDir;
+      GIT_CONFIG_COUNT = "1";
+      GIT_CONFIG_KEY_0 = "safe.directory";
+      GIT_CONFIG_VALUE_0 = ksConfigDir;
+      GIT_AUTHOR_NAME = "Vega";
+      GIT_AUTHOR_EMAIL = "vega@ncrmro.com";
+      GIT_COMMITTER_NAME = "Vega";
+      GIT_COMMITTER_EMAIL = "vega@ncrmro.com";
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
       PUBLIC_SERVER_PORT = "17878";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's
