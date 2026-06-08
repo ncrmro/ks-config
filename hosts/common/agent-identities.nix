@@ -25,6 +25,15 @@
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
+      # Agents only need Chrome DevTools access, not a viewable desktop.
+      desktop.enable = false;
+      chrome = {
+        mode = "headless";
+        healthCheck = {
+          interval = "30min";
+          probeMcp = false;
+        };
+      };
     };
     luce = {
       host = "ocean";
