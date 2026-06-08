@@ -1775,6 +1775,7 @@
       },
       "locked": {
         "lastModified": 1780599732,
+        "lfs": true,
         "narHash": "sha256-YHExIkxC1doB770h25cTsulLXeCX8vqJDxB9AhCSPzY=",
         "ref": "refs/heads/main",
         "rev": "1e1979c1bf503760de62fb3076245b759c286847",
@@ -1783,6 +1784,7 @@
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
       },
       "original": {
+        "lfs": true,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git"
       }

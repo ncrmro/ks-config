@@ -67,7 +67,7 @@
     # Forgejo main branch so every host can evaluate the same lock without
     # requiring an identical local checkout at ~/repos/ncrmro/plouton.
     plouton = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git";
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git?lfs=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
