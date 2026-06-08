@@ -296,7 +296,7 @@ To add a new service with auto-DNS, enable it in ocean's keystone config and reb
 - `./keystone/` - Gitignored Keystone checkout fallback
 - `/agenix-secrets/` - Local agenix secrets clone (gitignored)
 - `/bin/` - Helper scripts
-- `/overlays/` - Nix overlays (imports keystone overlay + local packages)
+- `/overlays/` - Nix overlays (imports keystone overlay + local packages); `/overlays/keystone/` holds keystone-bound overrides awaiting upstream (see `modules/keystone/AGENTS.md`)
 - `/packages/` - Local package definitions (claude-code, codex, gemini-cli, mcp-language-server, zesh)
 
 ### Flake Input Follows
