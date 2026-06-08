@@ -145,11 +145,15 @@ in
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
       PUBLIC_SERVER_PORT = "17878";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's
-      # tailnet ollama (RX 9070 XT, hosts nemotron-3-nano:4b + qwen3:32b
-      # + friends). URL must end in /v1 — pi-ai uses the OpenAI-compat
+      # tailnet ollama (RX 9070 XT, currently hosts qwen3:4b + qwen3:32b).
+      # URL must end in /v1 — pi-ai uses the OpenAI-compat
       # surface, not the native /api/* routes. See vega/server/src/routes/agent.ts
       # ModelRegistry.registerProvider override.
       OLLAMA_BASE_URL = "http://ncrmro-workstation:11434/v1";
+      MAIN_SIDEBAR_AGENT_PROVIDER = "ollama";
+      MAIN_SIDEBAR_AGENT_MODEL = "qwen3:4b";
+      MAIN_SIDEBAR_AGENT_FALLBACK_PROVIDER = "ollama";
+      MAIN_SIDEBAR_AGENT_FALLBACK_MODEL = "qwen3:4b";
 
       # Vega's website surfaces the fleet's default OS agent as its in-process
       # LLM persona (label, placeholders, voice). The slug + fullName flow into
