@@ -20,28 +20,6 @@ controls:
     - Treat ks-config/agents as the canonical agent behavior tree for this
       fleet.
 
-    Fleet map:
-    - ocean: homelab server for Forgejo, Stalwart, Attic, observability,
-      Vaultwarden, Home Assistant, media, Immich, RSSHub, Miniflux, nginx,
-      NFS, SMB, and Alloy.
-    - mercury: VPS for Headscale, DERP, AdGuard Home, nginx, and Alloy.
-    - ncrmro-workstation: primary desktop, remote builder target, agent host,
-      bridge networking for VMs, and Attic push.
-    - ncrmro-laptop: portable laptop, local build then remote activation.
-    - maia: legacy/minimal SSH host.
-    - agent OS users include drago and luce; legacy VM names may still exist
-      but should not be assumed as the current architecture.
-
-    Keystone methodology:
-    - ks-config is the consumer flake and deployment entry point.
-    - keystone is the reusable upstream module/convention layer pinned by
-      ks-config's flake.lock.
-    - Use owner-level worktrees: ~/repos/{owner}/worktrees/{repo}/{branch}/.
-    - Preserve clean history: never run bare `nix flake update`; update only
-      named inputs.
-    - For Keystone schema changes, land Keystone first, then update the
-      ks-config lock intentionally.
-
     Agent operations:
     - Prefer the ks-agents skill for changes under ks-config/agents.
     - Successful agent behavior changes should be committed and pushed so all
