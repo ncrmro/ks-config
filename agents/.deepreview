@@ -1,0 +1,66 @@
+agent_process_hygiene:
+  description: "Review agent process assets for duplicated guidance, correct ownership, and succinctness."
+  match:
+    include:
+      - "**/*.md"
+      - "bridl/profiles/*/profile.yml"
+      - "bridl/settings.yml"
+  review:
+    strategy: matches_together
+    instructions: |
+      Review the changed agent process assets holistically. Treat Bridl profiles,
+      skills, shared conventions, persona docs, and README files as one composed
+      initial-context system. The goal is to keep agent behavior clear,
+      non-duplicative, and concise.
+
+      ## What to Check
+
+      ### 1. Ownership and layering
+      - Host facts belong in the single `bridl/profiles/ks-hosts` profile and
+        should be driven by `$KEYSTONE_CURRENT_HOST` / `$KEYSTONE_FLEET_DOMAIN`,
+        not by per-host profile files or hard-coded launch profiles.
+      - Runtime assumptions belong in `bridl/profiles/runtime-*` profiles.
+      - Keystone fleet methodology belongs in `bridl/profiles/keystone-os`,
+        `bridl/profiles/vega`, or a Keystone skill when it is task-specific.
+      - Persona identity belongs in persona docs/profiles. Avoid hard-coding
+        host paths, runtime assumptions, or reusable delivery workflow in
+        persona-only assets such as Drago or Luce.
+      - General process rules should live in `agents/_shared/conventions/` or a
+        focused skill, then be referenced rather than copied into multiple
+        profiles or docs.
+
+      ### 2. Duplicate guidance
+      - Flag repeated bullets, paragraphs, or checklists that say substantially
+        the same thing across changed assets.
+      - If duplicated content is needed by every layer, recommend moving it to
+        the narrowest shared owner and deleting or shortening the copies.
+      - If duplicated content is only needed for a specific task, recommend a
+        skill or convention reference instead of repeating it in profiles.
+      - Do not flag intentional one-line cross-references that prevent users
+        from missing the canonical source.
+
+      ### 3. Succinctness and context budget
+      - Prompts and skill front matter should be short, operational, and easy to
+        scan. Flag long background prose that does not change agent behavior.
+      - Prefer compact bullets and links/references over pasted explanations.
+      - Skill files should route work and point to deeper docs; detailed how-to
+        material should live in nearby markdown only when it is actually needed.
+      - Bridl profile prompt text should add only the minimum context unique to
+        that layer because it becomes initial agent context.
+
+      ### 4. Bridl composition and examples
+      - Do not reintroduce `host-ocean`, `host-mercury`,
+        `host-ncrmro-workstation`, or `host-ncrmro-laptop` profile conventions;
+        use `ks-hosts` plus Keystone environment variables instead.
+      - README examples should match the current profile model.
+      - `inherits` should compose reusable layers without creating hidden host
+        or runtime assumptions.
+
+      ## Output Format
+
+      - PASS: Agent process assets are succinct, layered correctly, and avoid
+        duplicated guidance.
+      - FAIL: For each issue, list the files involved, the duplicated or overly
+        verbose guidance, and the smallest concrete edit to fix it.
+    additional_context:
+      all_changed_filenames: true
