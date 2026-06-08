@@ -25,78 +25,34 @@ let
 in
 let
   operatorAgent = config.keystone.os.defaultAgent;
-  workloadUser = "vega";
-  workloadGroup = "vega";
-  workloadHome = "/var/lib/vega";
-  stateDir = workloadHome;
+  workloadUser = "agent-${operatorAgent}";
+  workloadGroup = "agents";
+  workloadHome = "/home/${workloadUser}";
+  stateDir = "${workloadHome}/.local/state/vega/server";
   ksConfigDir = "/home/${config.keystone.os.adminUsername}/repos/ncrmro/ks-config";
 in
 {
-  users.groups.${workloadGroup} = { };
-  users.users.${workloadUser} = {
-    isSystemUser = true;
-    group = workloadGroup;
-    home = workloadHome;
-    createHome = false;
-    extraGroups = [
-      # Read/write access to the admin-owned ks-config checkout is granted via
-      # ACLs on /home/ncrmro/repos/ncrmro/ks-config. Vega still runs as its own
-      # service user; it is not hosted by an OS agent account.
-      "agents"
-    ];
-    subUidRanges = [
-      {
-        startUid = 362144;
-        count = 65536;
-      }
-    ];
-    subGidRanges = [
-      {
-        startGid = 362144;
-        count = 65536;
-      }
-    ];
-  };
+  assertions = [
+    {
+      assertion = config.keystone.os.agents.${operatorAgent}.host == config.networking.hostName;
+      message = "Ocean's Vega web/API workload must run under a local OS-agent user; ${operatorAgent} is declared for ${config.keystone.os.agents.${operatorAgent}.host}.";
+    }
+  ];
 
   systemd.tmpfiles.rules = [
+    "d ${workloadHome}/.local 0700 ${workloadUser} ${workloadGroup} -"
+    "d ${workloadHome}/.local/state 0700 ${workloadUser} ${workloadGroup} -"
+    "d ${workloadHome}/.local/state/vega 0700 ${workloadUser} ${workloadGroup} -"
     "d ${stateDir} 0700 ${workloadUser} ${workloadGroup} -"
     "d ${stateDir}/data 0750 ${workloadUser} ${workloadGroup} -"
-    # Let the dedicated service user bind-mount and edit the admin-owned
-    # checkout without running the container as an OS agent. The recursive ACL
-    # keeps existing/default ks-config ACLs while adding only Vega's access.
+    # Let ocean's OS-agent user bind-mount and edit the admin-owned checkout.
+    # The recursive ACL keeps existing/default ks-config ACLs while adding only
+    # the local agent's access.
     "a+ /home/${config.keystone.os.adminUsername} - - - - u:${workloadUser}:rx"
     "a+ /home/${config.keystone.os.adminUsername}/repos - - - - u:${workloadUser}:rx"
     "a+ /home/${config.keystone.os.adminUsername}/repos/ncrmro - - - - u:${workloadUser}:rx"
     "A+ ${ksConfigDir} - - - - u:${workloadUser}:rwX,d:u:${workloadUser}:rwX"
   ];
-
-  systemd.services.vega-agent-luce-container-migration = {
-    description = "Stop legacy agent-luce Vega rootless container";
-    wantedBy = [ "multi-user.target" ];
-    before = [ "keystone-container-workload-vega.service" ];
-    path = [
-      pkgs.coreutils
-      pkgs.systemd
-      pkgs.util-linux
-    ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      if id agent-luce >/dev/null 2>&1; then
-        uid="$(id -u agent-luce)"
-        if [ -S "/run/user/$uid/bus" ]; then
-          runuser -u agent-luce -- env \
-            HOME=/home/agent-luce \
-            XDG_RUNTIME_DIR="/run/user/$uid" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-            systemctl --user disable --now vega.service || true
-        fi
-        rm -f /home/agent-luce/.config/containers/systemd/vega.container
-      fi
-    '';
-  };
 
   keystone.os.containers.workloads.vega = {
     enable = true;
@@ -170,9 +126,9 @@ in
     useACMEHost = "wildcard-ncrmro-com";
     extraConfig = tailscaleOnly;
     locations."/" = {
-      # Vega is now served by the rootless Quadlet workload above. Keep nginx
-      # as the stable TLS/tailnet boundary and forward to the host-loopback
-      # port published by Podman.
+      # Vega is served by the rootless Quadlet workload above. Keep nginx as
+      # the stable TLS/tailnet boundary and forward to the host-loopback port
+      # published by Podman.
       proxyPass = "http://127.0.0.1:17878";
       proxyWebsockets = true;
       extraConfig = ''
