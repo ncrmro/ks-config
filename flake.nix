@@ -63,9 +63,11 @@
       inputs.llm-agents.follows = "llm-agents";
     };
 
-    # Plouton — FastAPI + Astro SPA, hosted on ocean.
+    # Plouton — FastAPI + Astro SPA, hosted on ocean. Use the canonical
+    # Forgejo main branch so every host can evaluate the same lock without
+    # requiring an identical local checkout at ~/repos/ncrmro/plouton.
     plouton = {
-      url = "path:/home/ncrmro/repos/ncrmro/plouton";
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -163,7 +165,12 @@
           # mkSystemFlake-managed host (maia, ncrmro-laptop, mercury,
           # ocean, ncrmro-workstation); catalystPrimary is wired
           # manually below and unaffected.
-          ({ ... }: { keystone.os.zram.enable = true; })
+          (
+            { ... }:
+            {
+              keystone.os.zram.enable = true;
+            }
+          )
         ];
         hosts = {
           maia = {
