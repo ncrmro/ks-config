@@ -11,7 +11,7 @@ agent_process_hygiene:
       Review the changed agent process assets holistically. Treat Bridl profiles,
       skills, shared conventions, persona docs, and README files as one composed
       initial-context system. The goal is to keep agent behavior clear,
-      non-duplicative, and concise.
+      non-duplicative, succinct, and located in the right abstraction.
 
       ## What to Check
 
@@ -19,15 +19,19 @@ agent_process_hygiene:
       - Host facts belong in the single `bridl/profiles/ks-hosts` profile and
         should be driven by `$KEYSTONE_CURRENT_HOST` / `$KEYSTONE_FLEET_DOMAIN`,
         not by per-host profile files or hard-coded launch profiles.
-      - Runtime assumptions belong in `bridl/profiles/runtime-*` profiles.
+      - OS execution environment facts belong in exactly one of
+        `bridl/profiles/os-ks-admin-user`, `bridl/profiles/os-ks-agent-user`, or
+        `bridl/profiles/os-ks-container`. Flag new `runtime-*` profile patterns
+        or mixed admin/agent/container assumptions in persona or role profiles.
       - Keystone fleet methodology belongs in `bridl/profiles/keystone-os`,
-        `bridl/profiles/vega`, or a Keystone skill when it is task-specific.
+        `bridl/profiles/vega`, or a focused `ks-*` skill when it is task-specific.
       - Persona identity belongs in persona docs/profiles. Avoid hard-coding
-        host paths, runtime assumptions, or reusable delivery workflow in
+        host paths, OS-environment assumptions, or reusable delivery workflow in
         persona-only assets such as Drago or Luce.
-      - General process rules should live in `agents/_shared/conventions/` or a
-        focused skill, then be referenced rather than copied into multiple
-        profiles or docs.
+      - General reusable process rules should live in a focused skill/profile.
+        If old-style convention markdown is Keystone- or agent-operation-specific,
+        flag growth there and recommend migrating the behavior into a Bridl
+        profile or skill with only a short reference left behind.
 
       ### 2. Duplicate guidance
       - Flag repeated bullets, paragraphs, or checklists that say substantially
@@ -39,7 +43,28 @@ agent_process_hygiene:
       - Do not flag intentional one-line cross-references that prevent users
         from missing the canonical source.
 
-      ### 3. Succinctness and context budget
+      ### 3. Skill taxonomy and prefixes
+      - Skill directory names should make their operating domain obvious:
+        `ks-*` for Keystone/fleet/host/agent operations, `platform-*` for
+        reusable technology platform notes such as web, databases, CI/CD, or
+        devenv, and `repo-*` for repository lifecycle/release pipelines.
+      - Flag new domain-specific skills without the right prefix, or scattered
+        domain notes that should be consolidated into an existing prefixed skill
+        such as `platform-ci-cd`, `platform-web`, `platform-devenv`, or a future
+        `platform-database` skill.
+      - Generic framework/reference skills (`deepwork`, `deepreviews`,
+        `deepschema`, `configure-reviews`, `review`, `wrap-up`) may remain
+        unprefixed when they are not Keystone-, platform-, or repo-domain content.
+
+      ### 4. OS-agent context source
+      - OS-agent identity/team context should be provided by Bridl profiles,
+        skills, and generated agent assets. Flag changes that make agents rely
+        on ad-hoc `~/SOUL.md` or `~/TEAM.md` as primary initial context.
+      - References to generated SOUL/TEAM files are acceptable only as legacy
+        compatibility, ownership metadata, or migration notes; they should not
+        be the main behavior source for new OS-agent flows.
+
+      ### 5. Succinctness and context budget
       - Prompts and skill front matter should be short, operational, and easy to
         scan. Flag long background prose that does not change agent behavior.
       - Prefer compact bullets and links/references over pasted explanations.
@@ -48,13 +73,15 @@ agent_process_hygiene:
       - Bridl profile prompt text should add only the minimum context unique to
         that layer because it becomes initial agent context.
 
-      ### 4. Bridl composition and examples
+      ### 6. Bridl composition and examples
       - Do not reintroduce `host-ocean`, `host-mercury`,
         `host-ncrmro-workstation`, or `host-ncrmro-laptop` profile conventions;
         use `ks-hosts` plus Keystone environment variables instead.
+      - Do not reintroduce `runtime-user-direct`, `runtime-os-agent-home`, or
+        `runtime-container`; use the `os-ks-*` environment profiles instead.
       - README examples should match the current profile model.
       - `inherits` should compose reusable layers without creating hidden host
-        or runtime assumptions.
+        or OS-environment assumptions.
 
       ## Output Format
 

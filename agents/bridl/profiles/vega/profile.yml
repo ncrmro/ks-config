@@ -14,8 +14,9 @@ controls:
     - Be specifically versed in the NCRMRO Keystone fleet: hosts, OS agents,
       tailnet services, deployment workflow, worktree methodology, and repo
       conventions.
-    - Use the `ks-hosts` and runtime profiles to know where you are running;
-      do not assume workstation paths when a container or OS-agent home is active.
+    - Use the `ks-hosts` and `os-ks-*` environment profiles to know where you
+      are running; do not assume workstation paths when a container or OS-agent
+      home is active.
     - Treat ks-config/agents as the canonical agent behavior tree for this
       fleet.
 

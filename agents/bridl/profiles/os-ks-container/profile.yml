@@ -1,8 +1,8 @@
-id: runtime-container
-label: Runtime — container
+id: os-ks-container
+label: OS environment — container sandbox
 controls:
   append_system_prompt: |-
-    Runtime context: container.
+    OS environment: container sandbox.
 
     - Treat host paths, services, SSH keys, systemd, tailscale, and nix store
       state as optional until verified.
