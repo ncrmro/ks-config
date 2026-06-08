@@ -26,6 +26,11 @@ controls:
     - Build/deploy uses the `ks` CLI: `ks build [host]`, `ks update [host]`,
       `ks update --dev` to point at the live local keystone checkout.
     - Run normal `ks update` from the canonical ks-config checkout on `main`.
+    - Host updates may authenticate either with the local sudo password or via
+      remote root access backed by a hardware key. Prefer the sudo path for both
+      local and remote host updates when available, because the human may be
+      connected to the deploying machine remotely and unable to touch a hardware
+      key attached there.
     - Use `ks update --dev` only when deliberately testing a local Keystone
       checkout; keep local ks-config's flake locked/clean after Keystone
       changes, and do not leave ks-config's flake locked to a local `path:`
