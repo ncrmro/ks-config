@@ -240,31 +240,6 @@
         "type": "github"
       }
     },
-    "bun2nix_3": {
-      "inputs": {
-        "flake-parts": "flake-parts_4",
-        "nixpkgs": [
-          "vega",
-          "nixpkgs"
-        ],
-        "systems": "systems_10",
-        "treefmt-nix": "treefmt-nix_3"
-      },
-      "locked": {
-        "lastModified": 1778446047,
-        "narHash": "sha256-oQvcadh2BCkrog+SGrG6YffKJrveYpjj3TdQJWaKhaM=",
-        "owner": "nix-community",
-        "repo": "bun2nix",
-        "rev": "f2bc12af1a6369648aac41041ceeaa0b866599c6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "ref": "2.1.0",
-        "repo": "bun2nix",
-        "type": "github"
-      }
-    },
     "calendula": {
       "inputs": {
         "fenix": "fenix",
@@ -332,33 +307,6 @@
       },
       "parent": [
         "plouton"
-      ]
-    },
-    "code_2": {
-      "inputs": {
-        "bun2nix": [
-          "vega",
-          "bun2nix"
-        ],
-        "llm-agents": [
-          "vega",
-          "llm-agents"
-        ],
-        "nixpkgs": [
-          "vega",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "path": "./code",
-        "type": "path"
-      },
-      "original": {
-        "path": "./code",
-        "type": "path"
-      },
-      "parent": [
-        "vega"
       ]
     },
     "comodoro": {
@@ -682,28 +630,6 @@
         "nixpkgs-lib": [
           "plouton",
           "code",
-          "bun2nix",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1777988971,
-        "narHash": "sha256-qIoWPDs+0/8JecyYgE3gpKQxW/4bLW/gp45vow9ioCQ=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "0678d8986be1661af6bb555f3489f2fdfc31f6ff",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-parts_4": {
-      "inputs": {
-        "nixpkgs-lib": [
-          "vega",
           "bun2nix",
           "nixpkgs"
         ]
@@ -1960,8 +1886,7 @@
           "nixos-hardware"
         ],
         "nixpkgs": "nixpkgs_5",
-        "plouton": "plouton",
-        "vega": "vega"
+        "plouton": "plouton"
       }
     },
     "rust-analyzer-src": {
@@ -2077,21 +2002,6 @@
       }
     },
     "systems": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
-    "systems_10": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
@@ -2271,28 +2181,6 @@
         "type": "github"
       }
     },
-    "treefmt-nix_3": {
-      "inputs": {
-        "nixpkgs": [
-          "vega",
-          "bun2nix",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1775636079,
-        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
     "uv2nix": {
       "inputs": {
         "nixpkgs": [
@@ -2345,31 +2233,6 @@
         "owner": "pyproject-nix",
         "repo": "uv2nix",
         "type": "github"
-      }
-    },
-    "vega": {
-      "inputs": {
-        "bun2nix": "bun2nix_3",
-        "code": "code_2",
-        "llm-agents": [
-          "llm-agents"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1780926489,
-        "narHash": "sha256-Wff0pvRmgndf7zD4w00Qd6vRwufB0090WcbDqLQOP+s=",
-        "ref": "refs/heads/main",
-        "rev": "20dbe4fe7977c81ca4667974916028ca1e1dfeca",
-        "revCount": 79,
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
       }
     },
     "walker": {

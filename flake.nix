@@ -21,24 +21,10 @@
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    # Active milestone-M10 dev: keystone, vega, and plouton are pinned to
-    # local working trees on the user's standard layout. Letting the
-    # flake follow whatever's in those trees removes the
-    # commit → push → bump-lock → push round-trip that was eating dev
-    # cycles. Restore the remote URLs (and `nix flake update`) once
-    # these repos stabilise; this block is the easy revert.
-    #
-    # Assumed checkouts (workstation + laptop):
-    #   /home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents
-    #   /home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config
-    #   /home/ncrmro/repos/ncrmro/plouton                                      (main)
-    # keystone + vega point at worktrees that haven't merged back to
-    # their main branches yet but carry the option schema ocean depends
-    # on (keystone.os.agents.<n>.default + defaultAgent;
-    # services.vega.configFile). plouton's main has the static-SPA flip.
-    #
-    # Remote targets (ocean, mercury) never fetch inputs — ks-dev builds
-    # locally and copies the closure — so they need nothing extra.
+    # Active milestone-M10 dev: keystone is pinned to the local milestone
+    # worktree because its option schema has not landed on keystone main yet.
+    # Vega itself is deployed from the Forgejo OCI image, not as a ks-config
+    # flake input/package.
 
     # NEVER CHANGE THIS URL. EVER. milestone/M10-V2-os-agents is the
     # single canonical branch for keystone work right now — squash /
@@ -54,15 +40,6 @@
     llama-cpp = {
       url = "github:ggml-org/llama.cpp";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Vega — personal dashboard + MCP server, hosted on ocean. Use the
-    # canonical Forgejo main branch so every host can evaluate the same lock
-    # without requiring an identical local worktree.
-    vega = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.llm-agents.follows = "llm-agents";
     };
 
     # Plouton — FastAPI + Astro SPA, hosted on ocean. Use the canonical

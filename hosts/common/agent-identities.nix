@@ -12,11 +12,21 @@
 #
 # Agenix note: secrets like agent-{name}-mail-password need recipients on
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 let
-  vegaPkg = inputs.vega.packages.${pkgs.stdenv.hostPlatform.system}.vega;
+  vegaImage = "git.ncrmro.com/ncrmro/vega:latest";
+  ksVegaMcpContainer = pkgs.writeShellScript "ks-vega-mcp-container" ''
+    set -euo pipefail
+    exec ${pkgs.podman}/bin/podman run --rm -i --pull=missing --network=host \
+      -e KS_VEGA_SERVER_URL="''${KS_VEGA_SERVER_URL:-https://vega.ncrmro.com}" \
+      -e KS_VEGA_HOST="''${KS_VEGA_HOST:-''${HOSTNAME:-}}" \
+      -e KS_VEGA_AGENT="''${KS_VEGA_AGENT:-}" \
+      -e KS_AGENT="''${KS_AGENT:-}" \
+      -e USER="''${USER:-}" \
+      ${vegaImage} ks-vega
+  '';
   ksVegaServer = {
-    command = "${vegaPkg}/bin/ks-vega";
+    command = toString ksVegaMcpContainer;
     args = [ ];
     env = {
       KS_VEGA_SERVER_URL = "https://vega.ncrmro.com";
