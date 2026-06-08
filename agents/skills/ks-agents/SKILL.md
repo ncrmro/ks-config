@@ -51,7 +51,7 @@ assets, or skills.
 
 - Keep persona profiles portable. Do not hard-code Keystone fleet paths, host
   names, or OS-environment assumptions in `drago` or `luce`.
-- Put host facts in the single environment-parameterized `ks-hosts` profile and
-  OS-environment facts in `os-ks-*` profiles.
+- Put fleet facts in the single environment-parameterized `ks-fleet` profile
+  and OS-environment facts in `os-ks-*` profiles.
 - Put Keystone fleet/methodology knowledge in `vega` and/or `keystone-os`.
 - Default model changes belong in `agents/bridl/profiles/default/profile.yml`.

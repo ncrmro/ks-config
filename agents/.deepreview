@@ -16,9 +16,11 @@ agent_process_hygiene:
       ## What to Check
 
       ### 1. Ownership and layering
-      - Host facts belong in the single `bridl/profiles/ks-hosts` profile and
-        should be driven by `$KEYSTONE_CURRENT_HOST` / `$KEYSTONE_FLEET_DOMAIN`,
-        not by per-host profile files or hard-coded launch profiles.
+      - Fleet facts belong in the single `bridl/profiles/ks-fleet` profile and
+        should be driven by Keystone environment variables/assets such as
+        `$KEYSTONE_CURRENT_HOST`, `$KEYSTONE_FLEET_DOMAIN`, and generated
+        host/agent/team/service metadata, not by per-host profile files or
+        hard-coded launch profiles.
       - OS execution environment facts belong in exactly one of
         `bridl/profiles/os-ks-admin-user`, `bridl/profiles/os-ks-agent-user`, or
         `bridl/profiles/os-ks-container`. Flag new `runtime-*` profile patterns
@@ -74,9 +76,9 @@ agent_process_hygiene:
         that layer because it becomes initial agent context.
 
       ### 6. Bridl composition and examples
-      - Do not reintroduce `host-ocean`, `host-mercury`,
+      - Do not reintroduce `ks-hosts`, `host-ocean`, `host-mercury`,
         `host-ncrmro-workstation`, or `host-ncrmro-laptop` profile conventions;
-        use `ks-hosts` plus Keystone environment variables instead.
+        use `ks-fleet` plus Keystone environment variables/assets instead.
       - Do not reintroduce `runtime-user-direct`, `runtime-os-agent-home`, or
         `runtime-container`; use the `os-ks-*` environment profiles instead.
       - README examples should match the current profile model.
