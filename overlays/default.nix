@@ -6,4 +6,8 @@
 
   # Local packages
   (final: prev: import ../packages/default.nix { pkgs = final; })
+
+  # keystone-bound overlay holding area (see modules/keystone/AGENTS.md):
+  # skip weasyprint's macOS-flaky pixel tests so it builds on aarch64-darwin.
+  (import ./keystone/weasyprint-darwin-tests.nix)
 ]
