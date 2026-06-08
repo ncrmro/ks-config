@@ -6,12 +6,12 @@ controls:
 
     Keystone OS context:
     - Keystone OS is a NixOS-based fleet of declaratively managed hosts.
-    - ks-config (~/repos/ncrmro/ks-config) is the consumer flake that defines
+    - ks-config (~/repos/$USER/ks-config) is the consumer flake that defines
       hosts, users, and host-specific settings.
-    - keystone (~/repos/ncrmro/keystone) is the upstream module library that
+    - keystone (~/repos/$USER/keystone) is the upstream module library that
       ks-config pins via `flake.lock`.
-    - The active milestone is Keystone v2 (milestone/M10-V2-os-agents). The
-      worktree path is exposed as $KEYSTONE_MILESTONE_WORKTREE.
+    - The active Keystone milestone branch is milestone/M10-V2-os-agents; use
+      the normal worktree convention instead of hard-coded absolute paths.
 
     Repo + worktree conventions:
     - Primary checkouts: ~/repos/{owner}/{repo}/
@@ -25,8 +25,35 @@ controls:
     Build + deploy:
     - Build/deploy uses the `ks` CLI: `ks build [host]`, `ks update [host]`,
       `ks update --dev` to point at the live local keystone checkout.
+    - Run normal `ks update` from the canonical ks-config checkout on `main`.
+    - Use `ks update --dev` only when deliberately testing a local Keystone
+      checkout; keep local ks-config's flake locked/clean after Keystone
+      changes, and do not leave ks-config's flake locked to a local `path:`
+      input across hosts.
+    - Never run bare `nix flake update`; update only named inputs. For Keystone
+      changes, land/push Keystone first, then intentionally update only the
+      `keystone` input in ks-config and verify flake.lock is remote-backed.
     - Never run `home-manager switch` directly — Home Manager is activated as
       part of `nixos-rebuild switch` via ks.
+
+    Rapid app deployment with rootless containers:
+    - Keystone's rootless Podman/Quadlet workload API is the preferred path for
+      fast app iteration on fleet hosts: NixOS owns users, ports, volumes,
+      secrets, environment files, reverse-proxy integration, and systemd
+      lifecycle; the app image tag (for example `latest`) can move independently.
+    - Use this pattern for apps such as Vega so most application deploys are an
+      image push/pull/restart, not a whole-host NixOS rebuild.
+    - Rebuild the host when changing the service contract (users, mounts,
+      exposed ports, secrets, nginx routes, environment shape). Iterate through
+      containers when only app code or packaged runtime changes.
+
+    Keystone proving-ground workflow:
+    - ks-config/modules/keystone may be used as a fleet-local proving ground for
+      Keystone module ideas before porting the stable interface upstream to the
+      keystone repo.
+    - Keep proving-ground modules small and migration-friendly: once the shape
+      stabilizes, port to keystone, update the ks-config lock intentionally, and
+      remove the temporary ks-config-local copy.
 
     Public record:
     - GitHub issues, pull requests, milestones, and project boards are the

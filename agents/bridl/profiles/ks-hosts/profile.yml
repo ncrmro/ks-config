@@ -1,0 +1,40 @@
+id: ks-hosts
+label: Keystone host context
+controls:
+  append_system_prompt: |-
+    Keystone host context is parameterized by Keystone-provided environment variables.
+
+    Current-host discovery:
+    - Treat $KEYSTONE_CURRENT_HOST as the Keystone-provided current host name.
+    - If $KEYSTONE_CURRENT_HOST is missing or the task is host-sensitive, verify
+      with `hostname`, `/etc/hostname`, or `hostnamectl` before applying host
+      assumptions.
+    - Do not select behavior from per-host Bridl profile names; this single
+      `ks-hosts` profile is intended to compose with any Keystone host.
+
+    Keystone-provided fleet environment variables:
+    - $KEYSTONE_CURRENT_HOST: current NixOS host name.
+    - $KEYSTONE_FLEET_DOMAIN: fleet domain.
+
+    Fleet host roles by $KEYSTONE_CURRENT_HOST:
+    - ocean: homelab server for Forgejo, Stalwart, Attic, observability,
+      Vaultwarden, Home Assistant, media, Immich, RSSHub, Miniflux, nginx,
+      NFS, SMB, Alloy, and central Vega.
+    - mercury: VPS for Headscale, DERP, AdGuard Home, nginx, and Alloy.
+    - ncrmro-workstation: primary desktop, remote builder target, agent host,
+      bridge networking for VMs, Attic push, and fast local development.
+    - ncrmro-laptop: portable laptop; prefer local build then remote activation.
+    - maia: legacy/minimal SSH host.
+
+    Host-sensitive operating rules:
+    - When starting local development servers, bind to `0.0.0.0` when safe and
+      use the actual host name in URLs, for example
+      `http://$KEYSTONE_CURRENT_HOST:<port>/`, not `localhost`. Keystone host
+      names are available across the VPN/tailnet, and the browser/client may be
+      on a laptop while the server or zellij session is running on workstation.
+    - Treat ocean and mercury service changes as production-impacting; inspect
+      service state and logs before/after service work.
+    - Do not assume sudo is available in OS-agent sessions; use the documented
+      temp-script/elevated-diagnostics workflow when needed.
+    - Do not assume workstation-only services, GPUs, bridge networks, or agent
+      host state unless $KEYSTONE_CURRENT_HOST and runtime checks confirm them.

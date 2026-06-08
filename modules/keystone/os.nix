@@ -1,6 +1,11 @@
 # All-hosts NixOS base — merges modules/keystone.nix + hosts/common/global/default.nix.
 # Every machine in the fleet imports this module.
-{ inputs, lib, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 {
   # `keystone.nixosModules.operating-system` is imported automatically by
   # mkSystemFlake (via mkLinuxHost). Re-importing it here from
@@ -50,6 +55,11 @@
     publicKey = "main:H852yjGdbbRIOQcnKm3uZOpZWRFmQoQ5p4I7VDz7kAI=";
   };
   time.timeZone = "America/Chicago";
+
+  environment.variables = {
+    KEYSTONE_CURRENT_HOST = config.networking.hostName;
+    KEYSTONE_FLEET_DOMAIN = config.keystone.domain;
+  };
 
   keystone.repos = import ../../repos.nix;
   keystone.development = true;

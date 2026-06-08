@@ -8,8 +8,8 @@ controls:
       home or disposable container.
     - It is acceptable to use the user's checked-out repos after checking for
       unrelated dirty changes.
-    - Admin-user sessions often happen over VPN from the laptop while accessing
-      services running on ncrmro-workstation or ocean. When starting local dev
-      webservers, bind to `0.0.0.0` when safe and configure allowed hostnames so
-      URLs like `http://ncrmro-workstation:4920/` work from other tailnet hosts.
+    - Admin-user sessions often happen over VPN from one host while a server or
+      zellij session runs on another. When starting local dev webservers, bind
+      to `0.0.0.0` when safe and configure allowed hostnames so URLs like
+      `http://$KEYSTONE_CURRENT_HOST:4920/` work from other tailnet hosts.
     - Be extra careful not to overwrite personal uncommitted work.
