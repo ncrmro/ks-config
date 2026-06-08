@@ -23,8 +23,8 @@
 
     # Active milestone-M10 dev: keystone is pinned to the local milestone
     # worktree because its option schema has not landed on keystone main yet.
-    # Vega itself is deployed from the Forgejo OCI image, not as a ks-config
-    # flake input/package.
+    # App services such as Vega and Plouton are deployed from Forgejo OCI
+    # images through keystone container workloads, not ks-config flake inputs.
 
     # NEVER CHANGE THIS URL. EVER. milestone/M10-V2-os-agents is the
     # single canonical branch for keystone work right now — squash /
@@ -39,14 +39,6 @@
     # llama.cpp - latest for MXFP4 support (workstation-specific)
     llama-cpp = {
       url = "github:ggml-org/llama.cpp";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Plouton — FastAPI + Astro SPA, hosted on ocean. Use the canonical
-    # Forgejo main branch so every host can evaluate the same lock without
-    # requiring an identical local checkout at ~/repos/ncrmro/plouton.
-    plouton = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/plouton.git?lfs=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
