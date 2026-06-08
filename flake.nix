@@ -56,9 +56,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Vega — personal dashboard + MCP server, hosted on ocean.
+    # Vega — personal dashboard + MCP server, hosted on ocean. Use the
+    # canonical Forgejo main branch so every host can evaluate the same lock
+    # without requiring an identical local worktree.
     vega = {
-      url = "git+file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config";
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };

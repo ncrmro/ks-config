@@ -2359,17 +2359,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1780708581,
-        "narHash": "sha256-GAoZB1+o4ygC7fxC/DUNlSc294YuJ3rnlb0f8e0FH38=",
-        "ref": "refs/heads/feat/declarative-config",
-        "rev": "044e6940888d73ada57e2c52dd20f308247d5eaf",
-        "revCount": 67,
+        "lastModified": 1780876654,
+        "narHash": "sha256-koSL7qgAcLB1Wl//E6uKSPfUyHCAHPH2qxCaHm8coHE=",
+        "ref": "refs/heads/main",
+        "rev": "8672005745bd3f4145a1b9d01e7c6da8beda0ccb",
+        "revCount": 76,
         "type": "git",
-        "url": "file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config"
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/ncrmro/repos/ncrmro/worktrees/vega/feat/declarative-config"
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git"
       }
     },
     "walker": {
