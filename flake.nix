@@ -26,12 +26,12 @@
     # App services such as Vega and Plouton are deployed from Forgejo OCI
     # images through keystone container workloads, not ks-config flake inputs.
 
-    # NEVER CHANGE THIS URL. EVER. milestone/M10-V2-os-agents is the
-    # single canonical branch for keystone work right now — squash /
-    # cherry-pick new commits onto it instead of repointing the flake
-    # at a different branch. If a change is needed here, ask first.
+    # milestone/M10-V2-os-agents is the single canonical branch for Keystone
+    # work right now. Keep this locked to GitHub so every host evaluates the
+    # same committed Keystone revision; use bin/dev-keystone for local
+    # path overrides while developing uncommitted Keystone changes.
     keystone = {
-      url = "path:/home/ncrmro/repos/ncrmro/worktrees/keystone/milestone/M10-V2-os-agents";
+      url = "github:ncrmro/keystone/milestone/M10-V2-os-agents";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };
