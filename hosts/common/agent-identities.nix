@@ -12,27 +12,7 @@
 #
 # Agenix note: secrets like agent-{name}-mail-password need recipients on
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
-{ pkgs, ... }:
-let
-  vegaImage = "git.ncrmro.com/ncrmro/vega:latest";
-  ksVegaMcpContainer = pkgs.writeShellScript "ks-vega-mcp-container" ''
-    set -euo pipefail
-    exec ${pkgs.podman}/bin/podman run --rm -i --pull=missing --network=host \
-      -e KS_VEGA_SERVER_URL="''${KS_VEGA_SERVER_URL:-https://vega.ncrmro.com}" \
-      -e KS_VEGA_HOST="''${KS_VEGA_HOST:-''${HOSTNAME:-}}" \
-      -e KS_VEGA_AGENT="''${KS_VEGA_AGENT:-}" \
-      -e KS_AGENT="''${KS_AGENT:-}" \
-      -e USER="''${USER:-}" \
-      ${vegaImage} ks-vega
-  '';
-  ksVegaServer = {
-    command = toString ksVegaMcpContainer;
-    args = [ ];
-    env = {
-      KS_VEGA_SERVER_URL = "https://vega.ncrmro.com";
-    };
-  };
-in
+{ ... }:
 {
   keystone.os.agents = {
     drago = {
@@ -45,7 +25,6 @@ in
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
-      mcp.servers.ks-vega = ksVegaServer;
     };
     luce = {
       host = "ocean";
@@ -58,7 +37,6 @@ in
       ];
       mail.provision = true;
       git.provision = true;
-      mcp.servers.ks-vega = ksVegaServer;
     };
   };
 }

@@ -144,7 +144,6 @@ in
       GIT_COMMITTER_EMAIL = "vega@ncrmro.com";
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
       PUBLIC_SERVER_PORT = "17878";
-      KEYSTONE_AGENTS_RPC_URL = "ws://ncrmro-workstation:7700/rpc,ws://ocean:7700/rpc";
       PI_RPC_DRAGO_URL = "http://ncrmro-workstation:7701";
       PI_RPC_LUCE_URL = "http://ocean:7702";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's

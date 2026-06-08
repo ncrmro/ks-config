@@ -1,16 +1,19 @@
-# Vega OS-agent RPC sidecars.
+# Vega OS-agent RPC sidecars and Pi MCP configuration.
 #
-# These use the same git.ncrmro.com/ncrmro/vega image as the ocean dashboard,
-# but override the container command to run the per-host/per-agent RPC entrypoints.
-# Transcripts stay on the agent's host under that agent user's home directory;
-# Vega on ocean reaches them through the pi-rpc HTTP surface.
-{ config, lib, ... }:
+# The only per-agent Vega containers are the pi-rpc bridges that keep Pi chat
+# sessions/transcripts on the agent's own host. Vega MCP is centralized on ocean
+# at https://vega.ncrmro.com/mcp and is consumed by Pi through
+# pi-mcp-extension using request identity headers.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (lib)
     attrNames
-    concatStringsSep
     filterAttrs
-    head
     listToAttrs
     mkIf
     nameValuePair
@@ -18,7 +21,11 @@ let
 
   hostName = config.networking.hostName;
   image = "git.ncrmro.com/ncrmro/vega:latest";
-  rpcPort = 7700;
+  mcpUrl = "https://vega.ncrmro.com/mcp";
+  # Optional shared secret. If this runtime file exists, the activation script
+  # adds Authorization: Bearer <token> to Pi's MCP config. The token is never
+  # embedded in the Nix store.
+  mcpTokenFile = "/run/agenix/vega-mcp-token";
   portsByAgent = {
     drago = 7701;
     luce = 7702;
@@ -27,7 +34,6 @@ let
   localAgents = filterAttrs (_: agent: agent.host == hostName) config.keystone.os.agents;
   localAgentNames = attrNames localAgents;
   hasLocalAgents = localAgentNames != [ ];
-  firstAgent = head localAgentNames;
   agentUser = name: "agent-${name}";
   agentHome = name: "/home/${agentUser name}";
   agentState = name: "${agentHome name}/.local/state/vega/agents/${name}";
@@ -70,40 +76,54 @@ let
       ];
     };
 
-  ksAgentsRpcWorkload = nameValuePair "vega-ks-agents-rpc" {
-    enable = true;
-    user = agentUser firstAgent;
-    group = "agents";
-    home = agentHome firstAgent;
-    createHome = false;
-    description = "Vega host RPC daemon for OS agents on ${hostName}";
-    inherit image registryLogin;
-    serviceName = "vega-ks-agents-rpc";
-    containerName = "vega-ks-agents-rpc";
-    workingDir = agentHome firstAgent;
-    ports = [ "0.0.0.0:${toString rpcPort}:${toString rpcPort}" ];
-    volumes = [ "${agentHome firstAgent}:${agentHome firstAgent}" ];
-    environment = {
-      KS_AGENTS_RPC_HOST = hostName;
-      KS_AGENTS_RPC_AGENTS = concatStringsSep "," (
-        map (name: "${name}:${toString (portFor name)}") localAgentNames
-      );
-      KS_AGENTS_RPC_PORT = rpcPort;
-      KS_AGENTS_RPC_BIND = "0.0.0.0";
-      HOME = agentHome firstAgent;
+  piMcpHomeFor =
+    name:
+    nameValuePair (agentUser name) {
+      # Name sorts after Keystone's piMcpConfig activation entry so this can
+      # merge the central Vega Streamable HTTP server into the generated Pi MCP
+      # config without relying on home-manager's lib.hm from a NixOS module.
+      home.activation.zzVegaPiMcpConfig = ''
+        piMcpConfig="$HOME/.pi/agent/mcp.json"
+        mkdir -p "$(dirname "$piMcpConfig")"
+
+        token=""
+        if [ -r ${lib.escapeShellArg mcpTokenFile} ]; then
+          token="$(${pkgs.coreutils}/bin/tr -d '\n' < ${lib.escapeShellArg mcpTokenFile})"
+        fi
+
+        serverJson="$(${pkgs.jq}/bin/jq -n \
+          --arg url ${lib.escapeShellArg mcpUrl} \
+          --arg agent ${lib.escapeShellArg name} \
+          --arg host ${lib.escapeShellArg hostName} \
+          --arg token "$token" \
+          '{
+            transport: "streamable-http",
+            url: $url,
+            lifecycle: "eager",
+            headers: ({
+              "X-Keystone-Agent": $agent,
+              "X-Keystone-Host": $host
+            } + (if $token == "" then {} else {"Authorization": ("Bearer " + $token)} end))
+          }'
+        )"
+
+        if [ -f "$piMcpConfig" ] && [ ! -L "$piMcpConfig" ]; then
+          ${pkgs.jq}/bin/jq --argjson srv "$serverJson" \
+            '. * {mcpServers: ((.mcpServers // {}) + {"ks-vega": $srv})}' \
+            "$piMcpConfig" > "$piMcpConfig.tmp" \
+            && mv "$piMcpConfig.tmp" "$piMcpConfig"
+        else
+          ${pkgs.jq}/bin/jq -n --argjson srv "$serverJson" \
+            '{mcpServers: {"ks-vega": $srv}}' > "$piMcpConfig"
+        fi
+        chmod 600 "$piMcpConfig"
+      '';
     };
-    container.extraLines = commonContainerLines ++ [
-      "Exec=vega-ks-agents-rpc"
-    ];
-  };
 in
 mkIf hasLocalAgents {
-  keystone.os.containers.workloads = listToAttrs (
-    map piWorkloadFor localAgentNames ++ [ ksAgentsRpcWorkload ]
-  );
+  keystone.os.containers.workloads = listToAttrs (map piWorkloadFor localAgentNames);
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [
-    rpcPort
-  ]
-  ++ map portFor localAgentNames;
+  home-manager.users = listToAttrs (map piMcpHomeFor localAgentNames);
+
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = map portFor localAgentNames;
 }
