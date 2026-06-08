@@ -61,7 +61,42 @@ in
   systemd.tmpfiles.rules = [
     "d ${stateDir} 0700 ${workloadUser} ${workloadGroup} -"
     "d ${stateDir}/data 0750 ${workloadUser} ${workloadGroup} -"
+    # Let the dedicated service user bind-mount and edit the admin-owned
+    # checkout without running the container as an OS agent. The recursive ACL
+    # keeps existing/default ks-config ACLs while adding only Vega's access.
+    "a+ /home/${config.keystone.os.adminUsername} - - - - u:${workloadUser}:rx"
+    "a+ /home/${config.keystone.os.adminUsername}/repos - - - - u:${workloadUser}:rx"
+    "a+ /home/${config.keystone.os.adminUsername}/repos/ncrmro - - - - u:${workloadUser}:rx"
+    "A+ ${ksConfigDir} - - - - u:${workloadUser}:rwX,d:u:${workloadUser}:rwX"
   ];
+
+  systemd.services.vega-agent-luce-container-migration = {
+    description = "Stop legacy agent-luce Vega rootless container";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "keystone-container-workload-vega.service" ];
+    path = [
+      pkgs.coreutils
+      pkgs.systemd
+      pkgs.util-linux
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      if id agent-luce >/dev/null 2>&1; then
+        uid="$(id -u agent-luce)"
+        if [ -S "/run/user/$uid/bus" ]; then
+          runuser -u agent-luce -- env \
+            HOME=/home/agent-luce \
+            XDG_RUNTIME_DIR="/run/user/$uid" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+            systemctl --user disable --now vega.service || true
+        fi
+        rm -f /home/agent-luce/.config/containers/systemd/vega.container
+      fi
+    '';
+  };
 
   keystone.os.containers.workloads.vega = {
     enable = true;
