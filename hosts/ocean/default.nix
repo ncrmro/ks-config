@@ -33,6 +33,7 @@
     ./miniflux.nix
     ./observability
     ../common/optional/alloy-client.nix
+    ../common/optional/vega-agent-rpc.nix
     ./immich.nix
     ./vms.nix
     ./vega.nix
@@ -254,8 +255,18 @@
   # evaluate the full fleet without "Too many open files" — the kernel default
   # 1024 trips nix when the daemon spawns many parallel evaluators.
   security.pam.loginLimits = [
-    { domain = "*"; type = "soft"; item = "nofile"; value = "65535"; }
-    { domain = "*"; type = "hard"; item = "nofile"; value = "1048576"; }
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "65535";
+    }
+    {
+      domain = "*";
+      type = "hard";
+      item = "nofile";
+      value = "1048576";
+    }
   ];
 
   environment.systemPackages = [
