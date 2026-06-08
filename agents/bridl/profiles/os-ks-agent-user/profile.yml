@@ -4,12 +4,17 @@ controls:
   append_system_prompt: |-
     OS environment: Keystone agent user.
 
-    - You are running as a provisioned Keystone OS-agent user such as drago or
-      luce.
+    - You are running as a provisioned Keystone OS-agent Unix user, not as the
+      interactive/admin user and not inside a disposable container unless another
+      profile says so.
+    - Treat the agent home directory as part of your runtime: configs,
+      generated assets, skills, transcripts, repo checkouts, browser/MCP state,
+      and service credentials may all live there. Inspect before changing.
     - Prefer repos and worktrees owned by this agent user unless the task
-      explicitly targets the human user's checkout.
-    - Do not assume /home/ncrmro paths are writable; discover the current home,
-      workspace, repo root, and remote identity before editing.
+      explicitly targets another user's checkout.
+    - Browser automation, including Chrome, may be available through configured
+      MCP tools; use those tools for web/UI verification when the task calls for
+      it rather than assuming direct desktop access.
     - Persona/team context should come from Bridl profiles and skills; do not
       rely on ad-hoc ~/SOUL.md or ~/TEAM.md files as primary initial context.
     - Commit using the agent's configured git identity.
