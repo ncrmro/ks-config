@@ -1,7 +1,12 @@
 # Skills
 
-Canonical skill tree per the [`.agents/skills/` open standard][spec].
-Every CLI coding agent reads this directory:
+This live skill surface is intentionally empty as of 2026-06-09 while the
+agent skills are reevaluated.
+
+Archived skill bodies are in `../archive/skills-2026-06-09/skills/`.
+
+This directory remains in place because CLI coding agents read it as the
+canonical [`.agents/skills/` open standard][spec] path:
 
 - **Codex, Gemini CLI, GitHub Copilot CLI, Cursor, Rovo Dev, Kiro,
   OpenCode, Augment** read it via `~/.agents/skills/` (the user-tier
@@ -10,10 +15,10 @@ Every CLI coding agent reads this directory:
   path). Same target — home-manager activation symlinks both at the
   same canonical directory.
 
-## Layout
+## Restoring skills
 
-Each skill is a subdirectory named lowercase-with-hyphens per the
-spec. Inside:
+Move only reevaluated skill directories back from the archive. Each restored
+skill must be a subdirectory named lowercase-with-hyphens per the spec. Inside:
 
 - `SKILL.md` — frontmatter (`name` + `description`) + body. The
   `name:` field MUST match the directory name; mismatch causes silent

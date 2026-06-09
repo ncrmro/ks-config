@@ -1,5 +1,11 @@
 # Claude skills
 
+This live Claude-facing skill surface is intentionally empty as of 2026-06-09
+while the agent skills are reevaluated.
+
+Archived Claude-facing links are in
+`../../archive/skills-2026-06-09/claude/skills/`.
+
 Claude Code reads skills from `~/.claude/skills/`. Codex and other
 spec-compliant CLI coding agents read from `~/.agents/skills/`.
 
@@ -18,6 +24,4 @@ usually contain symlinks back to those canonical skill directories.
 
 ## Current skills
 
-- `ks-host-sync` -> `../../skills/ks-host-sync`
-- `repo-development-pipeline-operator` -> `../../skills/repo-development-pipeline-operator`
-- `repo-release-operator` -> `../../skills/repo-release-operator`
+None.

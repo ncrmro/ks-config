@@ -13,12 +13,4 @@ controls:
     Review audit:
     - Before ending a session that touched a PR, audit the PR's review summaries and line-level comments with `gh api repos/{owner}/{repo}/pulls/{number}/reviews` and `gh api repos/{owner}/{repo}/pulls/{number}/comments`.
     - Every human or bot review comment must have a fix commit, or a reply explaining why it was deferred/declined; quote explicit user authorization if comments are intentionally left open.
-  skills:
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-engineer
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/deepwork
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/deepreviews
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/review
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/wrap-up
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-web
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-ci-cd
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-devenv
+  skills: []

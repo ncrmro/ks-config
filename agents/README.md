@@ -16,7 +16,7 @@ home-dir symlinks that home-manager activation creates.
 | `<agent>/AGENTS.md` | User-authored OS-agent instruction file. OS agents receive this as `~/AGENTS.md` and `~/.pi/agent/AGENTS.md`. |
 | `<agent>/SYSTEM.md` | User-authored OS-agent system file. OS agents receive this as `~/SYSTEM.md`, `~/.pi/agent/SYSTEM.md`, and `~/.pi/agents/SYSTEM.md`. |
 | `<agent>/SOUL.md` | Generated OS-agent identity file. OS agents receive this as `~/SOUL.md`. |
-| `skills/` | Canonical skill tree per the [`.agents/skills/` open standard][spec]. Read by every spec-compliant agent. |
+| `skills/` | Canonical skill tree per the [`.agents/skills/` open standard][spec]. Currently empty while skills are reevaluated; archived bodies are under `archive/skills-2026-06-09/`. |
 | `claude/agents/` | Claude-specific subagent personas. Read via `~/.claude/agents/`. |
 
 ## Maintenance

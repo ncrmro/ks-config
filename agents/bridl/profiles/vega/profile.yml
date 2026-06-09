@@ -21,12 +21,6 @@ controls:
       fleet.
 
     Agent operations:
-    - Prefer the ks-agents skill for changes under ks-config/agents.
     - Successful agent behavior changes should be committed and pushed so all
       hosts can converge through normal ks-config deployment.
-  skills:
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-dev
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-system
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-host-sync
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-agents
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-milestone
+  skills: []

@@ -1,9 +1,4 @@
 id: product-lead
 label: Product Lead (role base)
 controls:
-  skills:
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-product
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/ks-projects
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/deepplan
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-web
-    - /home/ncrmro/repos/ncrmro/ks-config/agents/skills/platform-ci-cd
+  skills: []
