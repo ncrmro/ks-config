@@ -61,10 +61,7 @@ let
       containerName = "os-agent-${name}";
       workingDir = agentHome name;
       ports = [ "0.0.0.0:${toString (portFor name)}:${toString (portFor name)}" ];
-      volumes = [
-        "${agentHome name}:${agentHome name}"
-        "/nix/store:/nix/store:ro"
-      ];
+      volumes = [ "${agentHome name}:${agentHome name}" ];
       environment = {
         PI_RPC_AGENT = name;
         PI_RPC_PORT = portFor name;
@@ -86,8 +83,19 @@ let
       # merge the central Vega Streamable HTTP server into the generated Pi MCP
       # config without relying on home-manager's lib.hm from a NixOS module.
       home.activation.zzVegaPiMcpConfig = ''
-        piMcpConfig="$HOME/.pi/agent/mcp.json"
-        mkdir -p "$(dirname "$piMcpConfig")"
+        piAgentDir="$HOME/.pi/agent"
+        piModelsConfig="$piAgentDir/models.json"
+        piMcpConfig="$piAgentDir/mcp.json"
+        mkdir -p "$piAgentDir"
+
+        if [ -L "$piModelsConfig" ]; then
+          modelsTarget="$(${pkgs.coreutils}/bin/readlink -f "$piModelsConfig" || true)"
+          if [ -n "$modelsTarget" ] && [ -r "$modelsTarget" ]; then
+            ${pkgs.coreutils}/bin/cp "$modelsTarget" "$piModelsConfig.tmp"
+            ${pkgs.coreutils}/bin/chmod 600 "$piModelsConfig.tmp"
+            ${pkgs.coreutils}/bin/mv "$piModelsConfig.tmp" "$piModelsConfig"
+          fi
+        fi
 
         token=""
         if [ -r ${lib.escapeShellArg mcpTokenFile} ]; then
