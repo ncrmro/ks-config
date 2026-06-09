@@ -112,7 +112,9 @@ in
       PUBLIC_BROWSER_SERVER_URL = "https://vega.ncrmro.com";
       PUBLIC_SERVER_PORT = "17878";
       PI_RPC_DRAGO_URL = "http://ncrmro-workstation:7701";
-      PI_RPC_LUCE_URL = "http://ocean:7702";
+      # Rootless containers cannot reliably hairpin through the host's own
+      # tailnet name; use Podman's host gateway for the local sidecar.
+      PI_RPC_LUCE_URL = "http://host.containers.internal:7702";
       # Ocean has no GPU. Route ollama traffic to ncrmro-workstation's
       # tailnet ollama (RX 9070 XT, currently hosts qwen3:4b + qwen3:32b).
       # URL must end in /v1 — pi-ai uses the OpenAI-compat
