@@ -61,7 +61,10 @@ let
       containerName = "os-agent-${name}";
       workingDir = agentHome name;
       ports = [ "0.0.0.0:${toString (portFor name)}:${toString (portFor name)}" ];
-      volumes = [ "${agentHome name}:${agentHome name}" ];
+      volumes = [
+        "${agentHome name}:${agentHome name}"
+        "/nix/store:/nix/store:ro"
+      ];
       environment = {
         PI_RPC_AGENT = name;
         PI_RPC_PORT = portFor name;
