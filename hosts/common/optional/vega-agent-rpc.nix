@@ -109,8 +109,6 @@ let
   piHomeFor =
     name:
     nameValuePair (agentUser name) {
-      systemd.user.services."os-agent-${name}" = agentServiceFor name;
-
       # Name sorts after Keystone's piMcpConfig activation entry so this can
       # merge the central Vega Streamable HTTP server into the generated Pi MCP
       # config without relying on home-manager's lib.hm from a NixOS module.
@@ -169,6 +167,10 @@ let
     };
 in
 mkIf hasLocalAgents {
+  systemd.user.services = listToAttrs (
+    map (name: nameValuePair "os-agent-${name}" (agentServiceFor name)) localAgentNames
+  );
+
   home-manager.users = listToAttrs (map piHomeFor localAgentNames);
 
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = map portFor localAgentNames;
