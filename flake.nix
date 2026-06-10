@@ -23,8 +23,15 @@
 
     # Active milestone-M10 dev: keystone is pinned to the local milestone
     # worktree because its option schema has not landed on keystone main yet.
-    # App services such as Vega and Plouton are deployed from Forgejo OCI
-    # images through keystone container workloads, not ks-config flake inputs.
+    # App services such as Plouton are deployed from Forgejo OCI images through
+    # keystone container workloads. Vega's central web/API also uses an OCI image,
+    # but its native OS-agent bridge is packaged from this flake input so agent
+    # services do not read source from the admin user's Vega checkout.
+    vega = {
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.llm-agents.follows = "llm-agents";
+    };
 
     # milestone/M10-V2-os-agents is the single canonical branch for Keystone
     # work right now. Keep this locked to GitHub so every host evaluates the

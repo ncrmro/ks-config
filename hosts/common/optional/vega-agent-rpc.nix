@@ -6,6 +6,7 @@
 # credentials, and home directory directly.
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -26,8 +27,7 @@ let
   # adds Authorization: Bearer <token> to Pi's MCP config. The token is never
   # embedded in the Nix store.
   mcpTokenFile = "/run/agenix/vega-mcp-token";
-  vegaRepo = "/home/${config.keystone.os.adminUsername}/repos/ncrmro/vega";
-  piRpcSource = "${vegaRepo}/code/pi-rpc/src/main.ts";
+  vegaPackage = inputs.vega.packages.${pkgs.stdenv.hostPlatform.system}.vega;
   piModelByAgent = {
     drago = "qwen3:4b";
     luce = "qwen3:4b";
@@ -66,7 +66,6 @@ let
       environment = {
         PATH = lib.mkForce "/etc/profiles/per-user/${username}/bin:/run/wrappers/bin:/run/current-system/sw/bin:${
           lib.makeBinPath [
-            pkgs.bun
             pkgs.coreutils
             pkgs.git
             pkgs.openssh
@@ -98,11 +97,7 @@ let
       };
       script = ''
         set -euo pipefail
-        if [ ! -f ${lib.escapeShellArg piRpcSource} ]; then
-          echo "vega-pi-rpc source missing at ${piRpcSource}; sync the Vega checkout on ${hostName}" >&2
-          exit 1
-        fi
-        exec ${pkgs.bun}/bin/bun ${lib.escapeShellArg piRpcSource}
+        exec ${vegaPackage}/bin/vega-pi-rpc
       '';
     };
 
@@ -168,13 +163,11 @@ let
 in
 mkIf hasLocalAgents {
   systemd.tmpfiles.rules = [
+    # Agent Bridl config resolves through ~/.bridl symlinks into the admin
+    # ks-config checkout; keep traversal to that checkout explicit here.
     "a+ /home/${config.keystone.os.adminUsername} - - - - g:agents:x"
     "a+ /home/${config.keystone.os.adminUsername}/repos - - - - g:agents:x"
     "a+ /home/${config.keystone.os.adminUsername}/repos/ncrmro - - - - g:agents:x"
-    "a+ ${vegaRepo} - - - - g:agents:rx"
-    "a+ ${vegaRepo}/code - - - - g:agents:rx"
-    "a+ ${vegaRepo}/code/pi-rpc - - - - g:agents:rx"
-    "a+ ${vegaRepo}/code/pi-rpc/src - - - - g:agents:rx"
   ];
 
   systemd.user.services = listToAttrs (
