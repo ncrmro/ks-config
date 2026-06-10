@@ -26,6 +26,13 @@ let
   # adds Authorization: Bearer <token> to Pi's MCP config. The token is never
   # embedded in the Nix store.
   mcpTokenFile = "/run/agenix/vega-mcp-token";
+  ollamaHost = "ncrmro-workstation.mercury";
+  ollamaPort = 11434;
+  ollamaDefaultModel = "qwen3:4b";
+  ollamaModels = [
+    "qwen3:4b"
+    "qwen3:32b"
+  ];
   portsByAgent = {
     drago = 7701;
     luce = 7702;
@@ -69,6 +76,8 @@ let
         PI_RPC_CWD = agentState name;
         PI_RPC_SESSION_DIR = "${agentState name}/sessions";
         PI_RPC_TRANSCRIPT_DIR = "${agentState name}/transcripts";
+        PI_RPC_PROVIDER = "ollama";
+        PI_RPC_MODEL = ollamaDefaultModel;
         HOME = agentHome name;
       };
       container.extraLines = commonContainerLines ++ [
@@ -95,6 +104,29 @@ let
             ${pkgs.coreutils}/bin/chmod 600 "$piModelsConfig.tmp"
             ${pkgs.coreutils}/bin/mv "$piModelsConfig.tmp" "$piModelsConfig"
           fi
+        fi
+
+        if ! [ -f "$piModelsConfig" ] || ! ${pkgs.jq}/bin/jq -e '.providers.ollama' "$piModelsConfig" >/dev/null 2>&1; then
+          ${pkgs.jq}/bin/jq -n \
+            --arg baseUrl ${lib.escapeShellArg "http://${ollamaHost}:${toString ollamaPort}/v1"} \
+            --argjson models ${
+              lib.escapeShellArg (builtins.toJSON (map (id: { inherit id; }) ollamaModels))
+            } \
+            '{
+              providers: {
+                ollama: {
+                  baseUrl: $baseUrl,
+                  api: "openai-completions",
+                  apiKey: "ollama",
+                  compat: {
+                    supportsDeveloperRole: false,
+                    supportsReasoningEffort: false
+                  },
+                  models: $models
+                }
+              }
+            }' > "$piModelsConfig"
+          chmod 600 "$piModelsConfig"
         fi
 
         token=""
