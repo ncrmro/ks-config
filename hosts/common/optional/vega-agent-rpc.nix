@@ -167,6 +167,16 @@ let
     };
 in
 mkIf hasLocalAgents {
+  systemd.tmpfiles.rules = [
+    "a+ /home/${config.keystone.os.adminUsername} - - - - g:agents:x"
+    "a+ /home/${config.keystone.os.adminUsername}/repos - - - - g:agents:x"
+    "a+ /home/${config.keystone.os.adminUsername}/repos/ncrmro - - - - g:agents:x"
+    "a+ ${vegaRepo} - - - - g:agents:rx"
+    "a+ ${vegaRepo}/code - - - - g:agents:rx"
+    "a+ ${vegaRepo}/code/pi-rpc - - - - g:agents:rx"
+    "a+ ${vegaRepo}/code/pi-rpc/src - - - - g:agents:rx"
+  ];
+
   systemd.user.services = listToAttrs (
     map (name: nameValuePair "os-agent-${name}" (agentServiceFor name)) localAgentNames
   );
