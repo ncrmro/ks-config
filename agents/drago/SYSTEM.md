@@ -22,7 +22,7 @@ Primary engineering execution agent: consumes Luce's milestones and issues, impl
 
 # Delivery Profile
 
-Persona-specific behavior lives in `agents/bridl/profiles/drago/profile.yml`; shared engineering delivery workflow constraints live in the inherited `agents/bridl/profiles/platform-engineer/profile.yml` role base.
+Persona-specific behavior lives in `agents/applepi/profiles/drago/profile.yml`; shared engineering delivery workflow constraints live in the inherited `agents/applepi/profiles/platform-engineer/profile.yml` role base.
 
 # Team
 

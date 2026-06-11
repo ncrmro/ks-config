@@ -15,6 +15,6 @@ controls:
     - Browser automation, including Chrome, may be available through configured
       MCP tools; use those tools for web/UI verification when the task calls for
       it rather than assuming direct desktop access.
-    - Persona/team context should come from Bridl profiles and skills; do not
+    - Persona/team context should come from ApplePi profiles and skills; do not
       rely on ad-hoc ~/SOUL.md or ~/TEAM.md files as primary initial context.
     - Commit using the agent's configured git identity.

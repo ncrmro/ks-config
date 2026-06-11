@@ -1,0 +1,7 @@
+# applepi is BSL-licensed (unfree); allow it on every host that consumes
+# the keystone overlay, since keystone.terminal.applepi defaults to enabled
+# for all OS agents.
+{ lib, ... }:
+{
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "applepi" ];
+}

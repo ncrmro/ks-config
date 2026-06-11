@@ -35,11 +35,11 @@
   keystone.terminal.pi.enable = true;
   keystone.terminal.sandbox.enable = false;
 
-  # Enable bridl so the agent context profiles are installed on this laptop.
+  # Enable applepi so the agent context profiles are installed on this laptop.
   # configDir must be set explicitly: in standalone-HM mode the module defaults
   # to ~/repos/ks-config, but this checkout lives under ~/repos/ncrmro/ks-config.
-  keystone.terminal.bridl.enable = true;
-  keystone.terminal.bridl.configDir = "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/bridl";
+  keystone.terminal.applepi.enable = true;
+  keystone.terminal.applepi.configDir = "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/applepi";
 
   programs.home-manager.enable = true;
 }

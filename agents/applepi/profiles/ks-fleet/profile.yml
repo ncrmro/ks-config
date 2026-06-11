@@ -16,10 +16,10 @@ controls:
     Fleet surface area:
     - Hosts: ocean, mercury, ncrmro-workstation, ncrmro-laptop, maia, and any
       active ks-config host registry entries exposed to agents.
-    - OS agents: provisioned users such as drago and luce plus their Bridl
+    - OS agents: provisioned users such as drago and luce plus their ApplePi
       personas, skills, git identity, and sidecar services.
     - Team/service context: generated TEAM/SERVICES-style assets are metadata
-      and compatibility inputs; Bridl profiles and skills should own primary
+      and compatibility inputs; ApplePi profiles and skills should own primary
       initial behavior.
     - Deployment context: ks-config is the consumer flake and host convergence
       entry point; Keystone provides reusable modules and conventions pinned by

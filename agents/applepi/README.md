@@ -1,4 +1,4 @@
-# Bridl profiles
+# ApplePi profiles
 
 Profiles are composable layers for agent behavior. Keep each profile focused on
 one dimension so personas can combine reusable building blocks without copying
@@ -7,7 +7,7 @@ skills or prompt text.
 Profile layers:
 
 - `default`: neutral provider, model, and thinking defaults. This currently
-  defaults every Bridl profile to `gpt-5.5`.
+  defaults every ApplePi profile to `gpt-5.5`.
 - OS environment base: where the agent is being started, exactly one of
   `os-ks-admin-user`, `os-ks-agent-user`, or `os-ks-container`.
 - Fleet base: Keystone fleet context from the single `ks-fleet` profile,
@@ -20,21 +20,22 @@ Profile layers:
   must not hard-code Keystone fleet paths, host assumptions, or container
   assumptions; compose a fleet, OS-environment, and domain profile when that
   context is true.
+- Launch composite: `applepi run --profile` takes a single profile, so
+  recurring launch contexts get a thin composite profile whose only job is
+  `inherits` — e.g. `drago-os-agent` = `drago` + `ks-fleet` +
+  `os-ks-agent-user`. Keystone's pi-task-runner and vega's pi-rpc bridge
+  launch agents with these composites.
 
 Examples:
 
-- Admin-user Keystone work: `bridl run -p vega -p ks-fleet -p os-ks-admin-user`
-- OS-agent Drago home: `bridl run -p drago -p ks-fleet -p os-ks-agent-user`
-- Portable Luce in a container: `bridl run -p luce -p os-ks-container`
-- Fast prototyping: `bridl run -p vibe-code -p ks-fleet -p os-ks-admin-user`
-
-If your launcher supports an environment-variable profile selector, set it to
-these same profile ids (for example `BRIDL_PROFILE=vega,ks-fleet,os-ks-admin-user`).
-Prefer explicit `-p` arguments when possible so the active context is visible in
-logs and shell history.
+- OS-agent Drago home: `applepi run -p drago-os-agent`
+- OS-agent Luce home: `applepi run -p luce-os-agent`
+- Admin-user Keystone work: compose a `vega-os-admin`-style profile inheriting
+  `vega` + `ks-fleet` + `os-ks-admin-user`, then `applepi run -p <id>`
+- Portable Luce in a container: a composite inheriting `luce` + `os-ks-container`
 
 A good building-block profile is narrow, stable, and non-personal. In the
-current Bridl merger, `skills` compose across inherited profiles, while
+current ApplePi merger, `skills` compose across inherited profiles, while
 `append_system_prompt` is a scalar where the higher-precedence profile wins.
 Role bases may own reusable delivery guidance as `append_system_prompt` when
 persona profiles use `system_prompt` for identity text; avoid duplicating shared

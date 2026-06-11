@@ -25,6 +25,8 @@
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
+      # Composite launch profile: persona + ks-fleet + os-ks-agent-user.
+      applepi.profile = "drago-os-agent";
       # Agents only need Chrome DevTools access, not a viewable desktop.
       desktop.enable = false;
       chrome = {
@@ -46,6 +48,8 @@
       ];
       mail.provision = true;
       git.provision = true;
+      # Composite launch profile: persona + ks-fleet + os-ks-agent-user.
+      applepi.profile = "luce-os-agent";
     };
   };
 }

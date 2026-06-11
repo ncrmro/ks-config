@@ -43,6 +43,22 @@
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git"
       }
     },
+    "applepi-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781140812,
+        "narHash": "sha256-POuWoNOfdUcTZyywZ0cXYSriXduKzJL90xh6FWlEGQI=",
+        "ref": "refs/heads/main",
+        "rev": "87d2e7de798fbf9bd18dd0561cb142dcffdeb378",
+        "revCount": 108,
+        "type": "git",
+        "url": "ssh://git@github.com/Unsupervisedcom/bridl.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/Unsupervisedcom/bridl.git"
+      }
+    },
     "aquamarine": {
       "inputs": {
         "hyprutils": [
@@ -140,22 +156,6 @@
         "owner": "numtide",
         "repo": "blueprint",
         "type": "github"
-      }
-    },
-    "bridl-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1781140812,
-        "narHash": "sha256-POuWoNOfdUcTZyywZ0cXYSriXduKzJL90xh6FWlEGQI=",
-        "ref": "refs/heads/main",
-        "rev": "87d2e7de798fbf9bd18dd0561cb142dcffdeb378",
-        "revCount": 108,
-        "type": "git",
-        "url": "ssh://git@github.com/Unsupervisedcom/bridl.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/Unsupervisedcom/bridl.git"
       }
     },
     "browser-previews": {
@@ -1324,7 +1324,7 @@
     "keystone": {
       "inputs": {
         "agenix": "agenix",
-        "bridl-src": "bridl-src",
+        "applepi-src": "applepi-src",
         "browser-previews": "browser-previews",
         "calendula": "calendula",
         "cardamum": "cardamum",
@@ -1355,11 +1355,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1781140937,
-        "narHash": "sha256-ufUk8Jwzke8HSPDGulwV/tC4ivAk0mEIFoSLujVQMXw=",
+        "lastModified": 1781185145,
+        "narHash": "sha256-cJigx8AdQ6IFz1p35W/67/jryOmlggjU9nN6V3tgA9E=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "a7606ca2c1a1dd33a7d746ba1bd417c5527e8e3d",
+        "rev": "71f21ec9e8a9989a5f2afc4da2fa9311fc79f239",
         "type": "github"
       },
       "original": {
