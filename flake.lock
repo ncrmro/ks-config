@@ -145,11 +145,11 @@
     "bridl-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1780420616,
-        "narHash": "sha256-2hxr/xonCXV3uVIQkOufJV8m2kqW263QjQVtizsc2S4=",
+        "lastModified": 1781140812,
+        "narHash": "sha256-POuWoNOfdUcTZyywZ0cXYSriXduKzJL90xh6FWlEGQI=",
         "ref": "refs/heads/main",
-        "rev": "12d275a24b192125998511c6cf8bb63a87bd05fe",
-        "revCount": 79,
+        "rev": "87d2e7de798fbf9bd18dd0561cb142dcffdeb378",
+        "revCount": 108,
         "type": "git",
         "url": "ssh://git@github.com/Unsupervisedcom/bridl.git"
       },
@@ -1355,11 +1355,11 @@
         "yazi": "yazi"
       },
       "locked": {
-        "lastModified": 1781037684,
-        "narHash": "sha256-ZcEtPS2+UzXBRrHTuE3CMEaaieMYwzghS31JMuGTHVo=",
+        "lastModified": 1781140937,
+        "narHash": "sha256-ufUk8Jwzke8HSPDGulwV/tC4ivAk0mEIFoSLujVQMXw=",
         "owner": "ncrmro",
         "repo": "keystone",
-        "rev": "b9218c949193cd9805f8d9c7dbb36d8f6727ce5a",
+        "rev": "a7606ca2c1a1dd33a7d746ba1bd417c5527e8e3d",
         "type": "github"
       },
       "original": {
