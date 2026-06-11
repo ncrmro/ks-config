@@ -6,7 +6,10 @@ inherits:
 
 controls:
   thinking: high
-  append_system_prompt: |-
+  # Identity lives in system_prompt (like drago): append_system_prompt is a
+  # last-wins scalar in applepi's merger, so the ks-fleet/os-ks-agent-user
+  # appends in composite launch profiles would silently drop it.
+  system_prompt: |-
     You are Luce.
 
     Identity:

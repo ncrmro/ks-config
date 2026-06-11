@@ -3,12 +3,12 @@ agent_process_hygiene:
   match:
     include:
       - "**/*.md"
-      - "bridl/profiles/*/profile.yml"
-      - "bridl/settings.yml"
+      - "applepi/profiles/*/profile.yml"
+      - "applepi/settings.yml"
   review:
     strategy: matches_together
     instructions: |
-      Review the changed agent process assets holistically. Treat Bridl profiles,
+      Review the changed agent process assets holistically. Treat ApplePi profiles,
       skills, shared conventions, persona docs, and README files as one composed
       initial-context system. The goal is to keep agent behavior clear,
       non-duplicative, succinct, and located in the right abstraction.
@@ -16,23 +16,23 @@ agent_process_hygiene:
       ## What to Check
 
       ### 1. Ownership and layering
-      - Fleet facts belong in the single `bridl/profiles/ks-fleet` profile and
+      - Fleet facts belong in the single `applepi/profiles/ks-fleet` profile and
         should be driven by Keystone environment variables/assets such as
         `$KEYSTONE_CURRENT_HOST`, `$KEYSTONE_FLEET_DOMAIN`, and generated
         host/agent/team/service metadata, not by per-host profile files or
         hard-coded launch profiles.
       - OS execution environment facts belong in exactly one of
-        `bridl/profiles/os-ks-admin-user`, `bridl/profiles/os-ks-agent-user`, or
-        `bridl/profiles/os-ks-container`. Flag new `runtime-*` profile patterns
+        `applepi/profiles/os-ks-admin-user`, `applepi/profiles/os-ks-agent-user`, or
+        `applepi/profiles/os-ks-container`. Flag new `runtime-*` profile patterns
         or mixed admin/agent/container assumptions in persona or role profiles.
-      - Keystone fleet methodology belongs in `bridl/profiles/keystone-os`,
-        `bridl/profiles/vega`, or a focused `ks-*` skill when it is task-specific.
+      - Keystone fleet methodology belongs in `applepi/profiles/keystone-os`,
+        `applepi/profiles/vega`, or a focused `ks-*` skill when it is task-specific.
       - Persona identity belongs in persona docs/profiles. Avoid hard-coding
         host paths, OS-environment assumptions, or reusable delivery workflow in
         persona-only assets such as Drago or Luce.
       - General reusable process rules should live in a focused skill/profile.
         If old-style convention markdown is Keystone- or agent-operation-specific,
-        flag growth there and recommend migrating the behavior into a Bridl
+        flag growth there and recommend migrating the behavior into an ApplePi
         profile or skill with only a short reference left behind.
 
       ### 2. Duplicate guidance
@@ -59,7 +59,7 @@ agent_process_hygiene:
         unprefixed when they are not Keystone-, platform-, or repo-domain content.
 
       ### 4. OS-agent context source
-      - OS-agent identity/team context should be provided by Bridl profiles,
+      - OS-agent identity/team context should be provided by ApplePi profiles,
         skills, and generated agent assets. Flag changes that make agents rely
         on ad-hoc `~/SOUL.md` or `~/TEAM.md` as primary initial context.
       - References to generated SOUL/TEAM files are acceptable only as legacy
@@ -72,10 +72,10 @@ agent_process_hygiene:
       - Prefer compact bullets and links/references over pasted explanations.
       - Skill files should route work and point to deeper docs; detailed how-to
         material should live in nearby markdown only when it is actually needed.
-      - Bridl profile prompt text should add only the minimum context unique to
+      - ApplePi profile prompt text should add only the minimum context unique to
         that layer because it becomes initial agent context.
 
-      ### 6. Bridl composition and examples
+      ### 6. ApplePi composition and examples
       - Do not reintroduce `ks-hosts`, `host-ocean`, `host-mercury`,
         `host-ncrmro-workstation`, or `host-ncrmro-laptop` profile conventions;
         use `ks-fleet` plus Keystone environment variables/assets instead.
@@ -84,6 +84,20 @@ agent_process_hygiene:
       - README examples should match the current profile model.
       - `inherits` should compose reusable layers without creating hidden host
         or OS-environment assumptions.
+      - `applepi run --profile` accepts a single profile: recurring launch
+        contexts must be thin composite profiles (e.g. `drago-os-agent`,
+        `luce-os-agent`) whose only job is `inherits`.
+
+      ### 7. Prompt control collisions
+      - `append_system_prompt` is a last-wins scalar in ApplePi's merger:
+        when several inherited layers set it, only the highest-precedence
+        one survives. Persona identity text must live in `system_prompt`
+        (which nothing else in the standard layers sets), never in
+        `append_system_prompt` — otherwise composing with `ks-fleet` or an
+        `os-ks-*` environment profile silently drops the agent's identity.
+      - Flag any profile change where two layers reachable from the same
+        composite launch profile both set `append_system_prompt`, and name
+        which layer's text would be lost.
 
       ## Output Format
 
