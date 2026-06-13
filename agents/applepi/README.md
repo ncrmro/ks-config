@@ -15,7 +15,7 @@ Profile layers:
   `$KEYSTONE_CURRENT_HOST` and generated host/agent/team/service metadata.
 - Domain base: shared repo or operating context, such as `keystone-os`.
 - Role base: reusable job shape, such as `platform-engineer`, `product-lead`,
-  or `project-manager`.
+  or `project-lead`.
 - Persona: portable named identity, such as `drago` or `luce`. Persona profiles
   must not hard-code Keystone fleet paths, host assumptions, or container
   assumptions; compose a fleet, OS-environment, and domain profile when that

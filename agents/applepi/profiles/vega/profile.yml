@@ -3,7 +3,7 @@ label: Vega — Keystone Fleet Operator
 inherits:
   - keystone-os
   - platform-engineer
-  - project-manager
+  - project-lead
 
 controls:
   thinking: high

@@ -1,8 +1,8 @@
 id: luce
-label: Luce — Product Lead / Project Manager
+label: Luce — Product Lead / Project Lead
 inherits:
   - product-lead
-  - project-manager
+  - project-lead
 
 controls:
   thinking: high
