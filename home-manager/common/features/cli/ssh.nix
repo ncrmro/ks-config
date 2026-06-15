@@ -10,6 +10,7 @@
     enableDefaultConfig = false;
     matchBlocks = {
       "unsup-laptop.local" = {
+        user = "nicholas";
         setEnv = {
           TERM = "xterm-256color";
         };
