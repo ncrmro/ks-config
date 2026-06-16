@@ -38,8 +38,11 @@
   # BEGIN keystone-managed desktop state
   # BEGIN keystone-managed monitors
   keystone.desktop.monitors = {
+    primaryDisplay = "desc:Dell Inc. DELL U5226KW 9XM3884";
     autoMirror = false;
-    settings = [ ", preferred, auto, 1" ];
+    settings = [
+      "desc:Dell Inc. DELL U5226KW 9XM3884, 6144x2560@120.00, 0x0, 1.00, transform, 0"
+    ];
   };
   # END keystone-managed monitors
   # BEGIN keystone-managed audio defaults
