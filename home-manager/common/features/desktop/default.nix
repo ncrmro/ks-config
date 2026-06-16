@@ -30,6 +30,16 @@
     { id = "einnioafmpimabjcddiinlhmijaionap"; } # wander wallet
   ];
   programs.vscode.enable = true;
+
+  wayland.windowManager.hyprland.settings = {
+    general.layout = "master";
+    master = {
+      new_status = "master";
+      orientation = "center";
+      always_center_master = true;
+    };
+  };
+
   # Managed by Keystone
   # wayland.windowManager.hyprland.settings = {
   #   # Environment variables
