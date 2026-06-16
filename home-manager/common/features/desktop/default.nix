@@ -34,7 +34,7 @@
   wayland.windowManager.hyprland.settings = {
     general.layout = "master";
     master = {
-      new_status = "master";
+      new_status = "slave";
       orientation = "center";
       slave_count_for_center_master = 0;
     };
