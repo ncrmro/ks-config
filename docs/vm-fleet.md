@@ -21,8 +21,8 @@ nix run .#vm-ks-terminal         # or boot one host
 nix flake show                   # lists vm-<host> apps
 
 # SSH ports are 2200 + index by sorted host name:
-#   ks-desktop 2200, ks-terminal 2201, maia 2202, mercury 2203,
-#   ncrmro-laptop 2204, ncrmro-workstation 2205, ocean 2206
+#   ks-desktop 2200, ks-terminal 2201, ncrmro-laptop 2202,
+#   ncrmro-workstation 2203, ocean 2204
 ssh -p 2201 localhost
 
 # Each console is on QEMU's built-in VNC server at display :index
@@ -31,8 +31,10 @@ ssh -p 2201 localhost
 vncviewer localhost:5900
 ```
 
-VMs get 4G RAM / 2 cores each; the full seven-host fleet needs ~28G free.
-`catalystPrimary` is excluded (non-keystone exception, not migrating).
+VMs get 4G RAM / 2 cores each; the five-host fleet needs ~20G free. Only
+the migrating hosts are included: `mercury` (Vultr VPS image) and `maia`
+(no coverage beyond the ocean server case) are out, and `catalystPrimary`
+is excluded (non-keystone exception, not migrating).
 agenix secrets do not decrypt inside the VMs (the VM has no enrolled host
 key), so secret-backed services will fail their units — expected; the
 harness verifies boot, activation, and module wiring, not secrets.

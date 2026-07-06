@@ -342,12 +342,19 @@
       # desktop fleet flakes (the legacy keystone modules declare the same
       # `keystone.terminal`/`keystone.desktop` option namespaces, so the new
       # stack cannot be layered onto the legacy hosts — it boots side by side
-      # instead). catalystPrimary is excluded: it is the documented
-      # non-keystone exception above and is not part of the migration.
+      # instead).
+      #
+      # Only the hosts that are actually migrating are in the VM fleet:
+      # ocean, ncrmro-laptop, ncrmro-workstation. mercury is a Vultr VPS
+      # image and catalystPrimary is the documented non-keystone exception;
+      # maia adds no coverage beyond the ocean server case.
       apps.x86_64-linux =
         (fleet.apps.x86_64-linux or { })
         // inputs.keystone-os.lib.mkFleetHarness {
-          nixosConfigurations = fleet.nixosConfigurations // newStackVmHosts;
+          nixosConfigurations = {
+            inherit (fleet.nixosConfigurations) ocean ncrmro-laptop ncrmro-workstation;
+          }
+          // newStackVmHosts;
         };
 
       # Code formatter (official NixOS formatter)
