@@ -841,6 +841,27 @@
         "type": "github"
       }
     },
+    "home-manager_3": {
+      "inputs": {
+        "nixpkgs": [
+          "keystone-desktop",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783024095,
+        "narHash": "sha256-oE+TNK98Pl7nHW4VU1oBvUKD5JR45U+py/NJmLoTNHI=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "a4d410db95a6416d1008049330bd86b85b5db45a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "hyprcursor": {
       "inputs": {
         "hyprlang": [
@@ -1369,6 +1390,25 @@
         "type": "github"
       }
     },
+    "keystone-desktop": {
+      "inputs": {
+        "home-manager": "home-manager_3",
+        "nix-darwin": "nix-darwin",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783366750,
+        "narHash": "sha256-ho8adVDHGJzVoCQHGb1keelSmC00PJCotcfbp+LHeVY=",
+        "path": "/home/ncrmro/repos/keystone-systems/desktop",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/ncrmro/repos/keystone-systems/desktop",
+        "type": "path"
+      }
+    },
     "keystone-os": {
       "inputs": {
         "nixpkgs": [
@@ -1390,6 +1430,23 @@
         "ref": "feat/fleet-harness",
         "repo": "os",
         "type": "github"
+      }
+    },
+    "keystone-terminal": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783366849,
+        "narHash": "sha256-+wrz2d6ZI7Jt72g20UpEkLx2OPj33c7o6TDSHqEAVzo=",
+        "path": "/home/ncrmro/repos/keystone-systems/terminal",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/ncrmro/repos/keystone-systems/terminal",
+        "type": "path"
       }
     },
     "kinda-nvim-hx": {
@@ -1493,6 +1550,27 @@
       "original": {
         "owner": "numtide",
         "repo": "llm-agents.nix",
+        "type": "github"
+      }
+    },
+    "nix-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "keystone-desktop",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781761792,
+        "narHash": "sha256-rCPytmKNjctLloB6UgK5CRrHSwV4b0ygxtJLPPp8R14=",
+        "owner": "LnL7",
+        "repo": "nix-darwin",
+        "rev": "a1fa429e945becaf60468600daf649be4ba0350c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LnL7",
+        "repo": "nix-darwin",
         "type": "github"
       }
     },
@@ -1831,7 +1909,9 @@
           "home-manager"
         ],
         "keystone": "keystone",
+        "keystone-desktop": "keystone-desktop",
         "keystone-os": "keystone-os",
+        "keystone-terminal": "keystone-terminal",
         "llama-cpp": "llama-cpp",
         "llm-agents": "llm-agents",
         "nixos-hardware": [

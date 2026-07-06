@@ -8,14 +8,22 @@ wraps every mkSystemFlake host's `vmVariant` as a runnable app, so the real
 fleet can be booted and verified locally before cutting this repo over to
 the keystone-systems flakes.
 
+The fleet also includes two VM-only hosts built purely from the new
+keystone-systems **terminal** and **desktop** fleet flakes: `ks-terminal`
+(new terminal stack) and `ks-desktop` (terminal + Hyprland desktop). The
+legacy keystone modules declare the same
+`keystone.terminal`/`keystone.desktop` option namespaces, so the new stack
+cannot be layered onto the legacy hosts — these boot side by side instead.
+
 ```bash
 nix run .#fleet                  # boot all hosts headless; disks/logs in ./.fleet
-nix run .#vm-maia                # or boot one host
+nix run .#vm-ks-terminal         # or boot one host
 nix flake show                   # lists vm-<host> apps
 
 # SSH ports are 2200 + index by sorted host name:
-#   maia 2200, mercury 2201, ncrmro-laptop 2202, ncrmro-workstation 2203, ocean 2204
-ssh -p 2200 localhost
+#   ks-desktop 2200, ks-terminal 2201, maia 2202, mercury 2203,
+#   ncrmro-laptop 2204, ncrmro-workstation 2205, ocean 2206
+ssh -p 2201 localhost
 
 # Each console is on QEMU's built-in VNC server at display :index
 # (port 5900+index), unauthenticated — reach it over the tailnet or an
@@ -23,11 +31,16 @@ ssh -p 2200 localhost
 vncviewer localhost:5900
 ```
 
-VMs get 4G RAM / 2 cores each; the full five-host fleet needs ~20G free.
+VMs get 4G RAM / 2 cores each; the full seven-host fleet needs ~28G free.
 `catalystPrimary` is excluded (non-keystone exception, not migrating).
 agenix secrets do not decrypt inside the VMs (the VM has no enrolled host
 key), so secret-backed services will fail their units — expected; the
 harness verifies boot, activation, and module wiring, not secrets.
+
+The keystone-systems terminal and desktop flakes are consumed as absolute
+`path:` inputs (pure flake eval cannot resolve `path:../x` siblings);
+switch them to `github:keystone-systems/*` once those repos publish — the
+same convention and caveat as the keystone-systems ks-config template.
 
 ## devenv/process-compose pilot (vm-tpm-microvm)
 
