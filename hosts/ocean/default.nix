@@ -38,6 +38,7 @@
     ./vms.nix
     ./vega.nix
     ./plouton.nix
+    ./forgejo-runner.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering
@@ -193,6 +194,9 @@
 
   # Override ROOT_URL to use HTTPS through Nginx
   services.forgejo.settings.server.ROOT_URL = "https://git.ncrmro.com/";
+
+  # Allow creating repos by pushing to a new remote path (git push origin -> auto-create)
+  services.forgejo.settings.repository.ENABLE_PUSH_CREATE_USER = true;
 
   # Per-host home-manager config: terminal-only, rebuild target, mail
   home-manager.users.ncrmro = import ../../home-manager/ncrmro/ocean.nix;

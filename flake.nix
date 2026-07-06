@@ -49,6 +49,29 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # New keystone-systems fleet harness (migration target for this repo).
+    # Boots every host as a local QEMU VM so the fleet can be verified
+    # before cutting over to the keystone-systems flakes. Pinned to the
+    # feat/fleet-harness branch until keystone-systems/os#1 merges.
+    keystone-os = {
+      url = "github:keystone-systems/os/feat/fleet-harness?dir=code";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # New keystone-systems terminal and desktop fleet flakes, layered onto
+    # the VM fleet (vmVariant only) so the VMs exercise the new stack.
+    # Absolute path: URLs because pure flake eval cannot resolve `path:../x`
+    # sibling inputs; switch to github:keystone-systems/* once those repos
+    # publish (same convention as the keystone-systems ks-config template).
+    keystone-terminal = {
+      url = "path:/home/ncrmro/repos/keystone-systems/terminal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    keystone-desktop = {
+      url = "path:/home/ncrmro/repos/keystone-systems/desktop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -215,6 +238,73 @@
           };
         };
       };
+      # VM-only hosts built purely from the new keystone-systems terminal and
+      # desktop fleet flakes, booted by the fleet harness alongside the
+      # legacy hosts. The legacy keystone modules declare the same
+      # `keystone.terminal`/`keystone.desktop` option namespaces, so the new
+      # stack cannot be layered onto the legacy hosts — it is verified side
+      # by side instead, ahead of cutting this repo over.
+      mkNewStackVmHost =
+        { name, desktop }:
+        nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            home-manager.nixosModules.home-manager
+            inputs.keystone-terminal.nixosModules.default
+            {
+              networking.hostName = name;
+              keystone.terminal.adminUsers = [ adminUser.username ];
+              users.users.${adminUser.username} = {
+                isNormalUser = true;
+                extraGroups = [ "wheel" ];
+              };
+              services.openssh.enable = true;
+              # Placeholder rootfs/bootloader: only the vmVariant is ever
+              # built for these hosts and it overrides both.
+              fileSystems."/" = {
+                device = "none";
+                fsType = "tmpfs";
+              };
+              boot.loader.systemd-boot.enable = true;
+              system.stateVersion = "25.11";
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.${adminUser.username} = {
+                imports = [
+                  inputs.keystone-terminal.homeManagerModules.default
+                ]
+                ++ nixpkgs.lib.optional desktop inputs.keystone-desktop.homeManagerModules.default;
+                keystone.terminal = {
+                  enable = true;
+                  git.name = adminUser.fullName;
+                  git.email = "${adminUser.username}@ncrmro.com";
+                };
+                home.stateVersion = "25.11";
+              };
+            }
+          ]
+          ++ nixpkgs.lib.optionals desktop [
+            inputs.keystone-desktop.nixosModules.default
+            {
+              keystone.desktop.linux.enable = true;
+              home-manager.users.${adminUser.username}.keystone.desktop = {
+                environment = "hyprland";
+                dotfiles.configRoot = "/home/${adminUser.username}/.config/keystone";
+              };
+            }
+          ];
+        };
+
+      newStackVmHosts = {
+        ks-terminal = mkNewStackVmHost {
+          name = "ks-terminal";
+          desktop = false;
+        };
+        ks-desktop = mkNewStackVmHost {
+          name = "ks-desktop";
+          desktop = true;
+        };
+      };
     in
     fleet
     // {
@@ -223,16 +313,49 @@
       # via mkSystemFlake would force `keystone.os.enable = true` and trip
       # the storage / fileSystems assertions. Merging into nixosConfigurations
       # via attribute-set extension keeps it discoverable alongside the rest.
-      nixosConfigurations = fleet.nixosConfigurations // {
-        catalystPrimary = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/catalystPrimary ];
-          specialArgs = {
-            inherit inputs self;
-            outputs = self;
+      nixosConfigurations =
+        fleet.nixosConfigurations
+        # ks-terminal/ks-desktop: VM-only new-stack test hosts (see
+        # mkNewStackVmHost above); exposed here so they are discoverable and
+        # `nix build .#nixosConfigurations.ks-*...` works — never deployed.
+        // newStackVmHosts
+        // {
+          catalystPrimary = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./hosts/catalystPrimary ];
+            specialArgs = {
+              inherit inputs self;
+              outputs = self;
+            };
           };
         };
-      };
+
+      # VM fleet test harness from keystone-systems: `nix run .#vm-<host>`
+      # boots one host's vmVariant; `nix run .#fleet` boots the whole fleet
+      # headless with SSH forwarded from localhost:2200 upward (sorted by
+      # host name) and consoles on VNC :0+. This is the pre-cutover
+      # verification path — the same harness the keystone-systems ks-config
+      # template uses, run against this repo's real hosts.
+      #
+      # Alongside the legacy hosts, `ks-terminal` and `ks-desktop` are
+      # VM-only hosts built purely from the new keystone-systems terminal and
+      # desktop fleet flakes (the legacy keystone modules declare the same
+      # `keystone.terminal`/`keystone.desktop` option namespaces, so the new
+      # stack cannot be layered onto the legacy hosts — it boots side by side
+      # instead).
+      #
+      # Only the hosts that are actually migrating are in the VM fleet:
+      # ocean, ncrmro-laptop, ncrmro-workstation. mercury is a Vultr VPS
+      # image and catalystPrimary is the documented non-keystone exception;
+      # maia adds no coverage beyond the ocean server case.
+      apps.x86_64-linux =
+        (fleet.apps.x86_64-linux or { })
+        // inputs.keystone-os.lib.mkFleetHarness {
+          nixosConfigurations = {
+            inherit (fleet.nixosConfigurations) ocean ncrmro-laptop ncrmro-workstation;
+          }
+          // newStackVmHosts;
+        };
 
       # Code formatter (official NixOS formatter)
       formatter.x86_64-linux = (pkgsForSystem "x86_64-linux").nixfmt;

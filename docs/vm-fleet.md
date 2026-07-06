@@ -1,5 +1,51 @@
 # VM fleet
 
+## Whole-fleet VMs via the keystone-systems harness
+
+The new keystone-systems migration target ships a fleet harness
+(`github:keystone-systems/os?dir=code`) that this flake now consumes: it
+wraps every mkSystemFlake host's `vmVariant` as a runnable app, so the real
+fleet can be booted and verified locally before cutting this repo over to
+the keystone-systems flakes.
+
+The fleet also includes two VM-only hosts built purely from the new
+keystone-systems **terminal** and **desktop** fleet flakes: `ks-terminal`
+(new terminal stack) and `ks-desktop` (terminal + Hyprland desktop). The
+legacy keystone modules declare the same
+`keystone.terminal`/`keystone.desktop` option namespaces, so the new stack
+cannot be layered onto the legacy hosts — these boot side by side instead.
+
+```bash
+nix run .#fleet                  # boot all hosts headless; disks/logs in ./.fleet
+nix run .#vm-ks-terminal         # or boot one host
+nix flake show                   # lists vm-<host> apps
+
+# SSH ports are 2200 + index by sorted host name:
+#   ks-desktop 2200, ks-terminal 2201, ncrmro-laptop 2202,
+#   ncrmro-workstation 2203, ocean 2204
+ssh -p 2201 localhost
+
+# Each console is on QEMU's built-in VNC server at display :index
+# (port 5900+index), unauthenticated — reach it over the tailnet or an
+# SSH tunnel only.
+vncviewer localhost:5900
+```
+
+VMs get 4G RAM / 2 cores each; the five-host fleet needs ~20G free. Only
+the migrating hosts are included: `mercury` (Vultr VPS image) and `maia`
+(no coverage beyond the ocean server case) are out, and `catalystPrimary`
+is excluded (non-keystone exception, not migrating).
+agenix secrets do not decrypt inside the VMs (the VM has no enrolled host
+key), so secret-backed services will fail their units — expected; the
+harness verifies boot, activation, and module wiring, not secrets.
+
+The keystone-systems terminal and desktop flakes are consumed as absolute
+`path:` inputs (pure flake eval cannot resolve `path:../x` siblings);
+switch them to `github:keystone-systems/*` once those repos publish — the
+same convention and caveat as the keystone-systems ks-config template.
+
+## devenv/process-compose pilot (vm-tpm-microvm)
+
 The VM fleet is the single entry point for running keystone test VMs locally.
 Each VM is a `process` declared in `devenv.nix` and managed by `process-compose`
 under the hood, so you don't need to remember which `bin/` script does what.
