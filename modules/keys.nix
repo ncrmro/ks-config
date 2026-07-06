@@ -26,6 +26,9 @@
         ncrmro-laptop = {
           publicKey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCUAyM7/owpfpJPuzQMmkmnlAcqB91QIfVsj1TueIU3hUtoHGR6FcKfFgJA5gkhww10A91M6iPSHD2kd/BNBGD4= ncrmro@ncrmro-laptop";
         };
+        ncrmro-laptop-14 = {
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/w5nhomSg4l0EjoPvG5n7GnLzpGTFcVg/WtmYdlAfW ncrmro@macbook-pro-m1-14";
+        };
       };
       hardwareKeys = {
         yubi-black = {
