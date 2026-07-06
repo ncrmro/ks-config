@@ -49,6 +49,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # New keystone-systems fleet harness (migration target for this repo).
+    # Boots every host as a local QEMU VM so the fleet can be verified
+    # before cutting over to the keystone-systems flakes. Pinned to the
+    # feat/fleet-harness branch until keystone-systems/os#1 merges.
+    keystone-os = {
+      url = "github:keystone-systems/os/feat/fleet-harness?dir=code";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -233,6 +242,20 @@
           };
         };
       };
+
+      # VM fleet test harness from keystone-systems: `nix run .#vm-<host>`
+      # boots one host's vmVariant; `nix run .#fleet` boots the whole
+      # mkSystemFlake fleet headless with SSH forwarded from localhost:2200
+      # upward (sorted by host name) and consoles on VNC :0+. This is the
+      # pre-cutover verification path — the same harness the keystone-systems
+      # ks-config template uses, run against this repo's real hosts.
+      # catalystPrimary is excluded: it is the documented non-keystone
+      # exception above and is not part of the migration.
+      apps.x86_64-linux =
+        (fleet.apps.x86_64-linux or { })
+        // inputs.keystone-os.lib.mkFleetHarness {
+          nixosConfigurations = fleet.nixosConfigurations;
+        };
 
       # Code formatter (official NixOS formatter)
       formatter.x86_64-linux = (pkgsForSystem "x86_64-linux").nixfmt;

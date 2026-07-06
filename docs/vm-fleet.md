@@ -1,5 +1,36 @@
 # VM fleet
 
+## Whole-fleet VMs via the keystone-systems harness
+
+The new keystone-systems migration target ships a fleet harness
+(`github:keystone-systems/os?dir=code`) that this flake now consumes: it
+wraps every mkSystemFlake host's `vmVariant` as a runnable app, so the real
+fleet can be booted and verified locally before cutting this repo over to
+the keystone-systems flakes.
+
+```bash
+nix run .#fleet                  # boot all hosts headless; disks/logs in ./.fleet
+nix run .#vm-maia                # or boot one host
+nix flake show                   # lists vm-<host> apps
+
+# SSH ports are 2200 + index by sorted host name:
+#   maia 2200, mercury 2201, ncrmro-laptop 2202, ncrmro-workstation 2203, ocean 2204
+ssh -p 2200 localhost
+
+# Each console is on QEMU's built-in VNC server at display :index
+# (port 5900+index), unauthenticated — reach it over the tailnet or an
+# SSH tunnel only.
+vncviewer localhost:5900
+```
+
+VMs get 4G RAM / 2 cores each; the full five-host fleet needs ~20G free.
+`catalystPrimary` is excluded (non-keystone exception, not migrating).
+agenix secrets do not decrypt inside the VMs (the VM has no enrolled host
+key), so secret-backed services will fail their units — expected; the
+harness verifies boot, activation, and module wiring, not secrets.
+
+## devenv/process-compose pilot (vm-tpm-microvm)
+
 The VM fleet is the single entry point for running keystone test VMs locally.
 Each VM is a `process` declared in `devenv.nix` and managed by `process-compose`
 under the hood, so you don't need to remember which `bin/` script does what.

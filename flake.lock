@@ -1369,6 +1369,29 @@
         "type": "github"
       }
     },
+    "keystone-os": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "code",
+        "lastModified": 1783365738,
+        "narHash": "sha256-IJY3weSHiw6aRJ2EhT68uxuH3UXJ8pXmg+RHV0UrQh4=",
+        "owner": "keystone-systems",
+        "repo": "os",
+        "rev": "0323e18d7a53e360db58034b04f5074699a3e5f2",
+        "type": "github"
+      },
+      "original": {
+        "dir": "code",
+        "owner": "keystone-systems",
+        "ref": "feat/fleet-harness",
+        "repo": "os",
+        "type": "github"
+      }
+    },
     "kinda-nvim-hx": {
       "flake": false,
       "locked": {
@@ -1808,6 +1831,7 @@
           "home-manager"
         ],
         "keystone": "keystone",
+        "keystone-os": "keystone-os",
         "llama-cpp": "llama-cpp",
         "llm-agents": "llm-agents",
         "nixos-hardware": [
