@@ -1,9 +1,0 @@
-id: drago-os-agent
-label: Drago — OS agent launch (persona + fleet + agent-user env)
-# Composite launch profile: applepi `run --profile` takes a single profile,
-# so the persona/fleet/environment layers compose here instead of via
-# repeated -p flags.
-inherits:
-  - drago
-  - ks-fleet
-  - os-ks-agent-user

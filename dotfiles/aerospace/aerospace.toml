@@ -1,0 +1,111 @@
+# Keystone Desktop — Aerospace (macOS tiling WM).
+# Linked to ~/.config/aerospace/aerospace.toml by Home Manager.
+# Iterate: edit this file, then `aerospace reload-config` (or alt-shift-r).
+#
+# The tiling modifier is alt (Option) — Cmd belongs to macOS application
+# shortcuts, and Option sits beside it under the thumb, matching the physical
+# Alt key used as $mod on the Linux desktops.
+# See docs/documentation/keyboard-philosophy.md.
+
+start-at-login = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+# Match Hyprland's gaps so the desktops feel like the same place.
+[gaps]
+inner.horizontal = 5
+inner.vertical = 5
+outer.left = 10
+outer.bottom = 10
+outer.top = 10
+outer.right = 10
+
+[mode.main.binding]
+# --- Application launchers ---
+alt-enter = 'exec-and-forget open -na Ghostty'
+# Launcher: Spotlight/Raycast stays on cmd-space; alt-space is left free.
+
+# --- Window management ---
+alt-w = 'close'
+alt-f = 'fullscreen'
+alt-shift-v = 'layout floating tiling'
+alt-t = 'layout tiles horizontal vertical'
+alt-s = 'layout accordion horizontal vertical'
+
+# --- Focus: vim keys ---
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# --- Focus: arrows ---
+alt-left = 'focus left'
+alt-down = 'focus down'
+alt-up = 'focus up'
+alt-right = 'focus right'
+
+# --- Move windows: vim keys and arrows ---
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+alt-shift-left = 'move left'
+alt-shift-down = 'move down'
+alt-shift-up = 'move up'
+alt-shift-right = 'move right'
+
+# --- Resize ---
+alt-minus = 'resize smart -100'
+alt-equal = 'resize smart +100'
+
+# --- Workspaces 1-10 ---
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 10'
+
+# --- Move window to workspace (and follow) ---
+alt-shift-1 = 'move-node-to-workspace 1 --focus-follows-window'
+alt-shift-2 = 'move-node-to-workspace 2 --focus-follows-window'
+alt-shift-3 = 'move-node-to-workspace 3 --focus-follows-window'
+alt-shift-4 = 'move-node-to-workspace 4 --focus-follows-window'
+alt-shift-5 = 'move-node-to-workspace 5 --focus-follows-window'
+alt-shift-6 = 'move-node-to-workspace 6 --focus-follows-window'
+alt-shift-7 = 'move-node-to-workspace 7 --focus-follows-window'
+alt-shift-8 = 'move-node-to-workspace 8 --focus-follows-window'
+alt-shift-9 = 'move-node-to-workspace 9 --focus-follows-window'
+alt-shift-0 = 'move-node-to-workspace 10 --focus-follows-window'
+
+# --- Cycle workspaces ---
+alt-tab = 'workspace-back-and-forth'
+alt-comma = 'workspace --wrap-around prev'
+alt-period = 'workspace --wrap-around next'
+alt-shift-comma = 'move-node-to-workspace --wrap-around prev --focus-follows-window'
+alt-shift-period = 'move-node-to-workspace --wrap-around next --focus-follows-window'
+
+# --- Monitors ---
+alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# --- Service mode: rarely used operations behind a prefix ---
+alt-shift-semicolon = 'mode service'
+alt-shift-r = 'reload-config'
+
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']  # reset layout
+f = ['layout floating tiling', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+
+# --- Multi-monitor: pin workspaces to monitors ---
+# Uncomment and adapt for a fixed desk setup. Monitor patterns match by
+# name substring or 'main'/'secondary'. See docs/documentation/monitors.md.
+# [workspace-to-monitor-force-assignment]
+# 1 = 'main'
+# 2 = 'main'
+# 9 = 'secondary'

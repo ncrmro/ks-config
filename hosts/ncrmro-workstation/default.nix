@@ -1,8 +1,8 @@
-# Host-specific overrides for `ocean`. Fleet-wide settings live in
+# Host-specific overrides for `ncrmro-workstation`. Fleet-wide settings live in
 # keystone.yaml. Real storage/boot/secure-boot (disko + lanzaboote + TPM)
 # arrive with the keystone-systems os flake's mkFleet port; until then this
 # host is VM-harness-only. The legacy deployable config is on main at
-# hosts/ocean/.
+# hosts/workstation/.
 { ... }:
 {
   # Placeholder filesystem so the configuration evaluates before the os

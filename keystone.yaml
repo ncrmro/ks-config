@@ -1,0 +1,105 @@
+# ncrmro fleet shared config — the single source of truth, consumed by the
+# keystone-systems flakes (os harness, terminal, desktop, services).
+# User-authored YAML; run scripts/generate-config.sh after editing to refresh
+# the committed keystone.json that Nix actually reads (pure eval cannot parse
+# YAML).
+#
+# Migration status: this replaces the legacy ncrmro/keystone mkSystemFlake
+# fleet — see docs/migration-to-keystone-systems.md for everything the old
+# flake provided and where it went.
+admin:
+  username: ncrmro
+  fullName: Nicholas Romero
+  email: ncrmro@ncrmro.com
+
+keys:
+  # All keys live in one registry; access surfaces reference them by name.
+  # TODO: the template only models `keys.hardware` — the per-device keys
+  # below are not hardware tokens; upstream a `keys.devices` class.
+  hardware:
+    yubi-black:
+      type: fido2-ssh
+      sshPublicKey: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAILEOo3uKwbDN1SJemQx8UPVXv0TjKn2VfZSTVFfp3tlcAAAACnNzaDpuY3Jtcm8=
+      description: Primary YubiKey 5 NFC (USB-A, black)
+      # No ageRecipient yet: set up age-plugin-yubikey identities before
+      # local agenix secrets can be created (see secrets/README.md).
+    yubi-green:
+      type: fido2-ssh
+      sshPublicKey: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDtwsz3zAJokZ3rnVyXUxmeUGba61b8KIW3u4aE52dK2AAAAFXNzaDpuY3Jtcm8teXViaS1ncmVlbg==
+      description: Backup YubiKey 5C NFC (USB-C, green sticker)
+    laptop-fw7k:
+      type: device-ssh
+      sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOyrDBVcGK+pUZOTUA7MLoD5vYK/kaPF6TNNyoDmwNl2 ncrmro@ncrmro-laptop-fw7k
+      description: Framework laptop device key
+    workstation:
+      type: device-ssh
+      sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGiFUbcDdzBGNgo7GdRvuRvZ9Yf195pIm2jbiM0uJwW0 ncrmro@ncrmro-workstation
+      description: Workstation device key
+    ocean:
+      type: device-ssh
+      sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEE6cFSyJoiaURB7+961zETflBNPJUZszH9xyowzbpNu ncrmro@ocean
+      description: Ocean server device key
+
+access:
+  admin:
+    sshKeys: [yubi-black, yubi-green, laptop-fw7k, workstation, ocean]
+  root:
+    enable: false
+    sshKeys: [yubi-black]
+  installer:
+    sshKeys: [yubi-black, yubi-green]
+  remoteUnlock:
+    sshKeys: [yubi-black, laptop-fw7k]
+
+secrets:
+  backend: agenix
+
+defaults:
+  timeZone: America/Chicago
+  updateChannel: stable
+
+# Migrating hosts only. mercury (Vultr VPS image), maia (storage/backup
+# server), and catalystPrimary (non-keystone k3s exception) stay on the
+# legacy flake (main branch) until the new stack covers them — see the
+# migration doc.
+hosts:
+  ocean:
+    kind: server
+    system: x86_64-linux
+    profiles: [terminal]
+  ncrmro-laptop:
+    kind: laptop
+    system: x86_64-linux
+    profiles: [terminal, desktop]
+    desktop:
+      environment: hyprland
+  ncrmro-workstation:
+    kind: workstation
+    system: x86_64-linux
+    profiles: [terminal, desktop]
+    desktop:
+      environment: hyprland
+  ncrmro-macbook:
+    kind: macbook
+    system: aarch64-darwin
+    profiles: [terminal, desktop]
+    desktop:
+      environment: aerospace
+
+# Fleet services: declared once, every host/consumer is configured for them.
+# tls stays "none" until acme-dns credentials migrate into ./secrets
+# (legacy fleet served real certificates — tracked in the migration doc).
+services:
+  domain: ncrmro.com
+  frontdoor: nginx
+  tls: none
+  forgejo:
+    host: ocean
+  immich:
+    host: ocean
+
+clusters:
+  homelab:
+    type: k3s
+    controlPlane: [ocean]
+    workers: [ncrmro-workstation]

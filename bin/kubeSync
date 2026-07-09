@@ -1,4 +1,0 @@
-#!/bin/bash
-set -e
-
-rsync --recursive --verbose --delete --exclude .git kubernetes/mercury/ root@10.13.13.5:/root/kubernetes/

@@ -1,1 +1,0 @@
-../../_shared/conventions/project-lead.md

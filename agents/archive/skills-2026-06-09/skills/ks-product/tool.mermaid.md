@@ -1,1 +1,0 @@
-../../_shared/conventions/tool.mermaid.md

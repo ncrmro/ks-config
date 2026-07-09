@@ -1,31 +1,38 @@
-## NixOS configuration (flake)
+# ncrmro fleet config (keystone-systems)
 
-This repository contains my NixOS flake and host configurations.
+User-owned shared config for the ncrmro fleet, built on the
+[keystone-systems](https://github.com/keystone-systems) flakes.
+`keystone.yaml` is the single source of truth — hosts, keys, access,
+services, clusters. Edit it, run `scripts/generate-config.sh`, commit both
+files.
 
-## Documentation
+> **Migration in progress.** This branch replaced the legacy
+> ncrmro/keystone mkSystemFlake fleet wholesale; it is VM-harness-only
+> until the keystone-systems os flake's storage/secure-boot port lands.
+> `main` remains the deployable flake. What was dropped and the parity
+> checklist: [docs/migration-to-keystone-systems.md](docs/migration-to-keystone-systems.md).
 
-- [Installing NixOS with nixos-anywhere](docs/INSTALL_NIXOS_ANYWHERE.md) - Installation instructions, ZFS notes, Secure Boot (lanzaboote), TPM enrollment, and post-install commands
-- [Headscale and Tailscale Setup](docs/HEADSCALE_SETUP.md) - Self-hosted Tailscale control server setup and client configuration
-- [Tailscale + GitHub Actions](docs/TAILSCALE_GITHUB_ACTIONS.md) - **NEW!** Comprehensive guide for Tailscale/Headscale integration with GitHub Actions
-- [Tailscale Quick Start](docs/TAILSCALE_QUICKSTART.md) - **NEW!** Quick setup guide for GitHub Actions with Tailscale
-- [VPS Notes](docs/vps-notes.md) - Notes about VPS setup
-- [DNS Configuration](docs/DNS.md) - DNS setup and configuration
-- [Kubernetes Modules](docs/KUBERNETES_MODULES.md) - Kubernetes modules documentation
-- [Kubernetes SSL Certificates](docs/KUBERNETES_SSL_CERTIFICATES.md) - SSL certificate management for Kubernetes
-- [Longhorn Storage](docs/LONGHORN_STORAGE.md) - Longhorn distributed storage configuration and usage
-- [Root Disk TPM Secure Boot Unlock](docs/ROOT_DISK_TPM_SECURE_BOOT_UNLOCK.md) - TPM and Secure Boot disk unlock configuration
-- [ZFS Remote Replication](docs/ZFS_REMOTE_REPLICATION.md) - ZFS remote replication setup
-- [Fingerprint Enrollment](docs/fingerprint-enrollment.md) - Fingerprint authentication setup
-- [Mounting Old Disks](docs/mounting-old-disks.md) - Instructions for mounting legacy disks
-- [ZFS Tweaks](docs/zfs-tweaks.md) - ZFS performance and configuration tweaks
-- [Keybindings](docs/KEYBINDINGS.md) - Comprehensive keybinding documentation for all tools (Hyprland, Ghostty, Zellij, Helix, etc.)
+## Layout
 
-### GitHub Actions Setup
+- `keystone.yaml` → `keystone.json` (generated) → `lib/mkConfig.nix`
+  validates and resolves the fleet config at eval time.
+- `hosts/<name>/` — per-host overrides (placeholders until the os port).
+- `secrets/` — agenix secrets, recipients derived from keystone.yaml keys.
+- `dotfiles/` — editable desktop/terminal dotfiles, live-linked from
+  `~/.config/keystone` on desktop hosts.
 
-The Tailscale documentation includes complete examples for setting up GitHub Actions workflows and reusable actions in your own repositories:
-- Reusable action for connecting to Tailscale
-- Kubernetes deployment workflows via Tailscale
-- Service health monitoring over Tailscale  
-- Database backup operations via Tailscale
+## Usage
 
-See the [Tailscale GitHub Actions guide](docs/TAILSCALE_GITHUB_ACTIONS.md) for complete implementation examples.
+```bash
+nix flake show              # nixosConfigurations + harness apps
+nix run .#fleet             # boot every host as a QEMU VM
+nix run .#vm-<host>         # boot one host
+```
+
+SSH and VNC ports per host: [docs/vm-fleet.md](docs/vm-fleet.md).
+
+## Operational documentation
+
+Legacy-era guides in `docs/` (install, headscale/tailscale, kubernetes,
+ZFS, keybindings, …) describe the deployed fleet on `main`; they migrate
+into the keystone-systems docs as parity items land.
