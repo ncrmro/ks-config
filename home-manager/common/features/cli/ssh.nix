@@ -20,6 +20,12 @@
           TERM = "xterm-256color";
         };
       };
+      "unsup-16-pro.local" = {
+        user = "nicholas";
+        setEnv = {
+          TERM = "xterm-256color";
+        };
+      };
       "ncrmro-laptop-14" = {
         setEnv = {
           TERM = "xterm-256color";
