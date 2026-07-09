@@ -99,6 +99,8 @@ let
       <LocalNetworkAddresses />
       <KnownProxies>
         <string>127.0.0.1</string>
+        <!-- k8s ingress-nginx pods, which now front jellyfin.ncrmro.com -->
+        <string>10.42.0.0/16</string>
       </KnownProxies>
       <IgnoreVirtualInterfaces>true</IgnoreVirtualInterfaces>
       <VirtualInterfaceNames>

@@ -6,9 +6,7 @@
 }:
 {
   imports = [
-    ../common/kubernetes/rook-ceph.nix
     ../common/kubernetes/zfs-localpv.nix
-    ../common/kubernetes/longhorn.nix
   ];
   # Define the K3s server token secret
   age.secrets.k3s-server-token = {
@@ -49,14 +47,15 @@
 
   # k3s configuration
   networking.firewall = {
+    # Pods reach NixOS-hosted services via the node address (see
+    # k3s-host-services.nix Endpoints); that traffic ingresses on the CNI
+    # bridge, which the firewall would otherwise drop.
+    trustedInterfaces = [ "cni0" ];
     # Open K3s cluster ports only on Tailscale interface
     interfaces.tailscale0 = {
       allowedTCPPorts = [
         6443 # k3s: API server (restricted to Tailscale only)
         10250 # k3s: kubelet API
-        2379 # k3s: etcd server client API
-        2380 # k3s: etcd server peer API
-        5001 # k3s: distributed registry mirror peer-to-peer communication
       ];
       allowedUDPPorts = [
         8472 # k3s: flannel VXLAN
@@ -74,15 +73,6 @@
     "--tls-san=100.64.0.6"
     "--node-ip=100.64.0.6"
     "--flannel-iface=tailscale0"
-    # "--embedded-registry" # Enable distributed OCI registry mirror (TODO: fix nft-expr-counter kernel module issue)
     # "--debug" # Optionally add additional args to k3s
   ];
-
-  # K3s registry mirror configuration
-  environment.etc."rancher/k3s/registries.yaml" = {
-    text = ''
-      mirrors:
-        "*":
-    '';
-  };
 }

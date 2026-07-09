@@ -25,7 +25,9 @@
           port = 6060;
           enabled = false;
         };
-        address = "127.0.0.1:3000";
+        # Bind all interfaces: reached from k8s ingress pods via the node
+        # address (firewall stays closed to LAN; only cni0 is trusted).
+        address = "0.0.0.0:3000";
         session_ttl = "720h";
       };
 
@@ -88,6 +90,8 @@
         trusted_proxies = [
           "127.0.0.0/8"
           "::1/128"
+          # k8s ingress-nginx pods (real client IP arrives via X-Forwarded-For)
+          "10.42.0.0/16"
         ];
 
         cache_size = 4194304;

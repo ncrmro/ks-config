@@ -29,8 +29,12 @@
             # Trust X-Forwarded-* headers from NixOS nginx (localhost)
             "use-forwarded-headers" = "true";
             "compute-full-forwarded-for" = "true";
-            # Only trust forwarded headers from localhost (NixOS nginx)
-            "proxy-real-ip-cidr" = "127.0.0.0/8";
+            # Trust forwarded headers from the NixOS nginx front. Its
+            # connections to the ingress hostPort arrive SNAT'd to the CNI
+            # bridge address, so the pod CIDR must be trusted alongside
+            # loopback for real-IP restoration (whitelist-source-range
+            # enforcement depends on this).
+            "proxy-real-ip-cidr" = "127.0.0.0/8,10.42.0.0/16";
           };
           watchIngressWithoutClass = true;
           ingressClassResource = {
