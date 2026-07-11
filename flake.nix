@@ -7,10 +7,11 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Fleet harness. Pinned to the feat/fleet-harness branch until
-    # keystone-systems/os#1 merges; bump to main after.
+    # Fleet harness from keystone-systems/os main (REQ-001 foundation merged
+    # in os#2; the mkConfigFlake port that replaces the placeholder host
+    # roots with its disko/secure-boot/TPM stack is the follow-up).
     keystone-os = {
-      url = "github:keystone-systems/os/feat/fleet-harness?dir=code";
+      url = "github:keystone-systems/os?dir=code";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Local development paths until the keystone-systems repos publish —

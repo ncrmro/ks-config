@@ -138,17 +138,16 @@
       },
       "locked": {
         "dir": "code",
-        "lastModified": 1783365738,
-        "narHash": "sha256-IJY3weSHiw6aRJ2EhT68uxuH3UXJ8pXmg+RHV0UrQh4=",
+        "lastModified": 1783769938,
+        "narHash": "sha256-SHMJUXLI5CURTucXVXmgvK767d5S9+pqqcqwsdru3TU=",
         "owner": "keystone-systems",
         "repo": "os",
-        "rev": "0323e18d7a53e360db58034b04f5074699a3e5f2",
+        "rev": "92539381f76536c7d380dec698586ead8d045a84",
         "type": "github"
       },
       "original": {
         "dir": "code",
         "owner": "keystone-systems",
-        "ref": "feat/fleet-harness",
         "repo": "os",
         "type": "github"
       }
