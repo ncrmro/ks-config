@@ -2,8 +2,8 @@
 #
 # Central Vega runs as the containerized os-agents workload on ocean. Per-agent
 # pi-rpc bridges run natively as systemd user services under the corresponding
-# OS-agent account so Pi sees the agent's Home Manager profile, ApplePi config,
-# credentials, and home directory directly.
+# OS-agent account so Pi sees the agent's Home Manager profile, credentials,
+# and home directory directly.
 {
   config,
   inputs,
@@ -72,10 +72,6 @@ let
         PI_RPC_CWD = home;
         PI_RPC_SESSION_DIR = "${agentState name}/sessions";
         PI_RPC_TRANSCRIPT_DIR = "${agentState name}/transcripts";
-        PI_RPC_APPLEPI_BIN = "applepi";
-        # applepi `run --profile` takes a single profile; the composite
-        # <name>-os-agent profile inherits persona + ks-fleet + os-ks-agent-user.
-        PI_RPC_APPLEPI_PROFILE = "${name}-os-agent";
         PI_RPC_PROVIDER = "ollama";
         PI_RPC_MODEL = piModelFor name;
         SSH_AUTH_SOCK = "/run/agent-${name}-ssh-agent/agent.sock";
@@ -158,7 +154,7 @@ let
 in
 mkIf hasLocalAgents {
   systemd.tmpfiles.rules = [
-    # Agent ApplePi config resolves through ~/.applepi symlinks into the admin
+    # Agent repo-backed config resolves through symlinks into the admin
     # ks-config checkout; keep traversal to that checkout explicit here.
     "a+ /home/${config.keystone.os.adminUsername} - - - - g:agents:x"
     "a+ /home/${config.keystone.os.adminUsername}/repos - - - - g:agents:x"

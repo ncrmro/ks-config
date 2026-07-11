@@ -14,6 +14,11 @@
 # BOTH the agent's host AND the server host. See agenix-secrets/secrets.nix.
 { ... }:
 {
+  # OS agents are currently disabled fleet-wide. Keystone's agent modules key
+  # off `keystone.os.agents != { }`, so an empty set removes agent users,
+  # services, secrets, and mail/git provisioning. Uncomment to re-enable.
+  keystone.os.agents = { };
+  /*
   keystone.os.agents = {
     drago = {
       host = "ncrmro-workstation";
@@ -25,8 +30,9 @@
       ];
       mail.provision = true; # provision Stalwart account on server host (ocean)
       git.provision = true; # provision Forgejo account on server host (ocean)
-      # Composite launch profile: persona + ks-fleet + os-ks-agent-user.
-      applepi.profile = "drago-os-agent";
+      # Outfitter profiles now live under agents/outfitter; do not wrap agent
+      # Pi launches with the retired ApplePi profile runner.
+      applepi.enable = false;
       # Agents only need Chrome DevTools access, not a viewable desktop.
       desktop.enable = false;
       chrome = {
@@ -48,8 +54,10 @@
       ];
       mail.provision = true;
       git.provision = true;
-      # Composite launch profile: persona + ks-fleet + os-ks-agent-user.
-      applepi.profile = "luce-os-agent";
+      # Outfitter profiles now live under agents/outfitter; do not wrap agent
+      # Pi launches with the retired ApplePi profile runner.
+      applepi.enable = false;
     };
   };
+  */
 }

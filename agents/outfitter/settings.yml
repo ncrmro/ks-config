@@ -1,0 +1,8 @@
+# Neutral default: outfitter implicitly merges default_profile under every
+# selected profile, so a role default would leak into other personas.
+# Use `outfitter run -p luce-os-agent` (or another composite profile) to launch.
+default_profile: default
+default_agent: pi
+
+profile_sources:
+  - path: ./profiles

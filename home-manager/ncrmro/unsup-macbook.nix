@@ -35,11 +35,7 @@
   keystone.terminal.pi.enable = true;
   keystone.terminal.sandbox.enable = false;
 
-  # Enable applepi so the agent context profiles are installed on this laptop.
-  # configDir must be set explicitly: in standalone-HM mode the module defaults
-  # to ~/repos/ks-config, but this checkout lives under ~/repos/ncrmro/ks-config.
-  keystone.terminal.applepi.enable = true;
-  keystone.terminal.applepi.configDir = "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/applepi";
-
+  # Outfitter settings/profiles are linked from agents/outfitter by the shared
+  # Home Manager config imported above.
   programs.home-manager.enable = true;
 }
