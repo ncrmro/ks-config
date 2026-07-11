@@ -23,6 +23,15 @@ interfaces so another machine can attach (e.g. from the laptop:
 `vncviewer ncrmro-workstation:5900`). VNC is unauthenticated — tailnet or
 SSH tunnel only.
 
+Desktop VMs (ncrmro-laptop, ncrmro-workstation) boot straight into a
+Hyprland session via greetd auto-login, and 9p-mount this repo's checkout
+at `~/.config/keystone` — the same path the stow-style dotfile symlinks
+point through (`~/.config/hypr → ~/.config/keystone/dotfiles/hyprland`,
+same for `zellij` and `yazi`). Edit a dotfile on the host and it is live
+in the VM immediately; `hyprctl reload` inside the session is the whole
+iteration loop. VM-only conveniences (auto-login, `keystone` console
+password) never reach real host builds.
+
 Notes:
 
 - SSH auth uses the keys declared in keystone.yaml (`access.admin`).

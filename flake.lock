@@ -120,8 +120,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1783554955,
-        "narHash": "sha256-ho8adVDHGJzVoCQHGb1keelSmC00PJCotcfbp+LHeVY=",
+        "lastModified": 1783776303,
+        "narHash": "sha256-BAKBsKdBq9XTX/nk4h92LiRuqMo43cxin/1q8mbNomg=",
         "path": "/home/ncrmro/repos/keystone-systems/desktop",
         "type": "path"
       },
@@ -177,8 +177,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1783366849,
-        "narHash": "sha256-+wrz2d6ZI7Jt72g20UpEkLx2OPj33c7o6TDSHqEAVzo=",
+        "lastModified": 1783776319,
+        "narHash": "sha256-5WyKPZSUq0bDd0vKVgEi8eJYwTFsC/b3j5z7oDtCa50=",
         "path": "/home/ncrmro/repos/keystone-systems/terminal",
         "type": "path"
       },

@@ -114,8 +114,9 @@
               {
                 keystone.desktop = {
                   environment = host.desktop.environment or "hyprland";
-                  # Editable dotfiles convention: clone this repo to
-                  # ~/.config/keystone on the host; ./dotfiles is live-linked.
+                  # Stow convention: this repo is cloned at ~/.config/keystone
+                  # and dotfiles/<app> is symlinked (never copied) onto the
+                  # path each app reads. VMs 9p-mount the checkout instead.
                   dotfiles.configRoot = "/home/${admin}/.config/keystone";
                 };
               }
@@ -146,7 +147,37 @@
             ]
             ++ lib.optionals (hasProfile "desktop" host) [
               keystone-desktop.nixosModules.default
-              { keystone.desktop.linux.enable = true; }
+              {
+                keystone.desktop.linux = {
+                  enable = true;
+                  environment = host.desktop.environment or "hyprland";
+                };
+                # VM-iteration conveniences, never part of the real host
+                # build: auto-login into the session, a console password,
+                # a virtio GPU for the compositor, and the host's checkout
+                # of this repo 9p-mounted at the dotfiles configRoot so an
+                # edit on the host is live in the VM — no copies anywhere.
+                virtualisation.vmVariant = {
+                  keystone.desktop.linux.autoLogin = {
+                    enable = true;
+                    user = admin;
+                  };
+                  users.users.${admin}.initialPassword = "keystone";
+                  virtualisation.qemu.options = [ "-device virtio-gpu-pci" ];
+                  virtualisation.sharedDirectories.keystone-config = {
+                    # Local-dev absolute path, same convention as the
+                    # keystone-* flake inputs above.
+                    source = "/home/ncrmro/repos/ncrmro/worktrees/ks-config/feat/keystone-systems-fleet-harness";
+                    target = "/home/${admin}/.config/keystone";
+                  };
+                  # Pre-create the mountpoint parents with the right owner —
+                  # the 9p mount unit would otherwise root-create ~/.config.
+                  systemd.tmpfiles.rules = [
+                    "d /home/${admin} 0700 ${admin} users -"
+                    "d /home/${admin}/.config 0755 ${admin} users -"
+                  ];
+                };
+              }
             ];
         };
     in

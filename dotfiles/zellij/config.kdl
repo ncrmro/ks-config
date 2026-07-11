@@ -1,0 +1,6 @@
+// Keystone zellij config — lives in your ks-config repo, symlinked to
+// ~/.config/zellij by Home Manager. Edit here; zellij picks it up on the
+// next session (no nix rebuild).
+default_layout "dev"
+pane_frames false
+theme "default"
