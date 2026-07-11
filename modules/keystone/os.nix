@@ -23,8 +23,6 @@
     inputs.keystone.nixosModules.binaryCacheClient
     ../keys.nix
     ../../hosts/common/global/openssh.nix
-    ../../hosts/common/agent-identities.nix
-    ./os/agents/auto-secrets.nix
   ];
 
   # Fleet-wide identity
