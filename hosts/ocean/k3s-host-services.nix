@@ -62,11 +62,6 @@ let
       port = 8070;
       annotations = whitelist tailscaleOnly;
     };
-    plouton = {
-      host = "plouton.ncrmro.com";
-      port = 17979;
-      annotations = whitelist tailscaleOnly;
-    };
     prometheus = {
       host = "prometheus.ncrmro.com";
       port = 9090;
@@ -82,14 +77,9 @@ let
       port = 8222;
       annotations = whitelist tailscaleOnly;
     };
-    vega = {
-      host = "vega.ncrmro.com";
-      port = 17878;
-      annotations = whitelist tailscaleOnly // {
-        "nginx.ingress.kubernetes.io/proxy-buffering" = "off";
-        "nginx.ingress.kubernetes.io/proxy-request-buffering" = "off";
-      };
-    };
+    # vega and plouton are cluster workloads now (Deployments in their own
+    # namespaces, manifests in the app repos); their Ingresses claim
+    # vega.ncrmro.com and plouton.ncrmro.com directly.
 
     # Jellyfin - PUBLIC (no whitelist)
     jellyfin = {
