@@ -128,6 +128,22 @@
 
       linuxHosts = lib.filterAttrs (_: host: lib.hasSuffix "-linux" host.system) ksConfig.hosts;
 
+      # vm-dev-<host> impurities for fast desktop iteration: auto-login
+      # straight into the session, and the host's live checkout 9p-mounted
+      # over the configRoot so an edit on the host is in the VM instantly.
+      devVmModule = {
+        keystone.desktop.linux.autoLogin = {
+          enable = true;
+          user = admin;
+        };
+        virtualisation.sharedDirectories.keystone-config = {
+          # Local-dev absolute path, same convention as the keystone-*
+          # flake inputs above.
+          source = "/home/ncrmro/repos/ncrmro/worktrees/ks-config/feat/keystone-systems-fleet-harness";
+          target = "/home/${admin}/.config/keystone";
+        };
+      };
+
       mkHost =
         name: host:
         nixpkgs.lib.nixosSystem {
@@ -152,29 +168,22 @@
                   enable = true;
                   environment = host.desktop.environment or "hyprland";
                 };
-                # VM-iteration conveniences, never part of the real host
-                # build: auto-login into the session, a console password,
-                # a virtio GPU for the compositor, and the host's checkout
-                # of this repo 9p-mounted at the dotfiles configRoot so an
-                # edit on the host is live in the VM — no copies anywhere.
+                # Primary-tier vmVariant: fresh-install semantics. The only
+                # concessions to being a VM are test hardware (virtio GPU),
+                # a known password for harness access, and a simulated
+                # "user cloned their ks-config" step — the committed flake
+                # tree (`self`, so uncommitted files are excluded, exactly
+                # like a real clone) copied to the dotfiles configRoot.
+                # Live-iteration impurities (9p mount, auto-login) live in
+                # the vm-dev-<host> variant only — see devVmModule.
                 virtualisation.vmVariant = {
-                  keystone.desktop.linux.autoLogin = {
-                    enable = true;
-                    user = admin;
-                  };
                   users.users.${admin}.initialPassword = "keystone";
                   virtualisation.qemu.options = [ "-device virtio-gpu-pci" ];
-                  virtualisation.sharedDirectories.keystone-config = {
-                    # Local-dev absolute path, same convention as the
-                    # keystone-* flake inputs above.
-                    source = "/home/ncrmro/repos/ncrmro/worktrees/ks-config/feat/keystone-systems-fleet-harness";
-                    target = "/home/${admin}/.config/keystone";
-                  };
-                  # Pre-create the mountpoint parents with the right owner —
-                  # the 9p mount unit would otherwise root-create ~/.config.
                   systemd.tmpfiles.rules = [
                     "d /home/${admin} 0700 ${admin} users -"
                     "d /home/${admin}/.config 0755 ${admin} users -"
+                    "C /home/${admin}/.config/keystone - - - - ${self}"
+                    "Z /home/${admin}/.config/keystone - ${admin} users -"
                   ];
                 };
               }
@@ -188,12 +197,15 @@
 
       nixosConfigurations = lib.mapAttrs mkHost linuxHosts;
 
-      # `nix run .#vm-<host>` boots one host; `nix run .#fleet` boots them
-      # all with SSH forwarded from localhost:2200 upward and graphical
-      # consoles on QEMU VNC :0+ (both by sorted host name). See
-      # docs/vm-fleet.md.
+      # `nix run .#vm-<host>` / `.#fleet` verify fresh-install semantics;
+      # `.#vm-dev-<host>` adds the live-iteration impurities for desktop
+      # hosts. SSH from localhost:2200 upward, VNC :0+ (sorted host name).
+      # See docs/vm-fleet.md.
       apps.x86_64-linux = keystone-os.lib.mkFleetHarness {
         nixosConfigurations = self.nixosConfigurations;
+        devModules = lib.mapAttrs (_: _: [ devVmModule ]) (
+          lib.filterAttrs (_: hasProfile "desktop") linuxHosts
+        );
       };
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;

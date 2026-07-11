@@ -1,0 +1,12 @@
+id: keystone-development
+label: Keystone Development
+description: Repo-local default profile for ks-config Keystone systems and fleet development.
+inherits:
+  - founder
+controls:
+  skills:
+    - keystone-development
+  append_system_prompt: |
+    You are working in the ks-config repository with the Keystone Development profile.
+    Use the keystone-development skill for keystone-systems fleet, VM harness,
+    desktop iteration, headless VM debugging, and related ks-config refactor work.

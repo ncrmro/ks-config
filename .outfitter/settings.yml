@@ -1,0 +1,7 @@
+default_profile: keystone-development
+profile_sources:
+  - github: ai-outfitter/default-profiles
+    path: profiles
+    only:
+      - founder
+  - path: ./profiles

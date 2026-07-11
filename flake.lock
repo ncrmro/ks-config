@@ -120,8 +120,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1783780212,
-        "narHash": "sha256-/vW1xoDEKphjTasICpA1Qx8wvc1qdYONaVeXR2/ATsw=",
+        "lastModified": 1783793456,
+        "narHash": "sha256-XUItEfkQ1pe2vo+PqryCw/S9sb6qXIXCkpo2Mx8MfwM=",
         "path": "/home/ncrmro/repos/keystone-systems/desktop",
         "type": "path"
       },
@@ -138,11 +138,11 @@
       },
       "locked": {
         "dir": "code",
-        "lastModified": 1783769938,
-        "narHash": "sha256-SHMJUXLI5CURTucXVXmgvK767d5S9+pqqcqwsdru3TU=",
+        "lastModified": 1783793349,
+        "narHash": "sha256-UM6wSW3mKJnyn0jonqipuKvRUPAyGcqHOBrFafl1hrw=",
         "owner": "keystone-systems",
         "repo": "os",
-        "rev": "92539381f76536c7d380dec698586ead8d045a84",
+        "rev": "a8737beda5c17b4ea93c6bd1a2efd61e61e2ad8e",
         "type": "github"
       },
       "original": {
