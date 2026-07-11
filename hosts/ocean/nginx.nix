@@ -1,5 +1,11 @@
 # Manual vhosts for non-keystone services.
 # ACME, base nginx, and firewall are managed by keystone.server.acme + keystone nginx module.
+#
+# NixOS nginx is a thin TLS front on 80/443. Routing and access control for
+# app traffic live in the k3s ingress-nginx (hostPort 127.0.0.1:8080):
+#   - k8s-native workloads (personal website) define their own Ingress
+#   - NixOS-hosted services get Ingress objects from ./k3s-host-services.nix,
+#     including the Tailscale/headscale whitelist rules
 { ... }:
 let
   k8sIngressHttp = "127.0.0.1:8080";
@@ -9,202 +15,45 @@ let
     allow fd7a:115c:a1e0::/48;
     deny all;
   '';
-  # Allow Tailscale and local network
-  tailscaleAndLocal = ''
-    allow 100.64.0.0/10;
-    allow fd7a:115c:a1e0::/48;
-    allow 192.168.1.0/24;
-    allow 2600:1702:6250:4c80::/64;
-    deny all;
-  '';
 in
 {
-  # Jellyfin - PUBLIC (no access restriction)
-  services.nginx.virtualHosts."jellyfin.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8096";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Personal Website - PUBLIC (proxied to k8s)
+  # Everything routed via the cluster ingress. Per-host body-size limits and
+  # buffering are enforced by Ingress annotations, so the front must not cap
+  # or buffer here.
   services.nginx.virtualHosts."ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    locations."/" = {
-      proxyPass = "http://${k8sIngressHttp}";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Radarr - Tailscale only
-  services.nginx.virtualHosts."radarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:7878";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Sonarr - Tailscale only
-  services.nginx.virtualHosts."sonarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8989";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Prowlarr - Tailscale only
-  services.nginx.virtualHosts."prowlarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:9696";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Bazarr - Tailscale only
-  services.nginx.virtualHosts."bazarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:6767";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Lidarr - Tailscale only
-  services.nginx.virtualHosts."lidarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8686";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Readarr - Tailscale only
-  services.nginx.virtualHosts."readarr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8787";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Jellyseerr - Tailscale only
-  services.nginx.virtualHosts."jellyseerr.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:5055";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Transmission - Tailscale only
-  services.nginx.virtualHosts."transmission.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:9091";
-      proxyWebsockets = true;
-    };
-  };
-
-  # SABnzbd - Tailscale only
-  services.nginx.virtualHosts."sabnzbd.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8085";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Home Assistant - Tailscale only
-  services.nginx.virtualHosts."home.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:8123";
-      proxyWebsockets = true;
-    };
-  };
-
-  # AdGuard Home - Tailscale and local network
-  services.nginx.virtualHosts."adguard.home.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleAndLocal;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:3000";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Immich - Tailscale only
-  services.nginx.virtualHosts."photos.ncrmro.com" = {
+    serverAliases = [
+      "jellyfin.ncrmro.com"
+      "radarr.ncrmro.com"
+      "sonarr.ncrmro.com"
+      "prowlarr.ncrmro.com"
+      "bazarr.ncrmro.com"
+      "lidarr.ncrmro.com"
+      "readarr.ncrmro.com"
+      "jellyseerr.ncrmro.com"
+      "transmission.ncrmro.com"
+      "sabnzbd.ncrmro.com"
+      "home.ncrmro.com"
+      "adguard.home.ncrmro.com"
+      "photos.ncrmro.com"
+      "git.ncrmro.com"
+    ];
     forceSSL = true;
     useACMEHost = "wildcard-ncrmro-com";
     extraConfig = ''
-      ${tailscaleOnly}
-      client_max_body_size 50G;
-    '';
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:2283";
-      proxyWebsockets = true;
-    };
-  };
-
-  services.nginx.virtualHosts."git.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = ''
-      ${tailscaleOnly}
-      # Forgejo Container Registry pushes upload large OCI layer blobs through
-      # this vhost. Leave size enforcement to Forgejo/storage quotas rather
-      # than nginx's default 1 MiB request limit.
       client_max_body_size 0;
     '';
     locations."/" = {
-      proxyPass = "http://127.0.0.1:3001";
+      proxyPass = "http://${k8sIngressHttp}";
       proxyWebsockets = true;
       extraConfig = ''
         proxy_request_buffering off;
-        proxy_buffering off;
       '';
     };
   };
 
-  services.nginx.virtualHosts."longhorn.ncrmro.com" = {
-    forceSSL = true;
-    useACMEHost = "wildcard-ncrmro-com";
-    extraConfig = tailscaleOnly;
-    locations."/" = {
-      proxyPass = "http://${k8sIngressHttp}";
-      proxyWebsockets = true;
-    };
-  };
-
-  # Stalwart Mail Admin - Tailscale only
+  # Stalwart Mail Admin - Tailscale only. Stays on native nginx: the JMAP
+  # listener is keystone-managed and bound to loopback, so the cluster
+  # ingress cannot reach it.
   services.nginx.virtualHosts."mail.ncrmro.com" = {
     forceSSL = true;
     useACMEHost = "wildcard-ncrmro-com";

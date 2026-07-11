@@ -2,7 +2,9 @@
 {
   keystone.os.services.immich = {
     # Role and mlUrl are auto-configured from keystone.services
-    host = "127.0.0.1";
+    # Bind all interfaces: reached from k8s ingress pods via the node address
+    # (firewall stays closed to LAN; only cni0 is trusted).
+    host = "0.0.0.0";
     mediaLocation = "/ocean/media/photos";
   };
 

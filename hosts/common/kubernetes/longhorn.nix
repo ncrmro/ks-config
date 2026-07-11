@@ -59,6 +59,9 @@
               annotations = {
                 "nginx.ingress.kubernetes.io/ssl-redirect" = "true";
                 "nginx.ingress.kubernetes.io/force-ssl-redirect" = "true";
+                # Tailscale/headscale-only, enforced here now that the NixOS
+                # nginx front forwards without its own allow/deny block
+                "nginx.ingress.kubernetes.io/whitelist-source-range" = "100.64.0.0/10,fd7a:115c:a1e0::/48";
               };
             };
 

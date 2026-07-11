@@ -63,7 +63,7 @@
     script = ''
       export GRAFANA_URL="http://127.0.0.1:${toString config.services.grafana.settings.server.http_port}"
       export GRAFANA_SERVICE_ACCOUNT_TOKEN="$(cat $CREDENTIALS_DIRECTORY/grafana-token)"
-      exec ${pkgs.mcp-grafana}/bin/mcp-grafana -transport sse -address 127.0.0.1:8090
+      exec ${pkgs.mcp-grafana}/bin/mcp-grafana -transport sse -address 0.0.0.0:8090
     '';
   };
 

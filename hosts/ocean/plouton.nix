@@ -48,7 +48,7 @@ in
     serviceName = "plouton";
     containerName = "plouton";
     workingDir = workloadHome;
-    ports = [ "127.0.0.1:17979:17979" ];
+    ports = [ "0.0.0.0:17979:17979" ];
     container.extraLines = [
       # Always resolve the mutable latest tag on service start; this keeps
       # app-only deploys from reusing a previously cached rootless image.
@@ -67,7 +67,6 @@ in
     };
     environment = {
       PORT = "17979";
-      # Bind inside the container; Podman publishes only to host loopback.
       BIND_HOST = "0.0.0.0";
       DATABASE_URL = "file:${workloadHome}/data/plouton.db";
       HOME = workloadHome;

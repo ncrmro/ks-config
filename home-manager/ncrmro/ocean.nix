@@ -1,6 +1,6 @@
 # Ocean-specific ncrmro HM config: mail, rebuild function, stateVersion pin.
 # Structural imports (terminal, notes, global, cli) are provided by modules/keystone/terminal.nix.
-{ lib, ... }:
+{ config, lib, ... }:
 {
   # stateVersion pinned to 25.05 (overrides keystone default from system.stateVersion)
   home.stateVersion = lib.mkForce "25.05";
@@ -20,6 +20,9 @@
     repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
     sync.enable = true;
   };
+
+  home.file.".kube/config".source =
+    config.lib.file.mkOutOfStoreSymlink "/etc/rancher/k3s/k3s.yaml";
 
   programs.zsh = {
     initContent = ''
