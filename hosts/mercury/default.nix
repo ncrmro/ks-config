@@ -1,4 +1,4 @@
-{ inputs, oceanConfig, ... }:
+{ inputs, lib, oceanConfig, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -10,6 +10,15 @@
     inputs.keystone.nixosModules.headscale-dns
     inputs.keystone.nixosModules.headscale-acl
   ];
+
+  # Mercury is a Vultr VPS that boots via grub-in-ESP, not systemd-boot.
+  # keystone's mkLinuxHost defaults `boot.loader.systemd-boot.enable = true`
+  # via mkDefault — that's fine for baremetal UEFI hosts but wrong here:
+  # the activation step runs `bootctl install`, finds no systemd-boot in
+  # the ESP, and aborts the switch. Force systemd-boot off and let grub
+  # (already declared in hardware-configuration.nix) handle the ESP.
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.grub.enable = true;
 
   boot.tmp.cleanOnBoot = true;
   zramSwap.enable = true;
@@ -45,7 +54,10 @@
   keystone.os.secureBoot.enable = false;
   keystone.os.tpm.enable = false;
   keystone.os.hypervisor.enable = false;
-  keystone.os.users.ncrmro.sshAutoLoad.enable = false;
+  # mkForce: the server kind applies flake.nix's adminUser (sshAutoLoad on)
+  # at normal priority; server-vm applied it via mkDefault, so this opt-out
+  # needs forcing since the revert back to kind = "server".
+  keystone.os.users.ncrmro.sshAutoLoad.enable = lib.mkForce false;
   # No local-link peers on a public-internet VPS — avahi would advertise
   # on the public network without serving any fleet purpose.
   keystone.os.services.avahi.enable = false;
