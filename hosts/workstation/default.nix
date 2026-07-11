@@ -68,6 +68,7 @@
   users.users.ncrmro.extraGroups = [
     "render"
     "video"
+    "i2c"
   ];
 
   # Stalwart mail user password for himalaya
@@ -120,6 +121,7 @@
     alsa-utils
     lsof
     amdgpu_top
+    ddcutil
     lutris
     # llama-cpp from upstream flake with Vulkan support for AMD GPU acceleration
     inputs.llama-cpp.packages.${pkgs.stdenv.hostPlatform.system}.vulkan
@@ -133,6 +135,10 @@
   keystone.hardware.uhk.enable = true;
 
   hardware.ledger.enable = true;
+
+  # DDC/CI monitor control (ddcutil): loads i2c-dev and grants group i2c
+  # access to /dev/i2c-* so the Dell U5226KW input can be switched over I2C.
+  hardware.i2c.enable = true;
 
   hardware.graphics = {
     enable = true;
