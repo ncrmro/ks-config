@@ -17,15 +17,20 @@
   # `keystone.nixosModules.{domain,services,hosts}` are already pulled in
   # by `operating-system`'s own imports list (see keystone flake.nix), so
   # they don't need to be repeated either.
-  # TODO(upstream-keystone): vendored zfs-backup replaces the upstream module
-  # until the same-host backup fixes land on keystone main.
-  disabledModules = [ "${inputs.keystone}/modules/os/zfs-backup.nix" ];
+  # TODO(upstream-keystone): vendored copies replace these upstream modules
+  # until the milestone-only fixes land on keystone main: zfs-backup
+  # (same-host backups), keys + hardware-key (SK key handle deployment).
+  disabledModules = [
+    "${inputs.keystone}/modules/os/zfs-backup.nix"
+    "${inputs.keystone}/modules/keys.nix"
+    "${inputs.keystone}/modules/os/hardware-key.nix"
+  ];
 
   imports = [
     ./os/zfs-backup.nix
+    ./os/keys.nix
+    ./os/hardware-key.nix
     ./os/journal-remote-listenstream.nix
-    inputs.keystone.nixosModules.hardwareKey
-    inputs.keystone.nixosModules.keys
     inputs.keystone.nixosModules.binaryCacheClient
     ../keys.nix
     ../../hosts/common/global/openssh.nix

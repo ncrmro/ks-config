@@ -25,7 +25,7 @@
     # revision; use bin/ks-dev for local path overrides while developing
     # uncommitted Keystone changes.
     keystone = {
-      url = "github:ncrmro/keystone/milestone/M10-V2-os-agents";
+      url = "github:ncrmro/keystone";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
     };

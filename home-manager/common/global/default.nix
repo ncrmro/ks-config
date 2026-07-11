@@ -20,7 +20,6 @@
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/settings.yml";
   home.file.".outfitter/profiles".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/profiles";
-  keystone.terminal.applepi.enable = false;
 
   home.shellAliases = {
     killport = "function _killp(){ lsof -nti:$1 | xargs kill -9 };_killp";

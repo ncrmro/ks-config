@@ -28,11 +28,9 @@
 
   # CLI AI tools (claude-code/gemini/codex) come from elsewhere on this machine,
   # so keep the keystone AI stack off — but run the keystone-pinned DeepWork MCP
-  # and the Pi assistant (both decoupled from ai.enable upstream) instead of the
-  # stale Claude plugin copy.
+  # instead of the stale Claude plugin copy.
   keystone.terminal.ai.enable = false;
   keystone.terminal.deepwork.enable = true;
-  keystone.terminal.pi.enable = true;
   keystone.terminal.sandbox.enable = false;
 
   # Outfitter settings/profiles are linked from agents/outfitter by the shared
