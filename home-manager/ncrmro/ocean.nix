@@ -19,6 +19,9 @@
     enable = true;
     repo = "ssh://forgejo@git.ncrmro.com:2222/ncrmro/notes.git";
     sync.enable = true;
+    # Ocean is the daily-rollover singleton; keystone main defaults
+    # daily.enable = false everywhere else.
+    daily.enable = true;
   };
 
   home.file.".kube/config".source =

@@ -7,6 +7,8 @@
 {
   imports = [
     inputs.home-manager.nixosModules.default
+    # TODO(upstream-keystone): drop once milestone fix 2d12ae01 lands on main.
+    ./desktop/greetd-session.nix
     # `keystone.nixosModules.desktop` is imported automatically by
     # mkSystemFlake when `kind = laptop` or `kind = workstation`. Re-importing
     # it here from `inputs.keystone.nixosModules.desktop` produces a second

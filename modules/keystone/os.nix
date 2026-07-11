@@ -17,7 +17,13 @@
   # `keystone.nixosModules.{domain,services,hosts}` are already pulled in
   # by `operating-system`'s own imports list (see keystone flake.nix), so
   # they don't need to be repeated either.
+  # TODO(upstream-keystone): vendored zfs-backup replaces the upstream module
+  # until the same-host backup fixes land on keystone main.
+  disabledModules = [ "${inputs.keystone}/modules/os/zfs-backup.nix" ];
+
   imports = [
+    ./os/zfs-backup.nix
+    ./os/journal-remote-listenstream.nix
     inputs.keystone.nixosModules.hardwareKey
     inputs.keystone.nixosModules.keys
     inputs.keystone.nixosModules.binaryCacheClient
@@ -33,11 +39,13 @@
     git.host = "ocean";
     immich.host = "ocean";
     immich.workers = [ "ncrmro-workstation" ];
-    notesDaily.host = "ocean";
   };
   keystone.hosts = import ../../hosts.nix;
 
-  nixpkgs.overlays = import ../../overlays { inherit inputs; };
+  # mkAfter: mkSystemFlake contributes `[ keystone.overlays.default ]` as its
+  # own definition of this list-typed option; without ordering, that entry can
+  # merge after ours and clobber the pkgs.keystone overrides in overlays/keystone.
+  nixpkgs.overlays = lib.mkAfter (import ../../overlays { inherit inputs; });
   nixpkgs.config.allowUnfree = true;
 
   nix.settings.experimental-features = [
