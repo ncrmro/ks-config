@@ -1,0 +1,49 @@
+/* Keystone waybar style. Theme colors move behind the current-theme
+   symlink once theming lands (see desktop docs/theming.md). */
+* {
+  font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
+  font-size: 13px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(17, 17, 27, 0.95);
+  color: #cdd6f4;
+  border-bottom: 1px solid #313244;
+}
+
+#workspaces button {
+  padding: 0 8px;
+  color: #6c7086;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+#workspaces button.active {
+  color: #cdd6f4;
+  border-bottom: 2px solid #b8a26c;
+}
+
+#clock,
+#cpu,
+#memory,
+#network,
+#battery,
+#tray {
+  padding: 0 10px;
+  background: transparent;
+  color: #cdd6f4;
+}
+
+#battery.warning {
+  color: #f9e2af;
+}
+
+#battery.critical {
+  color: #f38ba8;
+}
+
+#network.disconnected {
+  color: #6c7086;
+}

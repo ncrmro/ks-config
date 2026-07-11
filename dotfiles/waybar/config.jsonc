@@ -1,0 +1,36 @@
+// Keystone waybar — lives in your ks-config repo, linked to
+// ~/.config/waybar. Config changes: pkill waybar && waybar re-exec;
+// style-only changes: pkill -SIGUSR2 waybar.
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "spacing": 6,
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "network", "battery", "tray"],
+  "hyprland/workspaces": {
+    "format": "{id}"
+  },
+  "clock": {
+    "format": "{:%a %b %d  %H:%M}"
+  },
+  "cpu": {
+    "format": "  {usage}%"
+  },
+  "memory": {
+    "format": "  {percentage}%"
+  },
+  "network": {
+    "format-wifi": "  {essid}",
+    "format-ethernet": "󰈀  {ipaddr}",
+    "format-disconnected": "󰖪  offline"
+  },
+  "battery": {
+    "format": "{icon}  {capacity}%",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "tray": {
+    "spacing": 8
+  }
+}
