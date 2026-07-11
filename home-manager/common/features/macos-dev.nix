@@ -18,14 +18,8 @@
 
   programs.home-manager.enable = true;
 
-  # Enable experimental Nix features on macOS
-  nix = {
-    package = pkgs.nix;
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-    };
-  };
+  # Do not set home-manager's `nix.settings` here: it writes
+  # xdg.configFile."nix/nix.conf", which collides with keystone terminal's
+  # home.file.".config/nix/nix.conf" Darwin writer (already enables
+  # nix-command + flakes) and fails the managed-target-files assertion.
 }
