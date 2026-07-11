@@ -8,6 +8,7 @@
   imports = [
     ../common/kubernetes/zfs-localpv.nix
   ];
+
   # Define the K3s server token secret
   age.secrets.k3s-server-token = {
     file = "${inputs.agenix-secrets}/secrets/k3s-server-token.age";
@@ -69,6 +70,7 @@
     "--disable=traefik" # Disable traefik to use ingress nginx instead
     "--disable=local-storage"
     "--container-runtime-endpoint=/run/containerd/containerd.sock"
+    "--write-kubeconfig-mode=0644"
     "--tls-san=ocean.mercury"
     "--tls-san=100.64.0.6"
     "--node-ip=100.64.0.6"

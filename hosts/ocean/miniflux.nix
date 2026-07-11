@@ -17,7 +17,7 @@ in
     enable = true;
     createDatabaseLocally = true;
     config = {
-      LISTEN_ADDR = "127.0.0.1:8070";
+      LISTEN_ADDR = "0.0.0.0:8070";
     };
     adminCredentialsFile = config.age.secrets.miniflux-admin.path;
   };

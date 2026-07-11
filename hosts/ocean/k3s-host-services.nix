@@ -1,13 +1,9 @@
 # Routes HTTP for NixOS-hosted services through the in-cluster ingress-nginx.
-# NixOS nginx stays the TLS front on 80/443 (see nginx.nix) and forwards these
-# hosts to the ingress hostPort; each service here gets a selector-less
-# Service + Endpoints pointing back at the host, plus an Ingress.
+# Each service here gets a selector-less Service + Endpoints pointing back at
+# the host, plus an Ingress.
 #
 # Access control moves from nginx allow/deny blocks to ingress-nginx
-# whitelist-source-range annotations. That only works because ingress-nginx
-# restores the real client IP from X-Forwarded-For set by the NixOS front
-# (use-forwarded-headers + proxy-real-ip-cidr in
-# hosts/common/kubernetes/ingress-nginx.nix).
+# whitelist-source-range annotations.
 { lib, config, ... }:
 let
   # Headscale VPN (Tailscale CGNAT) ranges — mirrors the old nginx tailscaleOnly block
@@ -23,6 +19,78 @@ let
   };
 
   hostServices = {
+    attic = {
+      host = "cache.ncrmro.com";
+      port = 8199;
+      annotations = whitelist tailscaleOnly // {
+        "nginx.ingress.kubernetes.io/proxy-body-size" = "4G";
+      };
+    };
+    grafana = {
+      host = "grafana.ncrmro.com";
+      port = 3002;
+      annotations = whitelist tailscaleOnly;
+    };
+    journal = {
+      host = "journal.ncrmro.com";
+      port = 19532;
+      annotations = whitelist tailscaleOnly // {
+        "nginx.ingress.kubernetes.io/proxy-body-size" = "0";
+        "nginx.ingress.kubernetes.io/proxy-request-buffering" = "off";
+      };
+    };
+    loki = {
+      host = "loki.ncrmro.com";
+      port = 3100;
+      annotations = whitelist tailscaleOnly;
+    };
+    mail-admin = {
+      host = "mail.ncrmro.com";
+      port = 8082;
+      annotations = whitelist tailscaleOnly;
+    };
+    mcp-grafana = {
+      host = "mcp-grafana.ncrmro.com";
+      port = 8090;
+      annotations = whitelist tailscaleOnly // {
+        "nginx.ingress.kubernetes.io/proxy-buffering" = "off";
+        "nginx.ingress.kubernetes.io/proxy-read-timeout" = "86400";
+      };
+    };
+    miniflux = {
+      host = "miniflux.ncrmro.com";
+      port = 8070;
+      annotations = whitelist tailscaleOnly;
+    };
+    plouton = {
+      host = "plouton.ncrmro.com";
+      port = 17979;
+      annotations = whitelist tailscaleOnly;
+    };
+    prometheus = {
+      host = "prometheus.ncrmro.com";
+      port = 9090;
+      annotations = whitelist tailscaleOnly;
+    };
+    rsshub = {
+      host = "rsshub.ncrmro.com";
+      port = 1200;
+      annotations = whitelist tailscaleOnly;
+    };
+    vaultwarden = {
+      host = "vaultwarden.ncrmro.com";
+      port = 8222;
+      annotations = whitelist tailscaleOnly;
+    };
+    vega = {
+      host = "vega.ncrmro.com";
+      port = 17878;
+      annotations = whitelist tailscaleOnly // {
+        "nginx.ingress.kubernetes.io/proxy-buffering" = "off";
+        "nginx.ingress.kubernetes.io/proxy-request-buffering" = "off";
+      };
+    };
+
     # Jellyfin - PUBLIC (no whitelist)
     jellyfin = {
       host = "jellyfin.ncrmro.com";

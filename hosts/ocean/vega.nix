@@ -76,7 +76,7 @@ in
     serviceName = workloadName;
     containerName = workloadName;
     workingDir = workloadHome;
-    ports = [ "127.0.0.1:17878:17878" ];
+    ports = [ "0.0.0.0:17878:17878" ];
     container.extraLines = [
       # Always resolve the mutable latest tag on service start; this keeps
       # app-only deploys from reusing a previously cached rootless image.
@@ -95,7 +95,6 @@ in
     };
     environment = {
       PORT = "17878";
-      # Bind inside the container; Podman publishes only to host loopback.
       BIND_HOST = "0.0.0.0";
       DATABASE_URL = "file:${stateDir}/data/vega.db";
       HOME = workloadHome;

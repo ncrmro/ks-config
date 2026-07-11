@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  lib,
   outputs,
   pkgs,
   ...
@@ -31,7 +32,6 @@
     ../common/kubernetes/default.nix
     ./nfs.nix
     ../common/optional/smb-backup-shares.nix
-    ./nginx.nix
     ./vaultwarden.nix
     ./rsshub.nix
     ./miniflux.nix
@@ -98,7 +98,12 @@
   };
 
   # Give stalwart-mail access to ACME certs
+  users.groups.nginx = { };
   users.users.stalwart-mail.extraGroups = [ "nginx" ];
+
+  services.nginx.enable = lib.mkForce false;
+  services.atticd.settings.listen = lib.mkForce "0.0.0.0:8199";
+  services.grafana.settings.server.http_addr = lib.mkForce "0.0.0.0";
 
   # Stalwart admin password (SHA-512 hash, not plaintext).
   # fallback-admin.secret expects a $6$ hash. Generate with: mkpasswd -m sha-512
@@ -151,6 +156,7 @@
         private-key = "%{file:/var/lib/acme/wildcard-ncrmro-com/key.pem}%";
         default = true;
       };
+      server.listener.jmap.bind = lib.mkForce [ "0.0.0.0:8082" ];
       authentication.fallback-admin = {
         user = "admin";
         secret = "%{file:/run/agenix/stalwart-admin-password}%";

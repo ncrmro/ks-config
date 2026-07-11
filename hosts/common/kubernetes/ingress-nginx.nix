@@ -2,7 +2,6 @@
 {
   services.k3s.autoDeployCharts = {
     # Ingress NGINX Controller Helm Chart: https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
-    # NixOS nginx is the front-end on 80/443, forwarding K8s traffic to these internal ports
     ingress-nginx = {
       name = "ingress-nginx";
       repo = "https://kubernetes.github.io/ingress-nginx";
@@ -12,7 +11,7 @@
       createNamespace = false;
       values = {
         controller = {
-          replicaCount = 2;
+          replicaCount = 1;
           service = {
             type = "ClusterIP";
           };
@@ -20,21 +19,12 @@
           hostPort = {
             enabled = true;
             ports = {
-              http = 8080;
-              https = 8443;
+              http = 80;
+              https = 443;
             };
           };
           config = {
             "proxy-body-size" = "100m";
-            # Trust X-Forwarded-* headers from NixOS nginx (localhost)
-            "use-forwarded-headers" = "true";
-            "compute-full-forwarded-for" = "true";
-            # Trust forwarded headers from the NixOS nginx front. Its
-            # connections to the ingress hostPort arrive SNAT'd to the CNI
-            # bridge address, so the pod CIDR must be trusted alongside
-            # loopback for real-IP restoration (whitelist-source-range
-            # enforcement depends on this).
-            "proxy-real-ip-cidr" = "127.0.0.0/8,10.42.0.0/16";
           };
           watchIngressWithoutClass = true;
           ingressClassResource = {
@@ -70,7 +60,6 @@
           };
           dnsNames = [
             "*.ncrmro.com"
-            "*.home.ncrmro.com"
             "ncrmro.com"
           ];
         };
