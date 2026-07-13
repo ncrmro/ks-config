@@ -21,22 +21,9 @@
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    # Active milestone-M10 dev: keystone is pinned to the local milestone
-    # worktree because its option schema has not landed on keystone main yet.
-    # App services such as Plouton are deployed from Forgejo OCI images through
-    # keystone container workloads. Vega's central web/API also uses an OCI image,
-    # but its native OS-agent bridge is packaged from this flake input so agent
-    # services do not read source from the admin user's Vega checkout.
-    vega = {
-      url = "git+ssh://forgejo@git.ncrmro.com:2222/ncrmro/vega.git?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.llm-agents.follows = "llm-agents";
-    };
-
-    # milestone/M10-V2-os-agents is the single canonical branch for Keystone
-    # work right now. Keep this locked to GitHub so every host evaluates the
-    # same committed Keystone revision; use bin/dev-keystone for local
-    # path overrides while developing uncommitted Keystone changes.
+    # Keystone is locked to GitHub so every host evaluates the same committed
+    # revision; use bin/ks-dev for local path overrides while developing
+    # uncommitted Keystone changes.
     keystone = {
       url = "github:ncrmro/keystone/milestone/M10-V2-os-agents";
       inputs.nixpkgs.follows = "nixpkgs";

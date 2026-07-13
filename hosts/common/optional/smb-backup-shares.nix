@@ -185,6 +185,8 @@ in
     systemd.services.create-backup-datasets = {
       description = "Create ZFS datasets for backup shares";
       wantedBy = [ "multi-user.target" ];
+      requires = [ "zfs-mount.service" ];
+      after = [ "zfs-mount.service" ];
       before = [ "samba-smbd.service" ];
       serviceConfig = {
         Type = "oneshot";
@@ -269,7 +271,7 @@ in
         (echo "$TIMEMACHINE_PASSWORD"; echo "$TIMEMACHINE_PASSWORD") | ${pkgs.samba}/bin/smbpasswd -a -s timemachine
 
         echo "Samba timemachine user configured"
-        echo "Time Machine share: smb://$(hostname)/timemachine (user: timemachine)"
+        echo "Time Machine share: smb://${config.networking.hostName}/timemachine (user: timemachine)"
       '';
     };
   };

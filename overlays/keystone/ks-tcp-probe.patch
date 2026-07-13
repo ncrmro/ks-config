@@ -1,0 +1,147 @@
+From 8830b5600a411fcacb453b32a1bfc8b224a4ed01 Mon Sep 17 00:00:00 2001
+From: Nicholas Romero <ncrmro@gmail.com>
+Date: Thu, 4 Jun 2026 12:40:09 -0500
+Subject: [PATCH] fix(ks): probe reachability via TCP, not SSH auth
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ssh_test (and the sibling ssh_reachable in sync_host_keys) opened an
+ssh connection with -o BatchMode=yes -o ConnectTimeout=3 just to decide
+"is the Tailscale path usable." When the agent needed a YubiKey touch —
+locked agent, fresh login, signing-on-demand — BatchMode forbade the
+touch wait and the probe returned false, so switch.rs and the
+sync-host-keys path triggered an unnecessary LAN fallback and printed
+"Tailscale unavailable for {host}, using LAN: ..." every single time
+the user ran ks update or sync-host-keys before unlocking their key.
+
+The deploy still worked because open_master (which actually wants auth)
+held the connection long enough for the touch. But the user always saw
+a "failure" message even though everything was fine.
+
+Replace both probes with a plain TCP connect on port 22. That's the
+real question: is the network path open? Auth happens later in
+open_master, and the YubiKey touch happens there. fetch_public_key
+keeps the auth-required ssh probe — it has to, it's reading a file —
+but that one runs only after the reachability check passes.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+---
+ packages/ks/src/cmd/ssh.rs            | 33 ++++++++++++++++-----------
+ packages/ks/src/cmd/sync_host_keys.rs | 25 +++++++++++---------
+ 2 files changed, 34 insertions(+), 24 deletions(-)
+
+diff --git a/packages/ks/src/cmd/ssh.rs b/packages/ks/src/cmd/ssh.rs
+index 9d9f6265..1e9aee7f 100644
+--- a/packages/ks/src/cmd/ssh.rs
++++ b/packages/ks/src/cmd/ssh.rs
+@@ -3,9 +3,10 @@
+ use std::collections::BTreeSet;
+ use std::path::{Path, PathBuf};
+ use std::process::{Command as StdCommand, Stdio};
+-use std::time::{SystemTime, UNIX_EPOCH};
++use std::time::{Duration, SystemTime, UNIX_EPOCH};
+ 
+ use anyhow::{Context, Result};
++use tokio::net::TcpStream;
+ 
+ #[derive(Debug, Default)]
+ pub struct SshSessionManager {
+@@ -83,18 +84,16 @@ impl SshSessionManager {
+             return Ok(true);
+         }
+ 
+-        let status = tokio::process::Command::new("ssh")
+-            .args(["-o", "ConnectTimeout=3", "-o", "BatchMode=yes"])
+-            .arg(format!("root@{}", target))
+-            .arg("true")
+-            .stdin(Stdio::null())
+-            .stdout(Stdio::null())
+-            .stderr(Stdio::null())
+-            .status()
+-            .await
+-            .with_context(|| format!("Failed to probe SSH reachability for {}", target))?;
+-
+-        Ok(status.success())
++        // Probe TCP port 22, not SSH auth. The caller (switch.rs) uses this
++        // to decide "is the Tailscale path usable" before falling back to a
++        // LAN IP — it's a network-reachability question, not an auth one.
++        // The previous `ssh -o BatchMode=yes` probe coupled the two: when
++        // the agent needed a YubiKey touch (locked, or signing-on-demand),
++        // BatchMode forbade interaction and the probe returned false even
++        // though Tailscale was healthy, triggering a misleading "Tailscale
++        // unavailable" message and an unnecessary LAN fallback. open_master
++        // handles the actual auth (with touch) right after.
++        Ok(tcp_port_open(target, 22, Duration::from_secs(3)).await)
+     }
+ 
+     pub async fn open_master(&mut self, target: &str) -> Result<()> {
+@@ -160,6 +159,14 @@ impl SshSessionManager {
+     }
+ }
+ 
++async fn tcp_port_open(host: &str, port: u16, timeout: Duration) -> bool {
++    let addr = format!("{}:{}", host, port);
++    matches!(
++        tokio::time::timeout(timeout, TcpStream::connect(&addr)).await,
++        Ok(Ok(_))
++    )
++}
++
+ impl Drop for SshSessionManager {
+     fn drop(&mut self) {
+         for target in self.opened_targets.clone() {
+diff --git a/packages/ks/src/cmd/sync_host_keys.rs b/packages/ks/src/cmd/sync_host_keys.rs
+index 87cd8a84..c255f17c 100644
+--- a/packages/ks/src/cmd/sync_host_keys.rs
++++ b/packages/ks/src/cmd/sync_host_keys.rs
+@@ -3,7 +3,9 @@
+ use anyhow::{anyhow, Context, Result};
+ use serde::Serialize;
+ use std::path::Path;
++use std::time::Duration;
+ use tokio::fs;
++use tokio::net::TcpStream;
+ 
+ use crate::repo;
+ 
+@@ -43,16 +45,17 @@ async fn list_hosts(hosts_nix: &Path) -> Result<Vec<String>> {
+     serde_json::from_slice(&output.stdout).context("Failed to parse host list")
+ }
+ 
+-async fn ssh_reachable(target: &str) -> Result<bool> {
+-    let status = tokio::process::Command::new("ssh")
+-        .args(["-o", "ConnectTimeout=3", "-o", "BatchMode=yes"])
+-        .arg(target)
+-        .arg("true")
+-        .status()
+-        .await
+-        .with_context(|| format!("Failed to probe SSH reachability for {}", target))?;
+-
+-    Ok(status.success())
++async fn ssh_reachable(host: &str) -> Result<bool> {
++    // TCP-only probe — see ssh::ssh_test for the reasoning. Auth and the
++    // YubiKey touch happen later; this just answers "is the network path
++    // usable" so the misleading Tailscale-unavailable warning doesn't fire
++    // every time the agent isn't pre-touched.
++    let addr = format!("{}:22", host);
++    let connected = matches!(
++        tokio::time::timeout(Duration::from_secs(3), TcpStream::connect(&addr)).await,
++        Ok(Ok(_))
++    );
++    Ok(connected)
+ }
+ 
+ fn parse_public_key(stdout: &[u8]) -> Option<String> {
+@@ -192,7 +195,7 @@ async fn sync_host_entry(
+     };
+ 
+     let mut resolved = ssh_target.clone();
+-    if !ssh_reachable(&root_target(&ssh_target)).await? {
++    if !ssh_reachable(&ssh_target).await? {
+         if let Some(fallback_ip) = info
+             .fallback_ip
+             .as_deref()
+-- 
+2.54.0
+

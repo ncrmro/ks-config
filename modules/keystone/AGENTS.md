@@ -32,6 +32,6 @@ Place holding-area changes by shape, mirroring keystone's own layout:
 Host- or user-specific values (paths, hostnames, identities) are NOT
 keystone-bound — keep them in the consumer host config (e.g.
 `home-manager/ncrmro/<host>.nix`) even when they exist to work around an upstream
-default. Example: `keystone.terminal.applepi.configDir` on `unsup-macbook` is set
-host-side because keystone cannot derive the checkout path in
+default. Example: repo-backed Outfitter symlinks belong in this repo's
+Home Manager config because keystone cannot derive the checkout path in
 standalone-home-manager mode.

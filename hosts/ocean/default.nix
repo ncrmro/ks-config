@@ -37,11 +37,8 @@
     ./miniflux.nix
     ./observability
     ../common/optional/alloy-client.nix
-    ../common/optional/vega-agent-rpc.nix
     ./immich.nix
     ./vms.nix
-    ./vega.nix
-    ./plouton.nix
   ];
 
   # Enable Mesa/OpenGL drivers for EGL headless rendering
@@ -127,19 +124,6 @@
     owner = "ncrmro";
     mode = "0400";
   };
-
-  # Drago's mail password as a Stalwart provisioning input. Drago runs on
-  # workstation (host-prefix `ncrmro-workstation-`), but the password also
-  # needs to be readable on ocean so `provision-agent-mail-drago` can create
-  # the IMAP/SMTP account. Owner left as root (the default) — only
-  # stalwart-mail.service consumes it here, not agent-drago.
-  age.secrets.ncrmro-workstation-agent-drago-mail-password = {
-    file = "${inputs.agenix-secrets}/secrets/ncrmro-workstation-agent-drago-mail-password.age";
-    mode = "0400";
-  };
-  # Luce's per-host secrets are auto-declared by
-  # `modules/keystone/os/agents/auto-secrets.nix` (which now host-prefixes
-  # them). No manual declarations needed here.
 
   # Configure Stalwart TLS and admin auth
   services.stalwart-mail = {

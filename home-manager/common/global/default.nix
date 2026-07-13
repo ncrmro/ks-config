@@ -6,10 +6,6 @@
   ...
 }:
 {
-  imports = [
-    ../optional/mcp/ks-vega.nix
-  ];
-
   home.username = lib.mkDefault "ncrmro";
   home.homeDirectory = lib.mkDefault "/home/ncrmro";
   home.stateVersion = lib.mkDefault "25.05";
@@ -17,6 +13,14 @@
   programs.home-manager.enable = true;
 
   home.packages = [ pkgs.lsof ];
+
+  # Keep Outfitter's user-editable settings/profile source in ks-config while
+  # leaving ~/.outfitter/cache as normal mutable runtime state.
+  home.file.".outfitter/settings.yml".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/settings.yml";
+  home.file.".outfitter/profiles".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/profiles";
+  keystone.terminal.applepi.enable = false;
 
   home.shellAliases = {
     killport = "function _killp(){ lsof -nti:$1 | xargs kill -9 };_killp";

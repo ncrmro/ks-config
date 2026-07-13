@@ -31,15 +31,6 @@
   ];
   programs.vscode.enable = true;
 
-  wayland.windowManager.hyprland.settings = {
-    general.layout = "master";
-    master = {
-      new_status = "slave";
-      orientation = "center";
-      slave_count_for_center_master = 0;
-    };
-  };
-
   # Managed by Keystone
   # wayland.windowManager.hyprland.settings = {
   #   # Environment variables
