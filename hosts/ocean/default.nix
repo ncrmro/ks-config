@@ -264,6 +264,8 @@
   ];
 
   environment.systemPackages = [
+    # Node runtime for npm-global CLIs (e.g. @ai-outfitter/outfitter in ~/.local/bin)
+    pkgs.nodejs
     pkgs.sbctl
     pkgs.htop
     pkgs.usbutils
