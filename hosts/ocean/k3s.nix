@@ -63,21 +63,6 @@
       ];
     };
   };
-  # App deploys (vega/plouton bin/kdeploy) stream nix-built OCI archives into
-  # the k8s.io containerd namespace over ssh; scope passwordless sudo to that
-  # exact import command so the loop needs no interactive password.
-  security.sudo.extraRules = [
-    {
-      users = [ config.keystone.os.adminUsername ];
-      commands = [
-        {
-          command = "/run/current-system/sw/bin/ctr -n k8s.io images import -";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-
   services.k3s.enable = true;
   services.k3s.role = "server";
   services.k3s.tokenFile = config.age.secrets.k3s-server-token.path;
