@@ -1,0 +1,14 @@
+id: keystone-development
+label: Keystone Development
+description: Repo-local default profile for ks-config Keystone systems and fleet development.
+inherits:
+  - founder
+controls:
+  skills:
+    - keystone-development
+    - application-dev-and-deployment
+  append_system_prompt: |
+    You are working in the ks-config repository with the Keystone Development profile.
+    Use the keystone-development skill for consumer-flake, local Keystone adapter,
+    host deployment, and Ocean cluster work. Keep reusable personal guidance in
+    ~/.agents and project-specific guidance in this repository's .agents directory.

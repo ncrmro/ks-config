@@ -288,6 +288,8 @@ To add a new service with auto-DNS, enable it in ocean's keystone config and reb
   - `/common/features/` - Feature modules (cli, desktop, email, etc.)
   - `/common/agents/` - Shared agent home config
   - `/common/optional/` - Optional home modules (MCP, mosh, etc.)
+- `/.agents/` - Project-specific agent skills, transitional Outfitter profile,
+  and archived pre-Dotagents assets
 - `/modules/` - Custom NixOS and user modules
   - `keystone.nix`, `keystone.server.nix`, `keystone.desktop.nix` - Keystone wrapper modules
   - `/modules/nixos/` - Local NixOS modules (headscale, steam, bambu-studio)
@@ -322,8 +324,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 ./bin/updateMaia          # Rebuild maia
 ./bin/updateWorkstation   # Rebuild workstation
 
-# Verify local keystone changes (without sudo)
-ks build
+# Verify local keystone changes (without sudo, with local input overrides)
+./bin/ks-dev --build
 
 # Check flake configuration
 nix flake check
@@ -347,42 +349,35 @@ nix build .#nixosConfigurations.test-vm.config.system.build.vm
 
 Home Manager is integrated into NixOS and activated automatically during `nixos-rebuild switch`. **Never run `home-manager switch` directly** - it conflicts with the NixOS-managed home-manager service.
 
-## Agent-asset symlinks
+## Layered agent assets
 
-Keystone's terminal module (`modules/terminal/agents/assets.nix`) installs per-tool home-dir paths as symlinks into the active consumer flake's `agents/` tree:
+Agent context follows the Dotagents/Outfitter repository convention:
 
-| Link site | Target (inside consumer flake) |
-|-----------|--------------------------------|
-| `~/.claude/CLAUDE.md` | `agents/_shared/AGENTS.md` |
-| `~/.gemini/GEMINI.md` | `agents/_shared/AGENTS.md` |
-| `~/.codex/AGENTS.md`  | `agents/_shared/AGENTS.md` |
-| `~/.claude/skills`    | `agents/skills/` |
-| `~/.claude/agents`    | `agents/claude/agents/` |
-| `~/.gemini/skills`    | `agents/skills/` |
-| `~/.codex/skills`     | `agents/skills/` |
-| `~/.agents/skills`    | `agents/skills/` |
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| Personal/global | `~/repos/ncrmro/.agents`, linked at `~/.agents` | Reusable personal roles and skills shared across projects |
+| Organization | `~/repos/ncrmro/.agents` for now | Shared ncrmro defaults; split into a dedicated org catalog only when needed |
+| Project | this repository's `.agents/` | ks-config and Keystone-specific skills, profile, and archived legacy assets |
 
-The activation script **refuses to clobber a pre-existing regular file or non-empty directory** at any of those paths — it logs `keystone-agent-asset-symlinks: refusing to replace ...` to stderr and skips. The refusal scrolls past in long `nixos-rebuild` output and is easy to miss, so a host can run for weeks with stale on-disk content while every subsequent rebuild silently no-ops on those paths.
+Outfitter 0.10 still expects `.outfitter`, so both repositories provide a
+`legacy/outfitter/` catalog. This repository's root `.outfitter` is a symlink to
+its project compatibility catalog. The project settings flatten the published
+source graph because Outfitter 0.10 does not recursively load another source's
+settings; sources are ordered lowest-to-highest precedence, with the project
+profile last.
 
-Common cause: the host had a pre-symlink generation of keystone deployed once and the old regular file is in the way. This often surfaces on hosts where keystone dev mode was previously enabled and wrote concrete files that the current declarative wiring now expects to own as symlinks.
+`modules/keystone/terminal/agent-assets-dotagents.nix` temporarily disables
+Keystone's old consumer-flake `agents/` activation. Home Manager instead owns:
 
-**Fix on the affected host** (skips paths that are already symlinks or absent):
+- `~/.agents` → the personal repository;
+- `~/.claude/skills` → the personal skill catalog;
+- `~/.outfitter/{settings.yml,profiles,skills}` → the personal Outfitter 0.10
+  compatibility catalog, while `~/.outfitter/cache` remains mutable.
 
-```bash
-ts=$(date -Idate)
-for p in \
-  ~/.claude/CLAUDE.md ~/.gemini/GEMINI.md ~/.codex/AGENTS.md \
-  ~/.claude/skills ~/.claude/agents \
-  ~/.gemini/skills ~/.codex/skills ~/.agents/skills; do
-  [ -L "$p" ] && continue
-  [ ! -e "$p" ] && continue
-  if [ -d "$p" ] && [ -z "$(ls -A "$p")" ]; then rmdir "$p"; continue; fi
-  mv "$p" "$p.bak.$ts"
-done
-# Then re-activate home-manager via `ks update` / nixos-rebuild switch.
-```
-
-`ks-host-sync` includes a fleet-wide check (§1) that surveys these link sites on every host and surfaces any that are blocking the symlinks.
+The adapter is a holding-area change marked `TODO(upstream-keystone)` and should
+move upstream once Keystone supports layered `.agents` catalogs directly. If an
+old real directory blocks one of these Home Manager links, move it to a dated
+backup once, then rerun the normal NixOS/Home Manager activation.
 
 ## OS Agents
 

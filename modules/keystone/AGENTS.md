@@ -27,7 +27,7 @@ Place holding-area changes by shape, mirroring keystone's own layout:
   `overlays/default.nix` next to `inputs.keystone.overlays.default`, destined for
   keystone's overlay set. Example:
   `overlays/keystone/weasyprint-darwin-tests.nix`.
-- **Profiles / agent assets** → the matching tree under `agents/`.
+- **Profiles / agent assets** → the matching project layer under `.agents/`.
 
 Host- or user-specific values (paths, hostnames, identities) are NOT
 keystone-bound — keep them in the consumer host config (e.g.

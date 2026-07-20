@@ -52,16 +52,20 @@ consumed by both the `keystone.hosts` NixOS module and the `ks` CLI.
 nix flake check
 
 # Build a host config (no deploy, no sudo)
-ks build [--dev] [<HOSTS>]         # defaults to current hostname
+ks build [<HOSTS>]                 # defaults to current hostname; --lock builds full NixOS system
 ks build ocean                     # build ocean config
 ks build ocean,maia                # build multiple configs
-ks build                           # build against the live keystone checkout in dev mode
 
-# Deploy to a host (switch or boot)
-ks update [--dev] [--boot] [<HOSTS>] # defaults to current hostname, locks by default
+# Build/deploy with local input overrides (keystone, agenix-secrets) — the
+# `ks` CLI no longer has a --dev flag; use bin/ks-dev instead
+./bin/ks-dev --build [HOST]        # build only, no activation, no sudo
+./bin/ks-dev [HOST]                # build and switch (default)
+./bin/ks-dev --boot [HOST]         # build and set as boot generation
+
+# Deploy to a host with locked inputs (switch or boot)
+ks update [--boot] [<HOSTS>]         # defaults to current hostname, locks by default
 ks update ocean                      # deploy to ocean (Tailscale, LAN fallback)
 ks update mercury,ocean              # deploy multiple (builds all first, then sequential)
-ks update --dev ncrmro-workstation   # deploy with live local repo overrides (bypasses locking)
 ks update --boot                     # nixos-rebuild boot (reboot required)
 ```
 
@@ -79,7 +83,7 @@ When changes span keystone or agenix-secrets:
 4. Push ks-config
 
 Before pushing, always build the workstation host to verify:
-`ks build` or `nixos-rebuild build --flake .#ncrmro-workstation`
+`./bin/ks-dev --build` (local overrides) or `nixos-rebuild build --flake .#ncrmro-workstation` (locked inputs)
 
 ### Development Workflow
 

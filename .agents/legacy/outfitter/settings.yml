@@ -1,0 +1,21 @@
+default_profile: keystone-development
+profile_sources:
+  # Merged last-wins: the project-local source has highest precedence.
+  - github: ai-outfitter/default-profiles
+    ref: 6b2e61e9b8f6a3213abf0729a98b5c0617d08372
+    path: profiles
+    only:
+      - founder
+  - github: ai-outfitter/community-profiles
+    ref: ed7d3237778c500b83802b0ead330d202d34d941
+    path: profiles
+  - github: ai-outfitter/outfitter
+    ref: 5aa5bdab657da73cd6d526641e4ccea801333cc0
+    path: .outfitter
+  - github: ai-outfitter/actions
+    ref: 26387cfd3ae9e9b48a9dc4006e08623defa76436
+    path: .outfitter
+  - github: ncrmro/.agents
+    ref: d5f0472c401a3ecb65ada0cb1f0e20d39b3f89ff
+    path: legacy/outfitter/profiles
+  - path: ./profiles
