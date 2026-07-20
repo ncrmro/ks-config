@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+import { api } from "../lib/api";
+
+let projects: Awaited<ReturnType<typeof api.listProjects>>["projects"] = [];
+let err: string | null = null;
+try {
+  ({ projects } = await api.listProjects());
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+---
+<Base title="Projects">
+  <h2>Projects</h2>
+  {err && <p class="empty">Could not reach server: {err}</p>}
+  {!err && projects.length === 0 && (
+    <p class="empty">No projects yet. POST one to <code>/api/projects</code>.</p>
+  )}
+  {projects.length > 0 && (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Created</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {projects.map((p) => (
+          <tr>
+            <td><a href={`/projects/${p.slug}`}>{p.title}</a></td>
+            <td class="muted">{new Date(p.createdAt).toLocaleString()}</td>
+            <td><span class={`pill ${p.status}`}>{p.status}</span></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>
