@@ -30,11 +30,11 @@
     "agenix-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1780713433,
-        "narHash": "sha256-cvwnyEvZBYBNpHMyPssecR6h7uQdKDMo/OdHb/iWesY=",
+        "lastModified": 1784339239,
+        "narHash": "sha256-C6+mvXFLxIBli0jmAzr9UbMKUp4k4WaFG6NV3G6/Q80=",
         "ref": "refs/heads/main",
-        "rev": "2860a84e54d865b7bc979661d9492796990fef5b",
-        "revCount": 45,
+        "rev": "d4db9eeb3c97cecf6640f8b3e89e9e25c99717f9",
+        "revCount": 46,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ncrmro/agenix-secrets.git"
       },
