@@ -33,7 +33,7 @@
   keystone.terminal.deepwork.enable = true;
   keystone.terminal.sandbox.enable = false;
 
-  # Outfitter settings/profiles are linked from agents/outfitter by the shared
-  # Home Manager config imported above.
+  # Personal agent assets and Outfitter's compatibility paths are linked from
+  # ~/repos/ncrmro/.agents by the shared Home Manager config imported above.
   programs.home-manager.enable = true;
 }

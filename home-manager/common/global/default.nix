@@ -6,6 +6,8 @@
   ...
 }:
 {
+  imports = [ ../../../modules/keystone/terminal/agent-assets-dotagents.nix ];
+
   home.username = lib.mkDefault "ncrmro";
   home.homeDirectory = lib.mkDefault "/home/ncrmro";
   home.stateVersion = lib.mkDefault "25.05";
@@ -14,12 +16,19 @@
 
   home.packages = [ pkgs.lsof ];
 
-  # Keep Outfitter's user-editable settings/profile source in ks-config while
-  # leaving ~/.outfitter/cache as normal mutable runtime state.
+  # The personal repository is the canonical global agent layer. Project-local
+  # .agents trees are discovered from their repository; Outfitter 0.10 keeps a
+  # compatibility view under legacy/outfitter. Leave ~/.outfitter/cache mutable.
+  home.file.".agents".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/.agents";
+  home.file.".claude/skills".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/.agents/skills";
   home.file.".outfitter/settings.yml".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/settings.yml";
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/.agents/legacy/outfitter/settings.yml";
   home.file.".outfitter/profiles".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/ks-config/agents/outfitter/profiles";
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/.agents/legacy/outfitter/profiles";
+  home.file.".outfitter/skills".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/ncrmro/.agents/skills";
 
   home.shellAliases = {
     killport = "function _killp(){ lsof -nti:$1 | xargs kill -9 };_killp";

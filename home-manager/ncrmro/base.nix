@@ -14,6 +14,7 @@
     zig
     gh
     gh-dash
+    nodejs
     # devcontainer # broken in nixpkgs unstable (node-gyp offline build)
     obsidian
     signal-desktop
