@@ -16,7 +16,6 @@ hosts/common/kubernetes/
 ├── ingress-nginx.nix         # Ingress controller (kube-system namespace)
 ├── kube-prometheus-stack.nix # Monitoring stack (monitoring namespace)
 ├── loki.nix                  # Log aggregation
-├── longhorn.nix              # Distributed storage system (longhorn-system namespace)
 └── zfs-localpv.nix          # ZFS storage provisioner (kube-system namespace)
 ```
 
@@ -89,24 +88,14 @@ services.k3s.autoDeployCharts = {
   - SSH service for Git operations
   - Example placeholder storage class configurations
 
-### Distributed Storage (longhorn-system namespace)
-- **longhorn**: Distributed block storage for Kubernetes
-  - Provides ReadWriteMany (RWX) and ReadWriteOnce (RWO) storage classes
-  - Web UI accessible at `longhorn.ncrmro.com`
-  - Multiple storage classes:
-    - `longhorn-rwx`: Multi-node read/write access with 3 replicas
-    - `longhorn-rwo`: Single-node access with 3 replicas
-    - `longhorn-fast`: Single-replica for non-critical workloads
-
 ## Storage Classes
 
 The configuration uses custom storage classes for persistent volumes:
 - `ocean-nvme`: High-performance ZFS storage for monitoring components and applications
 - `zfs-nvme`: Alternative ZFS storage class for fast storage
 - `ocean-hdd`: ZFS storage class for larger, slower storage needs
-- `longhorn-rwx`: ReadWriteMany storage using Longhorn distributed storage
-- `longhorn-rwo`: ReadWriteOnce storage using Longhorn distributed storage  
-- `longhorn-fast`: High-performance single-replica storage for non-critical data
+- `zfs-nvme-block`: Raw ZFS block volumes on `rpool/crypt/kube-blockstorage`
+- `zfs-block-nvme`: Compatibility name for raw ZFS block volumes on `rpool/crypt/kube-blockstorage`
 - ZFS LocalPV provides the underlying storage provisioner
 
 Example storage class usage in Gitea module:

@@ -12,7 +12,6 @@ This repository contains my NixOS flake and host configurations.
 - [DNS Configuration](docs/DNS.md) - DNS setup and configuration
 - [Kubernetes Modules](docs/KUBERNETES_MODULES.md) - Kubernetes modules documentation
 - [Kubernetes SSL Certificates](docs/KUBERNETES_SSL_CERTIFICATES.md) - SSL certificate management for Kubernetes
-- [Longhorn Storage](docs/LONGHORN_STORAGE.md) - Longhorn distributed storage configuration and usage
 - [Root Disk TPM Secure Boot Unlock](docs/ROOT_DISK_TPM_SECURE_BOOT_UNLOCK.md) - TPM and Secure Boot disk unlock configuration
 - [ZFS Remote Replication](docs/ZFS_REMOTE_REPLICATION.md) - ZFS remote replication setup
 - [Fingerprint Enrollment](docs/fingerprint-enrollment.md) - Fingerprint authentication setup
