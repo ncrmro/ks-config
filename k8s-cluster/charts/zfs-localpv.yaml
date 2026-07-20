@@ -1,0 +1,27 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: zfs-localpv
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+spec:
+  repo: https://openebs.github.io/zfs-localpv
+  chart: zfs-localpv
+  version: 2.8.0
+  targetNamespace: kube-system
+  createNamespace: false
+  failurePolicy: abort
+  values:
+    zfsController:
+      tolerations:
+        - key: ncrmro.com/region
+          operator: Equal
+          value: us-south-2
+          effect: NoSchedule
+    zfsNode:
+      tolerations:
+        - key: ncrmro.com/region
+          operator: Equal
+          value: us-south-2
+          effect: NoSchedule

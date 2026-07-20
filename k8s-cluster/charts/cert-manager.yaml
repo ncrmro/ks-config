@@ -1,0 +1,17 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cert-manager
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+spec:
+  repo: https://charts.jetstack.io
+  chart: cert-manager
+  version: v1.18.2
+  targetNamespace: kube-system
+  createNamespace: false
+  failurePolicy: abort
+  values:
+    crds:
+      enabled: true

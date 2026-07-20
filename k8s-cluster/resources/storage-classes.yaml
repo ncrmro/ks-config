@@ -1,0 +1,82 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ocean-nvme
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+parameters:
+  thinprovision: "no"
+  fstype: zfs
+  poolname: rpool/crypt/kube-pv
+  shared: "yes"
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: kubernetes.io/hostname
+        values:
+          - ocean
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: zfs-nvme
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+parameters:
+  thinprovision: "no"
+  fstype: zfs
+  poolname: rpool/crypt/kube-pv
+  shared: "yes"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ocean-hdd
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+parameters:
+  thinprovision: "no"
+  fstype: zfs
+  poolname: ocean/crypt/kube-pv
+  shared: "yes"
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: kubernetes.io/hostname
+        values:
+          - ocean
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: zfs-nvme-block
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  poolname: rpool/crypt/kube-blockstorage
+  volumeMode: Block
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: zfs-block-nvme
+  labels:
+    app.kubernetes.io/managed-by: k8s-cluster
+provisioner: zfs.csi.openebs.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  poolname: rpool/crypt/kube-blockstorage
+  volumeMode: Block

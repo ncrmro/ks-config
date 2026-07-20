@@ -27,9 +27,7 @@
     ../common/optional/servarr.nix
     ../common/optional/home-assistant.nix
     ./k3s.nix
-    ./k3s-storage-classes.nix
     ./k3s-host-services.nix
-    ../common/kubernetes/default.nix
     ./nfs.nix
     ../common/optional/smb-backup-shares.nix
     ./vaultwarden.nix

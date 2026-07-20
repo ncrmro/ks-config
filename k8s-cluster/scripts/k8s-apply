@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: k8s-apply [--dry-run]
+
+Apply Ocean's K3s HelmCharts, wait for their install jobs and workloads, then
+apply dependent cluster resources. Resources absent from source are not pruned.
+EOF
+}
+
+dry_run=false
+case "${1:-}" in
+  "") ;;
+  --dry-run) dry_run=true ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
+
+: "${DEVENV_ROOT:?Run k8s-apply from the repository devenv}"
+cluster_dir="$DEVENV_ROOT/k8s-cluster"
+export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config.ocean.yml}"
+expected_server="${K8S_EXPECTED_SERVER:-https://100.64.0.6:6443}"
+field_manager="k8s-cluster"
+timeout="${K8S_APPLY_TIMEOUT:-10m}"
+
+if [[ ! -r "$KUBECONFIG" ]]; then
+  echo "k8s-apply: kubeconfig is not readable: $KUBECONFIG" >&2
+  exit 1
+fi
+
+actual_server="$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
+if [[ "$actual_server" != "$expected_server" ]]; then
+  echo "k8s-apply: refusing cluster server '$actual_server'; expected '$expected_server'" >&2
+  exit 1
+fi
+kubectl get --raw=/readyz >/dev/null
+
+apply_file() {
+  local file="$1"
+  # The initial cutover intentionally adopts fields currently owned by K3s's
+  # Nix-generated AddOns. Subsequent runs use this same field manager.
+  local -a args=(apply --server-side --force-conflicts --field-manager="$field_manager")
+  if [[ "$dry_run" == true ]]; then
+    args+=(--dry-run=server)
+  fi
+  kubectl "${args[@]}" -f "$file"
+}
+
+chart_files=(
+  "$cluster_dir/charts/cert-manager.yaml"
+  "$cluster_dir/charts/ingress-nginx.yaml"
+  "$cluster_dir/charts/zfs-localpv.yaml"
+)
+
+if [[ "$dry_run" == true ]]; then
+  for chart_file in "${chart_files[@]}"; do
+    apply_file "$chart_file"
+  done
+  for resource_file in "$cluster_dir"/resources/*.yaml; do
+    apply_file "$resource_file"
+  done
+  exit 0
+fi
+
+wait_for_chart_job() {
+  local namespace="$1"
+  local chart_name="$2"
+  local old_generation="$3"
+  local old_job_uid="$4"
+  local deadline=$((SECONDS + 600))
+  local generation job_name job_uid failed
+
+  while (( SECONDS < deadline )); do
+    generation="$(kubectl get helmchart "$chart_name" -n "$namespace" -o jsonpath='{.metadata.generation}')"
+    job_name="$(kubectl get helmchart "$chart_name" -n "$namespace" -o jsonpath='{.status.jobName}')"
+    failed="$(kubectl get helmchart "$chart_name" -n "$namespace" -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}')"
+    if [[ "$failed" == "True" ]]; then
+      echo "k8s-apply: HelmChart $namespace/$chart_name reports failure" >&2
+      [[ -n "$job_name" ]] && kubectl logs -n "$namespace" "job/$job_name" >&2 || true
+      exit 1
+    fi
+
+    if [[ -n "$job_name" ]]; then
+      job_uid="$(kubectl get job "$job_name" -n "$namespace" -o jsonpath='{.metadata.uid}' 2>/dev/null || true)"
+      if [[ -n "$job_uid" ]]; then
+        if [[ -z "$old_generation" || "$generation" == "$old_generation" || "$job_uid" != "$old_job_uid" ]]; then
+          if kubectl wait -n "$namespace" --for=condition=complete "job/$job_name" --timeout="$timeout"; then
+            return
+          fi
+          kubectl logs -n "$namespace" "job/$job_name" >&2 || true
+          exit 1
+        fi
+      fi
+    fi
+    sleep 2
+  done
+
+  echo "k8s-apply: timed out waiting for HelmChart $namespace/$chart_name to create an install job" >&2
+  exit 1
+}
+
+for chart_file in "${chart_files[@]}"; do
+  chart_name="$(yq -r '.metadata.name' "$chart_file")"
+  namespace="$(yq -r '.metadata.namespace' "$chart_file")"
+  old_generation="$(kubectl get helmchart "$chart_name" -n "$namespace" -o jsonpath='{.metadata.generation}' 2>/dev/null || true)"
+  old_job_name="$(kubectl get helmchart "$chart_name" -n "$namespace" -o jsonpath='{.status.jobName}' 2>/dev/null || true)"
+  old_job_uid=""
+  if [[ -n "$old_job_name" ]]; then
+    old_job_uid="$(kubectl get job "$old_job_name" -n "$namespace" -o jsonpath='{.metadata.uid}' 2>/dev/null || true)"
+  fi
+
+  apply_file "$chart_file"
+  wait_for_chart_job "$namespace" "$chart_name" "$old_generation" "$old_job_uid"
+done
+
+kubectl wait --for=condition=established crd/clusterissuers.cert-manager.io --timeout="$timeout"
+kubectl wait --for=condition=established crd/certificates.cert-manager.io --timeout="$timeout"
+
+for resource_file in "$cluster_dir"/resources/*.yaml; do
+  apply_file "$resource_file"
+done
+
+rollouts=(
+  deployment/cert-manager
+  deployment/cert-manager-cainjector
+  deployment/cert-manager-webhook
+  deployment/ingress-nginx-controller
+  deployment/zfs-localpv-controller
+  daemonset/zfs-localpv-node
+)
+for workload in "${rollouts[@]}"; do
+  kubectl rollout status -n kube-system "$workload" --timeout="$timeout"
+done
+
+kubectl wait --for=condition=Ready clusterissuer/letsencrypt-cloudflare --timeout="$timeout"
+kubectl wait -n kube-system --for=condition=Ready certificate/wildcard-ncrmro-com --timeout="$timeout"

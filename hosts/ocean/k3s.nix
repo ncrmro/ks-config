@@ -5,10 +5,6 @@
   ...
 }:
 {
-  imports = [
-    ../common/kubernetes/zfs-localpv.nix
-  ];
-
   # Define the K3s server token secret
   age.secrets.k3s-server-token = {
     file = "${inputs.agenix-secrets}/secrets/k3s-server-token.age";
@@ -44,6 +40,24 @@
         #   password = "";
         # };
       };
+  };
+
+  # ZFS LocalPV runs from a Kubernetes HelmChart managed in k8s-cluster, but
+  # its node plugin still needs the host's ZFS tools at conventional paths.
+  environment.systemPackages = [ pkgs.zfs ];
+  systemd.services.zfs-usr-bin = {
+    description = "ZFS symlinks in /usr/bin for OpenEBS ZFS LocalPV";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = [
+        "${pkgs.coreutils}/bin/mkdir -p /usr/bin"
+        "${pkgs.coreutils}/bin/ln -sf ${pkgs.zfs}/bin/zfs /usr/bin/zfs"
+        "${pkgs.coreutils}/bin/ln -sf ${pkgs.zfs}/bin/zpool /usr/bin/zpool"
+      ];
+      RemainAfterExit = true;
+    };
   };
 
   # k3s configuration
