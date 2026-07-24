@@ -6,8 +6,10 @@
   ...
 }:
 {
-  # Use the latest ZFS-compatible kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Pin a ZFS-compatible kernel. linuxPackages_latest advanced to 7.1.x, which
+  # ZFS 2.4.x does not support yet (the assertion below fires). 6.12 is the
+  # current LTS and is ZFS-compatible.
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # Fail at build time if kernel is incompatible with ZFS
   assertions = [

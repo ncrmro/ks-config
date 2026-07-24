@@ -21,6 +21,14 @@
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    # Secure Boot. Overridden from the consumer flake (keystone follows this)
+    # because keystone's pinned lanzaboote set the now-removed
+    # `boot.bootspec.enable` option, which is a hard error on current nixpkgs.
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Pin the Hyprland desktop stack in the consumer flake so desktop updates
     # do not require changing Keystone. Keystone follows these inputs while its
     # desktop modules are still in use.
@@ -47,6 +55,7 @@
       inputs.llm-agents.follows = "llm-agents";
       inputs.hyprland.follows = "hyprland";
       inputs.hyprpaper.follows = "hyprpaper";
+      inputs.lanzaboote.follows = "lanzaboote";
     };
 
     # llama.cpp - latest for MXFP4 support (workstation-specific)
