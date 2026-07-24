@@ -6,6 +6,10 @@
   ...
 }:
 {
+  # Use Hyprland's master layout on every ks-config desktop host. Keystone
+  # supplies the remaining master-layout defaults.
+  wayland.windowManager.hyprland.settings.general.layout = "master";
+
   # Add Flatpak exports to XDG_DATA_DIRS for application launcher
   home.sessionVariables = {
     XDG_DATA_DIRS = "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share";

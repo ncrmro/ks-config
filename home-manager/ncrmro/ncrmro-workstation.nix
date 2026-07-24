@@ -12,15 +12,11 @@
     ../common/features/desktop/openscad.nix
   ];
 
-  # Workstation uses Hyprland's master layout for the ultrawide monitor.
-  # Keep this host-specific; laptops should use Keystone/Hyprland defaults.
-  wayland.windowManager.hyprland.settings = {
-    general.layout = "master";
-    master = {
-      new_status = "slave";
-      orientation = "center";
-      slave_count_for_center_master = 0;
-    };
+  # Keep the ultrawide-specific master layout behavior host-specific.
+  wayland.windowManager.hyprland.settings.master = {
+    new_status = "slave";
+    orientation = "center";
+    slave_count_for_center_master = 0;
   };
 
   programs.zsh = {
