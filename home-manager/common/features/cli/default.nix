@@ -6,6 +6,7 @@
 {
   imports = [
     ./ssh.nix
+    ./llm-agents.nix
   ];
   # UV - Fast Python package installer and resolver written in Rust
   # https://github.com/astral-sh/uv

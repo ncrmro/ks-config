@@ -12,12 +12,6 @@
     ../common/features/desktop/openscad.nix
   ];
 
-  keystone.terminal.ai.ollama = {
-    enable = true;
-    host = "http://ncrmro-workstation:11434";
-    defaultModel = "qwen3:32b";
-  };
-
   # Workstation uses Hyprland's master layout for the ultrawide monitor.
   # Keep this host-specific; laptops should use Keystone/Hyprland defaults.
   wayland.windowManager.hyprland.settings = {

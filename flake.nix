@@ -123,6 +123,25 @@
         };
         shared.specialArgs = fleetSpecialArgs;
         shared.systemModules = [
+          # Shared Ollama service: server on the provider host, client (endpoint
+          # env + *-local coding-harness wrappers) on every fleet host. Wired
+          # once here; hosts are not configured individually.
+          ./modules/nixos/ollama.nix
+          {
+            local.ollama = {
+              enable = true;
+              server = {
+                host = "ncrmro-workstation";
+                acceleration = "rocm";
+                models = [
+                  "qwen3:32b"
+                  "qwen3:4b"
+                ];
+                environmentVariables.OLLAMA_CONTEXT_LENGTH = "64000";
+              };
+              model = "qwen3:32b";
+            };
+          }
           # Experimental: zstd-compressed zram swap at 50% of RAM with
           # swappiness=150, so the kernel reaches for compressed swap
           # before evicting clean page-cache. See `keystone.os.zram.*`
