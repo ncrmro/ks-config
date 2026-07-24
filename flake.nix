@@ -21,6 +21,23 @@
     # instead of being re-evaluated against this consumer's package set.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    # Pin the Hyprland desktop stack in the consumer flake so desktop updates
+    # do not require changing Keystone. Keystone follows these inputs while its
+    # desktop modules are still in use.
+    hyprland.url = "github:hyprwm/Hyprland?ref=v0.56.0";
+    hyprpaper = {
+      url = "github:hyprwm/hyprpaper?ref=v0.8.4";
+      inputs.nixpkgs.follows = "hyprland/nixpkgs";
+      inputs.systems.follows = "hyprland/systems";
+      inputs.aquamarine.follows = "hyprland/aquamarine";
+      inputs.hyprgraphics.follows = "hyprland/hyprgraphics";
+      inputs.hyprlang.follows = "hyprland/hyprlang";
+      inputs.hyprtoolkit.follows = "hyprland/hyprland-guiutils/hyprtoolkit";
+      inputs.hyprutils.follows = "hyprland/hyprutils";
+      inputs.hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+      inputs.hyprwire.follows = "hyprland/hyprwire";
+    };
+
     # Keystone is locked to GitHub so every host evaluates the same committed
     # revision; use bin/ks-dev for local path overrides while developing
     # uncommitted Keystone changes.
@@ -28,6 +45,8 @@
       url = "github:ncrmro/keystone";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.llm-agents.follows = "llm-agents";
+      inputs.hyprland.follows = "hyprland";
+      inputs.hyprpaper.follows = "hyprpaper";
     };
 
     # llama.cpp - latest for MXFP4 support (workstation-specific)
