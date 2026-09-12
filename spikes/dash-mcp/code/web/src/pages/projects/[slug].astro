@@ -1,0 +1,105 @@
+---
+import Base from "../../layouts/Base.astro";
+import { api } from "../../lib/api";
+
+const { slug } = Astro.params as { slug: string };
+let detail: Awaited<ReturnType<typeof api.getProject>> | null = null;
+let err: string | null = null;
+try {
+  detail = await api.getProject(slug);
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+---
+<Base title={detail?.project.title ?? slug}>
+  {err && <p class="empty">{err}</p>}
+  {detail && (
+    <>
+      <h2>{detail.project.title} <span class={`pill ${detail.project.status}`}>{detail.project.status}</span></h2>
+      <p class="muted">
+        owner {detail.project.ownerAgent ?? "—"}
+        {detail.project.missionMdPath && (
+          <> · <code>{detail.project.missionMdPath}</code></>
+        )}
+      </p>
+      {detail.project.purpose && <p>{detail.project.purpose}</p>}
+
+      {detail.values.length > 0 && (
+        <>
+          <h3>Core values</h3>
+          <ul>{detail.values.map((v) => <li>{v}</li>)}</ul>
+        </>
+      )}
+
+      {(detail.scopeIn.length > 0 || detail.scopeOut.length > 0) && (
+        <>
+          <h3>Scope</h3>
+          {detail.scopeIn.length > 0 && (
+            <>
+              <p class="muted">In scope</p>
+              <ul>{detail.scopeIn.map((s) => <li>{s}</li>)}</ul>
+            </>
+          )}
+          {detail.scopeOut.length > 0 && (
+            <>
+              <p class="muted">Out of scope</p>
+              <ul>{detail.scopeOut.map((s) => <li>{s}</li>)}</ul>
+            </>
+          )}
+        </>
+      )}
+
+      {detail.repos.length > 0 && (
+        <>
+          <h3>Repos</h3>
+          <ul>
+            {detail.repos.map((r) => (
+              <li>
+                <a href={r.url} rel="noopener noreferrer">{r.ref}</a>
+                {r.label && <span class="muted"> · {r.label}</span>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {detail.milestones.length > 0 && (
+        <>
+          <h3>Milestones</h3>
+          <table>
+            <thead><tr><th>Title</th><th>Status</th><th>Due</th></tr></thead>
+            <tbody>
+              {detail.milestones.map((m) => (
+                <tr>
+                  <td>{m.title}</td>
+                  <td><span class={`pill ${m.status}`}>{m.status}</span></td>
+                  <td class="muted">{m.dueAt ? new Date(m.dueAt).toLocaleDateString() : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <h3>Reports ({detail.reports.length})</h3>
+      {detail.reports.length === 0 && <p class="empty">No reports yet.</p>}
+      {detail.reports.map((r) => (
+        <div style="border:1px solid var(--border);border-radius:6px;padding:0.75rem;margin:0.5rem 0">
+          <div class="muted" style="font-size:0.8rem">
+            <span class={`pill ${r.kind}`}>{r.kind}</span>
+            {' · '}
+            <strong>{r.agent}</strong>@{r.host}
+            {' · '}
+            {new Date(r.createdAt).toLocaleString()}
+          </div>
+          <div style="margin-top:0.4rem;white-space:pre-wrap">{r.summary}</div>
+          {r.refs.length > 0 && (
+            <div class="muted" style="margin-top:0.4rem;font-size:0.85rem">
+              refs: {r.refs.join(", ")}
+            </div>
+          )}
+        </div>
+      ))}
+    </>
+  )}
+</Base>

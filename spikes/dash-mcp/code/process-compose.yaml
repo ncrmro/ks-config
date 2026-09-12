@@ -1,0 +1,59 @@
+version: "0.5"
+
+# Each `command:` sources `.ports.env` (written by the `./pc` wrapper) before
+# launching its process. This sidesteps process-compose's inconsistent env
+# inheritance / template substitution in this version. When the spike
+# graduates, swap to first-class `env_cmds` once we confirm support.
+
+processes:
+  sqld:
+    command: |
+      set -a; . ./.ports.env; set +a
+      mkdir -p .data
+      exec sqld \
+        --http-listen-addr "127.0.0.1:$SQLD_HTTP_PORT" \
+        --db-path .data/dash-mcp.db
+    readiness_probe:
+      exec:
+        command: |
+          set -a; . ./.ports.env; set +a
+          curl -fsS "http://127.0.0.1:$SQLD_HTTP_PORT/health" >/dev/null
+      initial_delay_seconds: 1
+      period_seconds: 1
+      failure_threshold: 30
+
+  migrate:
+    command: |
+      set -a; . ./.ports.env; set +a
+      exec bun run --filter @dash-mcp/server migrate
+    depends_on:
+      sqld:
+        condition: process_healthy
+    availability:
+      restart: "no"
+
+  seed:
+    command: |
+      set -a; . ./.ports.env; set +a
+      exec bun run --filter @dash-mcp/server seed
+    depends_on:
+      migrate:
+        condition: process_completed_successfully
+    availability:
+      restart: "no"
+
+  server:
+    command: |
+      set -a; . ./.ports.env; set +a
+      exec bun run --filter @dash-mcp/server dev
+    depends_on:
+      seed:
+        condition: process_completed_successfully
+
+  web:
+    command: |
+      set -a; . ./.ports.env; set +a
+      exec bun run --filter @dash-mcp/web dev -- --port "$WEB_PORT" --host 127.0.0.1
+    depends_on:
+      server:
+        condition: process_started

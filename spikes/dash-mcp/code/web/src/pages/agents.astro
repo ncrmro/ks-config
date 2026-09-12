@@ -1,0 +1,32 @@
+---
+import Base from "../layouts/Base.astro";
+import { api } from "../lib/api";
+
+let agents: Awaited<ReturnType<typeof api.listAgents>>["agents"] = [];
+let err: string | null = null;
+try {
+  ({ agents } = await api.listAgents());
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+---
+<Base title="Agents">
+  <h2>Agents</h2>
+  {err && <p class="empty">{err}</p>}
+  {!err && agents.length === 0 && <p class="empty">No agents have reported yet.</p>}
+  {agents.length > 0 && (
+    <table>
+      <thead><tr><th>Agent</th><th>Host</th><th>First seen</th><th>Last seen</th></tr></thead>
+      <tbody>
+        {agents.map((a) => (
+          <tr>
+            <td>{a.name}</td>
+            <td>{a.host}</td>
+            <td class="muted">{new Date(a.firstSeen).toLocaleString()}</td>
+            <td class="muted">{new Date(a.lastSeen).toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>

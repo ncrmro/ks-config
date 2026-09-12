@@ -1,0 +1,23 @@
+{
+  "name": "dash-mcp",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "db",
+    "server",
+    "mcp",
+    "web"
+  ],
+  "scripts": {
+    "typecheck": "bun run --filter '*' typecheck",
+    "db:generate": "bun run --filter @dash-mcp/db generate",
+    "db:check": "bun run --filter @dash-mcp/db check",
+    "server:dev": "bun run --filter @dash-mcp/server dev",
+    "web:dev": "bun run --filter @dash-mcp/web dev",
+    "mcp": "bun run --filter @dash-mcp/mcp start"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "@types/bun": "^1.3.14"
+  }
+}

@@ -1,0 +1,57 @@
+---
+const { title } = Astro.props as { title: string };
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} — dash-mcp</title>
+    <style is:global>
+      :root {
+        color-scheme: light dark;
+        --fg: #1a1a1a;
+        --bg: #ffffff;
+        --muted: #666;
+        --border: #ddd;
+        --accent: #2a6df4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --fg: #eee; --bg: #111; --muted: #999; --border: #333; --accent: #6ea0ff; }
+      }
+      * { box-sizing: border-box; }
+      body { font: 14px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); margin: 0; }
+      header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1.5rem; align-items: baseline; }
+      header h1 { margin: 0; font-size: 1.1rem; }
+      header nav a { color: var(--fg); text-decoration: none; margin-right: 1rem; }
+      header nav a:hover { color: var(--accent); }
+      main { padding: 1.5rem; max-width: 960px; margin: 0 auto; }
+      a { color: var(--accent); }
+      h2 { margin-top: 1.5rem; }
+      .pill { display: inline-block; padding: 1px 8px; border: 1px solid var(--border); border-radius: 999px; font-size: 0.75rem; color: var(--muted); }
+      .pill.active { color: #1f7a3a; border-color: #1f7a3a; }
+      .pill.blocked { color: #b9381a; border-color: #b9381a; }
+      .pill.done { color: var(--muted); }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+      th { color: var(--muted); font-weight: 500; }
+      pre { background: rgba(127,127,127,0.12); padding: 8px; border-radius: 4px; overflow-x: auto; }
+      .muted { color: var(--muted); }
+      .empty { color: var(--muted); padding: 2rem; text-align: center; border: 1px dashed var(--border); border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>dash-mcp</h1>
+      <nav>
+        <a href="/">Projects</a>
+        <a href="/tasks">Tasks</a>
+        <a href="/hosts">Hosts</a>
+        <a href="/agents">Agents</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

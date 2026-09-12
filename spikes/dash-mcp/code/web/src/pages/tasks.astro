@@ -1,0 +1,100 @@
+---
+import Base from "../layouts/Base.astro";
+import { api } from "../lib/api";
+
+const url = new URL(Astro.request.url);
+const assignee = url.searchParams.get("assignee") ?? undefined;
+const status = url.searchParams.get("status") ?? undefined;
+const kind = url.searchParams.get("kind") ?? undefined;
+
+let tasks: Awaited<ReturnType<typeof api.listTasks>>["tasks"] = [];
+let agents: Awaited<ReturnType<typeof api.listAgents>>["agents"] = [];
+let err: string | null = null;
+try {
+  [{ tasks }, { agents }] = await Promise.all([
+    api.listTasks({ assignee, status, kind }),
+    api.listAgents(),
+  ]);
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+
+const assigneeOptions = Array.from(
+  new Set(agents.map((a) => a.name).filter(Boolean)),
+).sort();
+const statusOptions = ["open", "in_progress", "blocked", "done", "wontfix"];
+const kindOptions = ["review", "reply", "decide", "implement", "triage", "ack", "other"];
+---
+<Base title="Tasks">
+  <h2>Tasks</h2>
+
+  <form method="get" style="display:flex;gap:0.75rem;align-items:end;margin-bottom:1rem;flex-wrap:wrap">
+    <label>
+      <div class="muted" style="font-size:0.75rem">Assignee</div>
+      <select name="assignee">
+        <option value="">— any —</option>
+        {assigneeOptions.map((a) => (
+          <option value={a} selected={a === assignee}>{a}</option>
+        ))}
+      </select>
+    </label>
+    <label>
+      <div class="muted" style="font-size:0.75rem">Status</div>
+      <select name="status">
+        <option value="">— any —</option>
+        {statusOptions.map((s) => (
+          <option value={s} selected={s === status}>{s}</option>
+        ))}
+      </select>
+    </label>
+    <label>
+      <div class="muted" style="font-size:0.75rem">Kind</div>
+      <select name="kind">
+        <option value="">— any —</option>
+        {kindOptions.map((k) => (
+          <option value={k} selected={k === kind}>{k}</option>
+        ))}
+      </select>
+    </label>
+    <button type="submit">Filter</button>
+    {(assignee || status || kind) && <a href="/tasks" class="muted">Clear</a>}
+  </form>
+
+  {err && <p class="empty">{err}</p>}
+  {!err && tasks.length === 0 && (
+    <p class="empty">No tasks match. <a href="/tasks">Clear filters</a>.</p>
+  )}
+
+  {tasks.length > 0 && (
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Project</th>
+          <th>Assignee</th>
+          <th>Kind</th>
+          <th>Status</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tasks.map((t) => (
+          <tr>
+            <td>{t.title}</td>
+            <td><a href={`/projects/${t.projectSlug}`}>{t.projectSlug}</a></td>
+            <td>{t.assigneeAgent ?? <span class="muted">—</span>}</td>
+            <td><span class="pill">{t.kind}</span></td>
+            <td><span class={`pill ${t.status}`}>{t.status}</span></td>
+            <td>
+              {t.sourceUrl ? (
+                <a href={t.sourceUrl} rel="noopener noreferrer">{t.sourceRef}</a>
+              ) : (
+                <span class="muted">{t.sourceRef ?? "—"}</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>

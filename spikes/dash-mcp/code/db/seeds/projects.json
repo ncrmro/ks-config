@@ -1,0 +1,287 @@
+[
+  {
+    "slug": "keystone",
+    "title": "Keystone",
+    "purpose": "Self-sovereign NixOS infrastructure platform for secure, encrypted systems on any hardware.",
+    "status": "active",
+    "ownerAgent": "drago",
+    "missionMdPath": "projects/keystone/mission.md",
+    "values": [
+      "Operational rigor over novelty",
+      "Conventions as code",
+      "Reproducibility over convenience"
+    ],
+    "scopeIn": [
+      "Reusable NixOS modules",
+      "DeepWork jobs",
+      "Per-agent runtime"
+    ],
+    "scopeOut": [
+      "Adopter-specific host config",
+      "Vendor lock-in"
+    ],
+    "milestones": [
+      { "title": "Nail down reliable OS install for laptops + workstations", "status": "in_progress" },
+      { "title": "Stabilize agentctl + per-agent MCP config publishing", "status": "done" },
+      { "title": "MacBook via Asahi (stretch)", "status": "planned" }
+    ],
+    "repos": [
+      {
+        "ref": "gh:ncrmro/keystone",
+        "url": "https://github.com/ncrmro/keystone",
+        "label": "platform"
+      }
+    ],
+    "reports": [
+      {
+        "host": "ncrmro-workstation",
+        "agent": "drago",
+        "kind": "work_started",
+        "summary": "Picked up Keystone ownership for this fleet rotation.",
+        "refs": ["gh:ncrmro/keystone"]
+      },
+      {
+        "host": "ncrmro-workstation",
+        "agent": "drago",
+        "kind": "work_update",
+        "summary": "Published per-agent MCP configs via agentctl; dash-mcp registered for drago and luce.",
+        "refs": ["gh:ncrmro/keystone#280", "gh:ncrmro/keystone#281"]
+      }
+    ],
+    "tasks": [
+      {
+        "title": "Review #281: claude --agent <name> CLI surface",
+        "kind": "review",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/keystone#281",
+        "sourceUrl": "https://github.com/ncrmro/keystone/pull/281",
+        "requester": "ncrmro",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Reply to vega handoff thread",
+        "kind": "reply",
+        "status": "open",
+        "sourceRef": "agent:luce/handoff/2026-05-20-keystone",
+        "requester": "luce",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Decide: Asahi MacBook tier-1 support cadence",
+        "kind": "decide",
+        "status": "open",
+        "requester": "drago",
+        "assigneeAgent": "drago"
+      }
+    ]
+  },
+  {
+    "slug": "ks-systems",
+    "title": "Managed Kubernetes for B2B SaaS",
+    "purpose": "Cut managed-service premiums by delivering turnkey, production-grade Kubernetes to mid-sized B2B SaaS companies.",
+    "status": "active",
+    "ownerAgent": "luce",
+    "missionMdPath": "projects/ks.systems/mission.md",
+    "values": [
+      "Operational rigor over novelty",
+      "Turnkey, not framework",
+      "Customer economics first"
+    ],
+    "scopeIn": [
+      "Managed control plane",
+      "Pre-configured platform stack",
+      "Guided workload migration"
+    ],
+    "scopeOut": [
+      "Non-Kubernetes workloads",
+      "Multi-region HA",
+      "24/7 on-call"
+    ],
+    "milestones": [
+      { "title": "Production-ready Rook/Ceph storage profile", "status": "in_progress" },
+      { "title": "Mini-ITX modular case kits", "status": "planned" },
+      { "title": "First paying B2B SaaS customer", "status": "planned" }
+    ],
+    "repos": [
+      {
+        "ref": "gh:ncrmro/ks-systems-hardware",
+        "url": "https://github.com/ncrmro/ks-systems-hardware",
+        "label": "hardware"
+      }
+    ],
+    "reports": [
+      {
+        "host": "ocean",
+        "agent": "luce",
+        "kind": "work_started",
+        "summary": "Owning ks.systems platform delivery from ocean.",
+        "refs": ["gh:ncrmro/ks-systems-hardware"]
+      },
+      {
+        "host": "ocean",
+        "agent": "luce",
+        "kind": "work_update",
+        "summary": "Rook/Ceph storage profile validated on a 3-node cluster; documenting runbook.",
+        "refs": []
+      }
+    ],
+    "tasks": [
+      {
+        "title": "Implement: Rook/Ceph storage profile runbook draft",
+        "kind": "implement",
+        "status": "in_progress",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      },
+      {
+        "title": "Triage Mini-ITX case kit suppliers",
+        "kind": "triage",
+        "status": "open",
+        "sourceRef": "note:projects/ks.systems/case-kit-suppliers.md",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      },
+      {
+        "title": "Reply to first prospect intro email",
+        "kind": "reply",
+        "status": "open",
+        "sourceRef": "mail:<prospect-intro-2026-05-19@example.com>",
+        "requester": "ncrmro",
+        "assigneeAgent": "luce"
+      }
+    ]
+  },
+  {
+    "slug": "plant-caravan",
+    "title": "Plant Caravan",
+    "purpose": "Autonomous agricultural systems that precede human exploration of the solar system; Earth ops fund and validate space-bound tech.",
+    "status": "active",
+    "ownerAgent": null,
+    "missionMdPath": "projects/plant-caravan/mission.md",
+    "values": [
+      "Plants precede people",
+      "Democratize horticulture",
+      "Dual-use technology",
+      "Quantifiable output"
+    ],
+    "scopeIn": [
+      "Autonomous growing platforms",
+      "Modular sensor hardware",
+      "Nutrition-yield tracking"
+    ],
+    "scopeOut": [
+      "Automated harvesting",
+      "Atmospheric processing",
+      "Orbital deployment"
+    ],
+    "milestones": [
+      { "title": "Indoor sensor v1 (temp + humidity + soil moisture)", "status": "in_progress" },
+      { "title": "First quantified nutrition-yield report from home grower", "status": "planned" },
+      { "title": "Outdoor sensor form factor", "status": "planned" }
+    ],
+    "repos": [
+      {
+        "ref": "gh:ncrmro/plant-caravan",
+        "url": "https://github.com/ncrmro/plant-caravan",
+        "label": "main"
+      }
+    ],
+    "reports": [
+      {
+        "host": "ncrmro-workstation",
+        "agent": "drago",
+        "kind": "note",
+        "summary": "Indoor sensor v1 firmware compiles clean; pending breadboard test on workstation bench.",
+        "refs": ["gh:ncrmro/plant-caravan"]
+      }
+    ],
+    "tasks": [
+      {
+        "title": "Implement indoor sensor v1 breadboard test plan",
+        "kind": "implement",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/plant-caravan#14",
+        "sourceUrl": "https://github.com/ncrmro/plant-caravan/issues/14",
+        "requester": "ncrmro",
+        "assigneeAgent": "drago"
+      },
+      {
+        "title": "Decide: outdoor sensor form-factor (waterproof vs vented)",
+        "kind": "decide",
+        "status": "open",
+        "requester": "ncrmro"
+      }
+    ]
+  },
+  {
+    "slug": "catalyst",
+    "title": "Catalyst",
+    "purpose": "Business platform; status snapshot pending fuller project write-up in ~/notes.",
+    "status": "proposed",
+    "ownerAgent": null,
+    "missionMdPath": null,
+    "values": [],
+    "scopeIn": [],
+    "scopeOut": [],
+    "milestones": [
+      { "title": "Write mission.md (Purpose / Values / Scope)", "status": "planned" },
+      { "title": "Define MVP feature set", "status": "planned" }
+    ],
+    "repos": [
+      {
+        "ref": "gh:ncrmro/catalyst",
+        "url": "https://github.com/ncrmro/catalyst",
+        "label": "main"
+      }
+    ],
+    "reports": [],
+    "tasks": [
+      {
+        "title": "Write mission.md for Catalyst (Purpose / Values / Scope)",
+        "kind": "implement",
+        "status": "open",
+        "sourceRef": "note:projects/catalyst/mission.md",
+        "requester": "ncrmro"
+      }
+    ]
+  },
+  {
+    "slug": "meze",
+    "title": "Meze",
+    "purpose": "Make meal planning easy for households.",
+    "status": "proposed",
+    "ownerAgent": null,
+    "missionMdPath": null,
+    "values": [],
+    "scopeIn": [
+      "Meal-plan generation",
+      "Household scheduling"
+    ],
+    "scopeOut": [
+      "Restaurant ordering",
+      "Calorie tracking as a primary goal"
+    ],
+    "milestones": [
+      { "title": "Weekly meal plan generator", "status": "in_progress" },
+      { "title": "Shared household calendar", "status": "planned" }
+    ],
+    "repos": [
+      {
+        "ref": "gh:ncrmro/meze",
+        "url": "https://github.com/ncrmro/meze",
+        "label": "main"
+      }
+    ],
+    "reports": [],
+    "tasks": [
+      {
+        "title": "Implement weekly meal plan generator",
+        "kind": "implement",
+        "status": "in_progress",
+        "sourceRef": "gh:ncrmro/meze#7",
+        "sourceUrl": "https://github.com/ncrmro/meze/issues/7",
+        "requester": "ncrmro"
+      }
+    ]
+  }
+]
