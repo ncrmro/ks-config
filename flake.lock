@@ -1673,11 +1673,11 @@
     "keystone-admin": {
       "flake": false,
       "locked": {
-        "lastModified": 1793741462,
-        "narHash": "sha256-B2I7QPX8wN8DRrl+urbc3BLi5xhSv9MV9S7980twIJc=",
+        "lastModified": 1793743437,
+        "narHash": "sha256-Zg21kc6fl8NNLAfVWtfwHj1oGmLDGSNkV5XCg7XVsp4=",
         "ref": "feat/portable-administration",
-        "rev": "725d337799d453897238924bb7151d381d2357b3",
-        "revCount": 146,
+        "rev": "23b18f35c7ac2c08bba27f60b83eeac3f88a583f",
+        "revCount": 147,
         "type": "git",
         "url": "ssh://forgejo@git.ncrmro.com:2222/ks.systems/os.git"
       },
