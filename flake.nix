@@ -2,6 +2,10 @@
   description = "NCRMRO's NixOS config";
 
   inputs = {
+    keystone-admin = {
+      url = "git+ssh://forgejo@git.ncrmro.com:2222/ks.systems/os.git?ref=feat/portable-administration";
+      flake = false;
+    };
     # Main package sources
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
