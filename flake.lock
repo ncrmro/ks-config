@@ -1670,6 +1670,23 @@
         "type": "github"
       }
     },
+    "keystone-admin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793741462,
+        "narHash": "sha256-B2I7QPX8wN8DRrl+urbc3BLi5xhSv9MV9S7980twIJc=",
+        "ref": "feat/portable-administration",
+        "rev": "725d337799d453897238924bb7151d381d2357b3",
+        "revCount": 146,
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ks.systems/os.git"
+      },
+      "original": {
+        "ref": "feat/portable-administration",
+        "type": "git",
+        "url": "ssh://forgejo@git.ncrmro.com:2222/ks.systems/os.git"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane_3",
@@ -2114,6 +2131,7 @@
         "hyprland": "hyprland",
         "hyprpaper": "hyprpaper",
         "keystone": "keystone",
+        "keystone-admin": "keystone-admin",
         "lanzaboote": "lanzaboote",
         "llama-cpp": "llama-cpp",
         "llm-agents": "llm-agents_2",
