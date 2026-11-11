@@ -11,6 +11,7 @@
     ../../modules/keystone/os.nix
     ../../modules/keystone/server.nix
     ../../modules/keystone/terminal.nix
+    ./remote-administration.nix
     ./hardware-configuration.nix
     # Legacy disk-config: uses disko disk name "disk1", producing partition
     # labels like disk-disk1-ESP and disk-disk1-encryptedSwap baked into GPT.
