@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Thin wrapper around process-compose for the dash-mcp spike.
+#
+# - On `up`, allocates a dynamic port for each long-running process and
+#   writes them to `.ports.env`. Subsequent invocations (logs, list, down)
+#   re-source the same file so they see the same ports.
+# - Pins the API server to a per-user Unix socket under $XDG_RUNTIME_DIR
+#   (the worktree path overflows Linux's 108-byte AF_UNIX limit).
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+ports_file=".ports.env"
+random_port() { shuf -i 10000-60000 -n 1; }
+
+allocate_ports() {
+  local sqld server web
+  sqld="$(random_port)"
+  server="$(random_port)"
+  web="$(random_port)"
+  cat > "$ports_file" <<EOF
+SQLD_HTTP_PORT=${sqld}
+SERVER_PORT=${server}
+WEB_PORT=${web}
+PORT=${server}
+DATABASE_URL=http://127.0.0.1:${sqld}
+PUBLIC_SERVER_URL=http://127.0.0.1:${server}
+EOF
+}
+
+# `up` allocates fresh ports unless the user has already prepared a file.
+# Every other subcommand reuses whatever's there.
+if [[ "${1:-}" == "up" && ! -f "$ports_file" ]]; then
+  allocate_ports
+fi
+
+if [[ -f "$ports_file" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$ports_file"
+  set +a
+fi
+
+sock_dir="${XDG_RUNTIME_DIR:-/tmp}"
+sock="${sock_dir}/dash-mcp-spike.pc.sock"
+
+exec process-compose --use-uds --unix-socket "$sock" "$@"

@@ -1,0 +1,31 @@
+---
+import Base from "../layouts/Base.astro";
+import { api } from "../lib/api";
+
+let hosts: Awaited<ReturnType<typeof api.listHosts>>["hosts"] = [];
+let err: string | null = null;
+try {
+  ({ hosts } = await api.listHosts());
+} catch (e) {
+  err = e instanceof Error ? e.message : String(e);
+}
+---
+<Base title="Hosts">
+  <h2>Hosts</h2>
+  {err && <p class="empty">{err}</p>}
+  {!err && hosts.length === 0 && <p class="empty">No hosts have reported yet.</p>}
+  {hosts.length > 0 && (
+    <table>
+      <thead><tr><th>Hostname</th><th>First seen</th><th>Last seen</th></tr></thead>
+      <tbody>
+        {hosts.map((h) => (
+          <tr>
+            <td>{h.hostname}</td>
+            <td class="muted">{new Date(h.firstSeen).toLocaleString()}</td>
+            <td class="muted">{new Date(h.lastSeen).toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>

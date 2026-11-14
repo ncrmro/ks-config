@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# dash-claude — launch `claude` with the dash-mcp MCP server preconfigured.
+#
+# Usage:
+#   dash-claude [--agent <name>] [--host <name>] [--strict] [--dry-run] [-- ] [claude-args...]
+#
+# Flags consumed by the wrapper:
+#   --agent <name>   Identity for mission_report attribution (default:
+#                    $DASH_MCP_AGENT > $KS_AGENT > $USER).
+#   --host  <name>   Hostname for mission_report attribution (default:
+#                    $DASH_MCP_HOST > $HOSTNAME > $(hostname)).
+#   --strict         Pass --strict-mcp-config to claude — only dash-mcp is
+#                    exposed, the user's other mcpServers are ignored.
+#   --dry-run        Print the generated MCP config and resolved argv, then
+#                    exit 0 without invoking claude. Useful for debugging.
+#   --               End of wrapper flags; everything after is forwarded.
+#
+# Anything else is forwarded verbatim to `claude`.
+#
+# Server URL resolution: $DASH_MCP_SERVER_URL, else derived from
+# <code-dir>/.ports.env (the file the ./pc wrapper writes on `up`).
+#
+# The temp MCP config is created via mktemp and removed on exit.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+code_dir="$(cd "$here/.." && pwd)"
+
+agent="${DASH_MCP_AGENT:-${KS_AGENT:-${USER:-unknown-agent}}}"
+host_name="${DASH_MCP_HOST:-${HOSTNAME:-$(hostname)}}"
+strict=0
+dry_run=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)
+      [[ $# -ge 2 ]] || { echo "dash-claude: --agent needs a value" >&2; exit 2; }
+      agent="$2"; shift 2 ;;
+    --host)
+      [[ $# -ge 2 ]] || { echo "dash-claude: --host needs a value" >&2; exit 2; }
+      host_name="$2"; shift 2 ;;
+    --strict)
+      strict=1; shift ;;
+    --dry-run)
+      dry_run=1; shift ;;
+    --)
+      shift; break ;;
+    -h|--help)
+      sed -n '2,21p' "${BASH_SOURCE[0]}"
+      exit 0
+      ;;
+    *)
+      break ;;
+  esac
+done
+
+server_url="${DASH_MCP_SERVER_URL:-}"
+if [[ -z "$server_url" ]]; then
+  if [[ -f "$code_dir/.ports.env" ]]; then
+    # shellcheck disable=SC1091
+    . "$code_dir/.ports.env"
+    server_url="http://127.0.0.1:${SERVER_PORT}"
+  fi
+fi
+if [[ -z "$server_url" ]]; then
+  echo "dash-claude: \$DASH_MCP_SERVER_URL not set and $code_dir/.ports.env missing." >&2
+  echo "             Run \`./pc up -D\` from $code_dir first." >&2
+  exit 1
+fi
+
+bun_path="$(command -v bun || true)"
+if [[ -z "$bun_path" ]]; then
+  echo "dash-claude: \`bun\` not on PATH. Run from within \`nix develop\` (or activate direnv)." >&2
+  exit 1
+fi
+
+claude_path="$(command -v claude || true)"
+if [[ -z "$claude_path" ]]; then
+  echo "dash-claude: \`claude\` not on PATH." >&2
+  exit 1
+fi
+
+mcp_entry="$code_dir/mcp/src/index.ts"
+if [[ ! -f "$mcp_entry" ]]; then
+  echo "dash-claude: MCP entrypoint not found at $mcp_entry" >&2
+  exit 1
+fi
+
+tmp_cfg="$(mktemp --tmpdir "dash-claude-${agent}.XXXXXX.json")"
+trap 'rm -f "$tmp_cfg"' EXIT
+
+# Build the JSON with jq so values are safely escaped.
+jq -n \
+  --arg bun "$bun_path" \
+  --arg entry "$mcp_entry" \
+  --arg url "$server_url" \
+  --arg host "$host_name" \
+  --arg agent "$agent" \
+  '{
+    mcpServers: {
+      "dash-mcp": {
+        command: $bun,
+        args: ["run", $entry],
+        env: {
+          DASH_MCP_SERVER_URL: $url,
+          DASH_MCP_HOST: $host,
+          DASH_MCP_AGENT: $agent
+        }
+      }
+    }
+  }' > "$tmp_cfg"
+
+args=("--mcp-config" "$tmp_cfg")
+[[ $strict -eq 1 ]] && args+=("--strict-mcp-config")
+args+=("$@")
+
+if [[ $dry_run -eq 1 ]]; then
+  echo "# dash-claude dry run"
+  echo "# resolved server: $server_url"
+  echo "# resolved agent:  $agent"
+  echo "# resolved host:   $host_name"
+  echo "# mcp config ($tmp_cfg):"
+  cat "$tmp_cfg"
+  echo
+  echo "# argv:"
+  printf '  %q\n' "$claude_path" "${args[@]}"
+  exit 0
+fi
+
+exec "$claude_path" "${args[@]}"
