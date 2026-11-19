@@ -5,23 +5,22 @@
 # Keystone is deprecating its own bundled agent packages, so we turn keystone's
 # installer off (keystone.terminal.ai.enable) — otherwise its claude-code and
 # ours would both put `bin/claude` in the profile and home-manager would error
-# on the collision. These are the only agent copies on PATH.
+# on the collision. On macOS, Codex and Claude CLI are managed outside Nix.
 {
   inputs,
   lib,
   pkgs,
   ...
-}:
-let
-  agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system} or { };
+}: let
+  agents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system} or {};
   pick = name: lib.optional (agents ? ${name}) agents.${name};
-in
-{
+in {
   keystone.terminal.ai.enable = lib.mkForce false;
 
   home.packages =
-    (pick "claude-code")
-    ++ (pick "gemini-cli")
-    ++ (pick "codex")
-    ++ (pick "opencode");
+    (pick "gemini-cli")
+    ++ (pick "opencode")
+    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
+      (pick "claude-code") ++ (pick "codex")
+    );
 }
